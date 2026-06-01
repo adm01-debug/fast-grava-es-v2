@@ -205,44 +205,56 @@ export default function KanbanBoard() {
   const handleBulkAction = useCallback(async (action: 'delete' | 'move' | 'rework' | 'pause', targetStatus?: JobStatus) => {
     if (selectedJobs.size === 0) return;
 
-    try {
-      if (action === 'move' && targetStatus) {
-        const updateData: TablesUpdate<'jobs'> = {
-          status: targetStatus,
-          updated_at: new Date().toISOString()
-        };
+    if (action === 'move' && targetStatus) {
+      const updateData: TablesUpdate<'jobs'> = {
+        status: targetStatus,
+        updated_at: new Date().toISOString()
+      };
 
-        // Add timestamps if needed
-        if (targetStatus === 'production') updateData.actual_start_time = new Date().toISOString();
-        if (targetStatus === 'finished') updateData.actual_end_time = new Date().toISOString();
+      // Add timestamps if needed
+      if (targetStatus === 'production') updateData.actual_start_time = new Date().toISOString();
+      if (targetStatus === 'finished') updateData.actual_end_time = new Date().toISOString();
 
-        const updates = Array.from(selectedJobs).map(id =>
-          supabase.from('jobs').update(updateData).eq('id', id)
-        );
-        await Promise.all(updates);
-        toast.success(`${selectedJobs.size} jobs movidos para "${targetStatus}"`);
-        setSelectedJobs(new Set());
-        handleJobsUpdate();
-      } else if (action === 'rework') {
-        const updates = Array.from(selectedJobs).map(id =>
-          supabase.from('jobs').update({ status: 'rework', updated_at: new Date().toISOString() }).eq('id', id)
-        );
-        await Promise.all(updates);
-        toast.success(`${selectedJobs.size} jobs marcados como Retrabalho`);
-        setSelectedJobs(new Set());
-        handleJobsUpdate();
-      } else if (action === 'delete') {
-        const updates = Array.from(selectedJobs).map(id =>
-          supabase.from('jobs').delete().eq('id', id)
-        );
-        await Promise.all(updates);
-        toast.success(`${selectedJobs.size} jobs excluídos permanentemente`);
-        setSelectedJobs(new Set());
-        handleJobsUpdate();
+      const updates = Array.from(selectedJobs).map(id =>
+        supabase.from('jobs').update(updateData).eq('id', id)
+      );
+      const results = await Promise.all(updates);
+      const errors = results.map(r => r.error).filter(Boolean);
+      if (errors.length > 0) {
+        toast.error(`Erro ao mover jobs: ${errors.map(e => e!.message).join('; ')}`);
+        return;
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro desconhecido';
-      toast.error(`Erro na ação em massa: ${message}`);
+      const allColumns = [...statusColumns, ...exceptionStatuses];
+      const statusLabel = allColumns.find(c => c.status === targetStatus)?.label ?? targetStatus;
+      toast.success(`${selectedJobs.size} jobs movidos para "${statusLabel}"`);
+      setSelectedJobs(new Set());
+      handleJobsUpdate();
+    } else if (action === 'rework') {
+      const updates = Array.from(selectedJobs).map(id =>
+        supabase.from('jobs').update({ status: 'rework', updated_at: new Date().toISOString() }).eq('id', id)
+      );
+      const results = await Promise.all(updates);
+      const errors = results.map(r => r.error).filter(Boolean);
+      if (errors.length > 0) {
+        toast.error(`Erro ao marcar retrabalho: ${errors.map(e => e!.message).join('; ')}`);
+        return;
+      }
+      toast.success(`${selectedJobs.size} jobs marcados como Retrabalho`);
+      setSelectedJobs(new Set());
+      handleJobsUpdate();
+    } else if (action === 'delete') {
+      const updates = Array.from(selectedJobs).map(id =>
+        supabase.from('jobs').delete().eq('id', id)
+      );
+      const results = await Promise.all(updates);
+      const errors = results.map(r => r.error).filter(Boolean);
+      if (errors.length > 0) {
+        toast.error(`Erro ao excluir jobs: ${errors.map(e => e!.message).join('; ')}`);
+        return;
+      }
+      toast.success(`${selectedJobs.size} jobs excluídos permanentemente`);
+      setSelectedJobs(new Set());
+      handleJobsUpdate();
     }
   }, [selectedJobs, handleJobsUpdate]);
 

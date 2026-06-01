@@ -93,9 +93,8 @@ describe('safeParseFloat', () => {
 
   it('accepts comma as decimal separator (Brazilian format)', () => {
     expect(safeParseFloat('3,14')).toBeCloseTo(3.14);
-    // '1.234,56' → replace first comma with '.' → '1.234.56' → parseFloat reads 1.234
-    // This is a known limitation of single-comma replacement for thousand separators.
-    expect(safeParseFloat('1.234,56')).toBeCloseTo(1.234);
+    expect(safeParseFloat('1.234,56')).toBeCloseTo(1234.56);
+    expect(safeParseFloat('1.234.567,89')).toBeCloseTo(1234567.89);
   });
 
   it('returns fallback for non-numeric strings', () => {

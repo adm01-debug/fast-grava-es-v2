@@ -198,7 +198,11 @@ export function ProductionRegistrationModal({
       toast.error(`Quantidade produzida muito alta (máximo ${(job.quantity * 3).toLocaleString()})`);
       return;
     }
-    if (notes.length > 2000) {
+    // Build finalNotes first so the length check covers the full string
+    const checklistStr = `[Protocolo Qualidade: ${qualityChecks.color ? 'COR OK, ' : 'COR PENDENTE, '}${qualityChecks.burrs ? 'REBARBA OK, ' : 'REBARBA PENDENTE, '}${qualityChecks.dimensions ? 'DIMENSÕES OK, ' : 'DIMENSÕES PENDENTE, '}${qualityChecks.packaging ? 'EMBALAGEM OK' : 'EMBALAGEM PENDENTE'}]`;
+    const finalNotes = notes ? `${notes}\n\n${checklistStr}` : checklistStr;
+
+    if (finalNotes.length > 2000) {
       toast.error('Observações excedem o limite de 2000 caracteres');
       return;
     }
@@ -206,9 +210,6 @@ export function ProductionRegistrationModal({
     setIsSaving(true);
 
     try {
-      // Append checklist to notes for traceability
-      const checklistStr = `[Protocolo Qualidade: ${qualityChecks.color ? 'COR OK, ' : 'COR PENDENTE, '}${qualityChecks.burrs ? 'REBARBA OK, ' : 'REBARBA PENDENTE, '}${qualityChecks.dimensions ? 'DIMENSÕES OK, ' : 'DIMENSÕES PENDENTE, '}${qualityChecks.packaging ? 'EMBALAGEM OK' : 'EMBALAGEM PENDENTE'}]`;
-      const finalNotes = notes ? `${notes}\n\n${checklistStr}` : checklistStr;
 
       // Montar payload com todos os campos desejados
       const rawPayload = {

@@ -57,8 +57,18 @@ serve(async (req) => {
       });
     }
 
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Restrict to admin or manager role
+    const { data: roleRows } = await supabase.from('user_roles')
+      .select('role').eq('user_id', user.id).in('role', ['admin', 'manager']).limit(1);
+    if (!roleRows || roleRows.length === 0) {
+      return new Response(JSON.stringify({ error: 'Insufficient permissions' }), {
+        status: 403, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
+      });
+    }
+
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
     const body: ReportRequest = await req.json();
     console.log('[send-email-report] Request:', body);

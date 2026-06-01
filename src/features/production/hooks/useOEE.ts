@@ -191,7 +191,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const endDate = filters?.endDate || endOfDay(now);
 
     const previousStartDate = startOfDay(subDays(startDate, comparisonDaysBack));
-    const previousEndDate = startOfDay(startDate);
+    const previousEndDate = new Date(startOfDay(startDate).getTime() - 1);
 
     const allRelevantJobs = jobs.filter(job => {
       if (filters?.machineId && job.machine_id !== filters.machineId) return false;

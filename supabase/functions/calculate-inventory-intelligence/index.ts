@@ -46,6 +46,15 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Restrict to admin role
+    const { data: roleRows } = await supabase.from('user_roles')
+      .select('role').eq('user_id', user.id).in('role', ['admin']).limit(1);
+    if (!roleRows || roleRows.length === 0) {
+      return new Response(JSON.stringify({ error: 'Insufficient permissions' }), {
+        status: 403, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
+      });
+    }
     console.log('Starting inventory intelligence calculation...');
 
     // 1. Fetch all items

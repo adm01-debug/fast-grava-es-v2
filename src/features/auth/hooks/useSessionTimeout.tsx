@@ -148,6 +148,9 @@ export function useSessionTimeout({
   }, [resetTimers, onSessionRenewed]);
 
   // Activity detection
+  const showWarningRef = React.useRef(state.showWarning);
+  React.useEffect(() => { showWarningRef.current = state.showWarning; }, [state.showWarning]);
+
   React.useEffect(() => {
     const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click"];
 
@@ -156,7 +159,7 @@ export function useSessionTimeout({
       const timeSinceLastActivity = now - lastActivityRef.current;
 
       // Only reset if more than 1 minute since last activity (debounce)
-      if (timeSinceLastActivity > 60000 && !state.showWarning) {
+      if (timeSinceLastActivity > 60000 && !showWarningRef.current) {
         resetTimers();
       }
 
@@ -178,7 +181,7 @@ export function useSessionTimeout({
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
       if (countdownRef.current) clearInterval(countdownRef.current);
     };
-  }, [resetTimers, state.showWarning]);
+  }, [resetTimers]);
 
   return {
     ...state,

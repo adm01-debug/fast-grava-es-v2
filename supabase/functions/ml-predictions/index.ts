@@ -33,16 +33,15 @@ serve(async (req) => {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) throw new Error("Supabase not configured");
 
     const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    const token = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
+    if (!token) {
       return new Response(JSON.stringify({ error: "Não autorizado" }), {
         status: 401,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: { user }, error: authError } = await userClient.auth.getUser(
-      authHeader.match(/^Bearer\s+(.+)$/i)?.[1]
-    );
+    const { data: { user }, error: authError } = await userClient.auth.getUser(token);
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Token inválido" }), {
         status: 401,

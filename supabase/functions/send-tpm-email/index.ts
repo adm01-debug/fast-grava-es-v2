@@ -27,7 +27,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const webhookApiKey = Deno.env.get('WEBHOOK_API_KEY');
     const authHeader = req.headers.get('authorization');
-    const providedKey = authHeader?.replace('Bearer ', '') || req.headers.get('x-api-key');
+    const providedKey = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1] || req.headers.get('x-api-key');
     const isServiceRole = providedKey === supabaseKey;
     const isWebhookKey = webhookApiKey && providedKey === webhookApiKey;
     if (!isServiceRole && !isWebhookKey) {

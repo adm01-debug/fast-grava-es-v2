@@ -22,7 +22,8 @@ serve(async (req) => {
   try {
     // Auth check
     const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    const token = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
+    if (!token) {
       return new Response(JSON.stringify({ error: "Não autorizado" }), {
         status: 401,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
@@ -33,9 +34,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(
-      authHeader.match(/^Bearer\s+(.+)$/i)?.[1]
-    );
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Token inválido" }), {
         status: 401,

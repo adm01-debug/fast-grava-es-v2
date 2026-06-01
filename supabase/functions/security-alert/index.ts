@@ -53,8 +53,8 @@ Deno.serve(async (req) => {
       .insert({
         event_type: payload.event_type,
         severity: payload.severity,
-        user_id: payload.user_id,
-        user_email: payload.user_email,
+        user_id: user.id,
+        user_email: user.email,
         ip_address: payload.ip_address,
         user_agent: payload.user_agent,
         details: payload.details || {},

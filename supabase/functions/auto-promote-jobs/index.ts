@@ -47,7 +47,7 @@ serve(async (req) => {
         const { data: roleRows } = await supabaseClient
           .from('user_roles').select('role')
           .eq('user_id', user.id)
-          .in('role', ['admin', 'manager', 'operator', 'coordinator'])
+          .in('role', ['admin', 'manager', 'coordinator'])
           .limit(1);
         authorized = !!(roleRows && roleRows.length > 0);
       }

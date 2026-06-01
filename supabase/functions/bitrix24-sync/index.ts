@@ -179,7 +179,8 @@ async function refreshAccessToken(refreshToken: string, supabase: any): Promise<
 // Generate a HMAC-signed, time-bound state token for OAuth CSRF protection
 async function generateOAuthState(): Promise<string> {
   const ts = Date.now().toString();
-  const keyMat = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+  const keyMat = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!keyMat) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey('raw', enc.encode(keyMat), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, enc.encode(ts)));
@@ -195,7 +196,8 @@ async function verifyOAuthState(state: string): Promise<boolean> {
   const sig = state.slice(dot + 1);
   const tsNum = parseInt(ts, 10);
   if (isNaN(tsNum) || Date.now() - tsNum > 15 * 60 * 1000) return false;
-  const keyMat = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+  const keyMat = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!keyMat) return false;
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey('raw', enc.encode(keyMat), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const expected = new Uint8Array(await crypto.subtle.sign('HMAC', key, enc.encode(ts)));

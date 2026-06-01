@@ -291,9 +291,9 @@ function calculateTopOperators(completedJobs: Job[], profiles: Profile[]) {
     .sort(([, a], [, b]) => b.produced - a.produced)
     .slice(0, 5)
     .map(([id, stats], index) => {
-      const profile = profiles.find(p => p.id === id) || profiles[index % Math.max(1, profiles.length)];
+      const profile = id !== 'unknown' ? profiles.find(p => p.id === id) : undefined;
       return {
-        name: profile?.full_name || `Operador ${index + 1}`,
+        name: profile?.full_name || (id === 'unknown' ? 'Sem operador' : `Operador ${index + 1}`),
         produced: stats.produced,
         efficiency: stats.jobs > 0 ? Math.min(100, (stats.produced / (stats.jobs * 100)) * 100) : 0,
       };

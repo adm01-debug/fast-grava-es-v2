@@ -62,15 +62,23 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const deviceInfo: DeviceInfo = await req.json();
-    
-    console.log('Checking device for user:', deviceInfo.user_id);
+
+    // Reject if body claims a different user than the authenticated principal
+    if (deviceInfo.user_id !== user.id) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Checking device for user:', user.id);
     console.log('Device fingerprint:', deviceInfo.device_fingerprint);
 
     // Verificar se o dispositivo já existe
     const { data: existingDevice, error: deviceError } = await supabase
       .from('user_devices')
       .select('*')
-      .eq('user_id', deviceInfo.user_id)
+      .eq('user_id', user.id)
       .eq('device_fingerprint', deviceInfo.device_fingerprint)
       .maybeSingle();
 
@@ -109,7 +117,7 @@ Deno.serve(async (req) => {
       const { data: newDevice, error: insertError } = await supabase
         .from('user_devices')
         .insert({
-          user_id: deviceInfo.user_id,
+          user_id: user.id,
           device_fingerprint: deviceInfo.device_fingerprint,
           ip_address: deviceInfo.ip_address,
           user_agent: deviceInfo.user_agent,
@@ -132,7 +140,7 @@ Deno.serve(async (req) => {
       const { error: alertError } = await supabase
         .from('new_device_alerts')
         .insert({
-          user_id: deviceInfo.user_id,
+          user_id: user.id,
           device_id: deviceId,
           ip_address: deviceInfo.ip_address,
           user_agent: deviceInfo.user_agent
@@ -143,14 +151,14 @@ Deno.serve(async (req) => {
       }
 
       // Enviar email de alerta
-      if (resendApiKey && deviceInfo.user_email) {
+      if (resendApiKey && user.email) {
         try {
           const resend = new Resend(resendApiKey);
-          
+
           const browserInfo = deviceInfo.browser_name || 'Navegador desconhecido';
           const osInfo = deviceInfo.os_name || 'Sistema operacional desconhecido';
           const deviceTypeInfo = deviceInfo.device_type || 'desktop';
-          const loginTime = new Date().toLocaleString('pt-BR', { 
+          const loginTime = new Date().toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             dateStyle: 'full',
             timeStyle: 'medium'
@@ -158,7 +166,7 @@ Deno.serve(async (req) => {
 
           const emailResponse = await resend.emails.send({
             from: 'Segurança <onboarding@resend.dev>',
-            to: [deviceInfo.user_email],
+            to: [user.email],
             subject: '⚠️ Novo dispositivo detectado na sua conta',
             html: `
               <!DOCTYPE html>
@@ -241,12 +249,12 @@ Deno.serve(async (req) => {
           // Atualizar alerta com status do email
           await supabase
             .from('new_device_alerts')
-            .update({ 
-              email_sent: true, 
-              email_sent_at: now 
+            .update({
+              email_sent: true,
+              email_sent_at: now
             })
             .eq('device_id', deviceId)
-            .eq('user_id', deviceInfo.user_id);
+            .eq('user_id', user.id);
 
         } catch (emailError) {
           console.error('Error sending alert email:', emailError);
@@ -259,7 +267,7 @@ Deno.serve(async (req) => {
         const osInfo = deviceInfo.os_name || 'Sistema desconhecido';
         
         const pushPayload = {
-          user_id: deviceInfo.user_id,
+          user_id: user.id,
           title: '🔐 Novo Dispositivo Detectado',
           body: `Login detectado de ${browserInfo} em ${osInfo}. IP: ${deviceInfo.ip_address || 'desconhecido'}`,
           data: { 

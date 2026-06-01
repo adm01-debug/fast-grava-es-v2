@@ -169,15 +169,15 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
-    // Non-service-role callers may only push to their own subscriptions
-    if (!isServiceRole && !broadcast) {
+    // Non-broadcast requests must always provide a user_id
+    if (!broadcast) {
       if (!user_id) {
         return new Response(JSON.stringify({ error: "user_id is required for non-broadcast push" }), {
           status: 400,
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
-      if (user_id !== callerUserId) {
+      if (!isServiceRole && user_id !== callerUserId) {
         return new Response(JSON.stringify({ error: "Forbidden: cannot send to another user's subscriptions" }), {
           status: 403,
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

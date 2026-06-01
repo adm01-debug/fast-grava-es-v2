@@ -136,7 +136,8 @@ Deno.serve(async (req: Request) => {
   try {
     // Auth check
     const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    const token = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
+    if (!token) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
@@ -145,7 +146,6 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const token = authHeader.match(/^Bearer\s+(.+)$/i)?.[1];
 
     // Verify JWT
     const supabaseAuth = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
@@ -161,12 +161,20 @@ Deno.serve(async (req: Request) => {
     // Role check — only admin/manager may use this service-role bridge.
     // Filter by eligible roles before limit(1) to handle users with multiple role rows.
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
-    const { data: roleRows } = await adminClient
+    const { data: roleRows, error: roleError } = await adminClient
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
       .in("role", ["admin", "manager"])
       .limit(1);
+
+    if (roleError) {
+      console.error("[external-db-bridge] Role query error:", roleError.message);
+      return new Response(JSON.stringify({ error: "Internal server error" }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
     if (!roleRows || roleRows.length === 0) {
       return new Response(JSON.stringify({ error: "Insufficient permissions" }), {
