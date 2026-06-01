@@ -60,7 +60,7 @@ export const JobQRCode = forwardRef<HTMLDivElement, JobQRCodeProps>(({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>QR Code - ${orderNumber}</title>
+          <title>QR Code - ${escapeHtml(orderNumber)}</title>
           <style>
             body {
               display: flex;

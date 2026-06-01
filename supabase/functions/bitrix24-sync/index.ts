@@ -755,47 +755,60 @@ serve(async (req) => {
     SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Require authenticated user with admin or manager role
-  try {
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
-        status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-      });
-    }
-    const userClient = createClient(SUPABASE_URL!, anonKey);
-    const { data: { user }, error: authError } = await userClient.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Token inválido' }), {
-        status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-      });
-    }
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    if (!roleData || !['admin', 'manager'].includes(roleData.role)) {
-      return new Response(JSON.stringify({ error: 'Permissão insuficiente' }), {
-        status: 403,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-      });
-    }
-  } catch (authCheckError) {
-    return new Response(JSON.stringify({ error: 'Erro de autenticação' }), {
-      status: 401,
-      headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-    });
-  }
-
   const url = new URL(req.url);
   const action = url.searchParams.get('action');
   const triggeredBy = url.searchParams.get('triggered_by') || 'manual';
+
+  // oauth-callback comes from Bitrix24's redirect (no user session);
+  // webhook events come from Bitrix24 servers — neither carries an app user JWT.
+  const noAuthActions = new Set(['oauth-callback', 'webhook']);
+
+  if (!noAuthActions.has(action ?? '')) {
+    // Require authenticated user with admin or manager role
+    try {
+      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
+
+      // `push` is called fire-and-forget by jobsService with only the Supabase publishable apikey
+      const apiKey = req.headers.get('apikey');
+      const isPushWithAnonKey = action === 'push' && apiKey === anonKey;
+
+      if (!isPushWithAnonKey) {
+        if (!authHeader?.startsWith('Bearer ')) {
+          return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+            status: 401,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
+        }
+        const userClient = createClient(SUPABASE_URL!, anonKey);
+        const { data: { user }, error: authError } = await userClient.auth.getUser(
+          authHeader.replace('Bearer ', '')
+        );
+        if (authError || !user) {
+          return new Response(JSON.stringify({ error: 'Token inválido' }), {
+            status: 401,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
+        }
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!roleData || !['admin', 'manager'].includes(roleData.role)) {
+          return new Response(JSON.stringify({ error: 'Permissão insuficiente' }), {
+            status: 403,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
+        }
+      }
+    } catch (authCheckError) {
+      return new Response(JSON.stringify({ error: 'Erro de autenticação' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+  }
 
   try {
     let result;

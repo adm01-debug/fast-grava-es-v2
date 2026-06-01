@@ -7,14 +7,18 @@ serve(async (req) => {
   }
 
   const cronApiKey = Deno.env.get("CRON_API_KEY");
-  if (cronApiKey) {
-    const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
-    if (provided !== cronApiKey) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+  if (!cronApiKey) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
+  if (provided !== cronApiKey) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   try {

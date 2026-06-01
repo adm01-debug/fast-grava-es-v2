@@ -39,8 +39,8 @@ export default function PublicTrackingPage() {
     e?.preventDefault();
     if (!query) return;
 
-    // Sanitize: only allow alphanumeric, hyphens, dots, and slashes (valid for order numbers and UUIDs)
-    const safeQuery = query.trim().replace(/[^a-zA-Z0-9\-./]/g, '');
+    // Trim only — the query is passed via .eq() parameterized call, not injected into a filter string
+    const safeQuery = query.trim();
     if (!safeQuery) return;
 
     setLoading(true);

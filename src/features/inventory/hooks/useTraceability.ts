@@ -324,13 +324,13 @@ export function useTraceabilityMutations() {
 }
 
 export function useSearchLots(searchTerm: string) {
+  // Compute safeTerm outside queryFn so it can be used in queryKey for correct cache keying
+  const safeTerm = searchTerm.trim().replace(/[,()%]/g, '');
   return useQuery({
-    queryKey: ['search-lots', searchTerm],
+    queryKey: ['search-lots', safeTerm],
     queryFn: async () => {
       if (!searchTerm || searchTerm.length < 2) return [];
-      // Strip PostgREST filter special characters to prevent filter injection
-      const safeTerm = searchTerm.replace(/[,()%.\\]/g, '');
-      if (!safeTerm) return [];
+      if (!safeTerm || safeTerm.length < 2) return [];
       const { data, error } = await supabase
         .from('production_lots')
         .select('id, lot_number, product_name, status')

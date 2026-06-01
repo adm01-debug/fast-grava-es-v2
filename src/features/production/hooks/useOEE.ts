@@ -190,7 +190,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const startDate = filters?.startDate || startOfDay(subDays(now, validDaysBack));
     const endDate = filters?.endDate || endOfDay(now);
 
-    const previousStartDate = startOfDay(subDays(startDate, daysBack));
+    const previousStartDate = startOfDay(subDays(startDate, comparisonDaysBack));
     const previousEndDate = startOfDay(startDate);
 
     const allRelevantJobs = jobs.filter(job => {
@@ -403,7 +403,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     const overallPerformance = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.performance, 0) / machinesWithData.length : 0;
     const overallQuality = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.quality, 0) / machinesWithData.length : 0;
 
-    const prevMetrics = calculateMetrics(prevPeriodJobs, Math.max(1, daysBack), PLANNED_MINUTES_PER_DAY);
+    const prevMetrics = calculateMetrics(prevPeriodJobs, Math.max(1, comparisonDaysBack), PLANNED_MINUTES_PER_DAY);
     const prevOEE = Math.round(prevMetrics.oee * 10) / 10;
     const prevAvail = Math.round(prevMetrics.avail * 10) / 10;
     const prevPerf = Math.round(prevMetrics.perf * 10) / 10;

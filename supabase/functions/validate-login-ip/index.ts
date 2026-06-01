@@ -37,14 +37,18 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
     const apiKey = Deno.env.get('WEBHOOK_API_KEY') || Deno.env.get('CRON_API_KEY');
-    if (apiKey) {
-      const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.replace('Bearer ', '');
-      if (provided !== apiKey) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-        });
-      }
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.replace('Bearer ', '');
+    if (provided !== apiKey) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);

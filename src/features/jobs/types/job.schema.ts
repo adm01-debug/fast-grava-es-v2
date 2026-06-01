@@ -25,8 +25,8 @@ export const jobSchema = z.object({
 });
 
 export const jobFormSchema = jobSchema.omit({ id: true, status: true }).extend({
-  quantity: z.coerce.number().int().positive('Quantidade deve ser positiva'),
-  estimated_duration: z.coerce.number().positive('Duração estimada deve ser positiva').default(60),
+  quantity: z.coerce.number().int().positive('Quantidade deve ser positiva').max(1_000_000, 'Quantidade muito alta'),
+  estimated_duration: z.coerce.number().positive('Duração estimada deve ser positiva').max(43_200, 'Duração estimada não pode exceder 30 dias').default(60),
 });
 
 export type JobFormData = z.infer<typeof jobFormSchema>;

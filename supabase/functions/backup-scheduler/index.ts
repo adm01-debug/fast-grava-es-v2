@@ -5,14 +5,18 @@ serve(async (req) => {
   try {
     // Guard with a shared secret so only cron infrastructure can trigger this
     const apiKey = Deno.env.get("BACKUP_API_KEY");
-    if (apiKey) {
-      const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
-      if (provided !== apiKey) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
+    if (provided !== apiKey) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const supabase = createClient(

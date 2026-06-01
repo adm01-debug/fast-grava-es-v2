@@ -53,7 +53,7 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
         .select('*', { count: 'exact' });
 
       // Apply search — strip PostgREST filter meta-characters to prevent filter injection
-      const safeSearch = search.trim().replace(/[,()%.\\]/g, '');
+      const safeSearch = search.trim().replace(/[,()%]/g, '');
       if (safeSearch) {
         query = query.or(
           `client.ilike.%${safeSearch}%,product.ilike.%${safeSearch}%,order_number.ilike.%${safeSearch}%`
