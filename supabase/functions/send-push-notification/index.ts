@@ -152,14 +152,16 @@ serve(async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = await req.json();
 
-    // Broadcast requires service-role key or admin/manager role
+    // Broadcast requires service-role key or admin/manager role.
+    // Filter by eligible roles before limit(1) to handle users with multiple role rows.
     if (broadcast && !isServiceRole && callerUserId) {
-      const { data: roleData } = await supabase
+      const { data: roleRows } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", callerUserId)
-        .maybeSingle();
-      if (!roleData || !["admin", "manager"].includes(roleData.role)) {
+        .in("role", ["admin", "manager"])
+        .limit(1);
+      if (!roleRows || roleRows.length === 0) {
         return new Response(JSON.stringify({ error: "Forbidden: broadcast requires admin or manager role" }), {
           status: 403,
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

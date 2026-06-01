@@ -812,12 +812,15 @@ serve(async (req) => {
           headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
         });
       }
-      const { data: roleData } = await supabase
+      // Filter by eligible roles before limit(1) so users with multiple role rows
+      // are handled correctly (maybeSingle would error/miss on >1 row).
+      const { data: roleRows } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .maybeSingle();
-      if (!roleData || !['admin', 'manager'].includes(roleData.role)) {
+        .in('role', ['admin', 'manager', 'coordinator'])
+        .limit(1);
+      if (!roleRows || roleRows.length === 0) {
         return new Response(JSON.stringify({ error: 'Permissão insuficiente' }), {
           status: 403,
           headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },

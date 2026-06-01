@@ -71,6 +71,14 @@ export default function PublicTrackingPage() {
           .select(selectClause)
           .eq('id', safeQuery)
           .maybeSingle());
+        // A UUID-shaped string is a valid order_number value; fall back if id lookup missed.
+        if (!supabaseError && !data) {
+          ({ data, error: supabaseError } = await supabase
+            .from('jobs')
+            .select(selectClause)
+            .eq('order_number', safeQuery)
+            .maybeSingle());
+        }
       } else {
         ({ data, error: supabaseError } = await supabase
           .from('jobs')

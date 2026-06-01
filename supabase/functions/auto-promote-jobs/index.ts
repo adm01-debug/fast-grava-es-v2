@@ -43,8 +43,13 @@ serve(async (req) => {
       const anonClient = createClient(supabaseUrl, anonKey);
       const { data: { user } } = await anonClient.auth.getUser(bearerToken);
       if (user) {
-        const { data: roleData } = await supabaseClient.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
-        authorized = !!roleData && ['admin', 'manager', 'operator'].includes(roleData.role as string);
+        // Filter by eligible roles first so users with multiple role rows are handled correctly.
+        const { data: roleRows } = await supabaseClient
+          .from('user_roles').select('role')
+          .eq('user_id', user.id)
+          .in('role', ['admin', 'manager', 'operator', 'coordinator'])
+          .limit(1);
+        authorized = !!(roleRows && roleRows.length > 0);
       }
     }
 
