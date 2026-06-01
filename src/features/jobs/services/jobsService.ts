@@ -92,11 +92,15 @@ export const jobsService = {
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       if (projectId) {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        if (!token) return;
         fetch(`https://${projectId}.supabase.co/functions/v1/bitrix24-sync?action=push`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({ jobId, status })
         }).catch(() => { /* fire and forget */ });

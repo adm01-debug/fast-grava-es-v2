@@ -123,7 +123,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Accept service-role key (internal Edge Function calls) or valid user JWT
     const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
-    const providedKey = authHeader?.replace("Bearer ", "");
+    const providedKey = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
     if (!providedKey) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,

@@ -434,7 +434,7 @@ serve(async (req) => {
     }
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: { user }, error: authError } = await userClient.auth.getUser(
-      authHeader.replace("Bearer ", "")
+      authHeader.match(/^Bearer\s+(.+)$/i)?.[1]
     );
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Token inválido" }), {

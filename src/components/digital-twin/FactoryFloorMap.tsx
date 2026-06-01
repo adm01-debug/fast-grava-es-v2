@@ -23,7 +23,8 @@ export function FactoryFloorMap() {
   useEffect(() => { machinesRef.current = machines; }, [machines]);
   useEffect(() => { activeJobsRef.current = activeJobs; }, [activeJobs]);
 
-  // Fetch active jobs once on mount; re-fetch only when machines list changes.
+  // Fetch active jobs on mount and poll every 30 s so the map doesn't go stale
+  // when operators start/finish jobs without a full page reload.
   useEffect(() => {
     let isMounted = true;
 
@@ -45,8 +46,12 @@ export function FactoryFloorMap() {
     };
 
     fetchActiveJobs();
+    const pollInterval = setInterval(fetchActiveJobs, 30_000);
 
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
   }, [machines]);
 
   // Simulated live telemetry tick (independent of fetch cycle).

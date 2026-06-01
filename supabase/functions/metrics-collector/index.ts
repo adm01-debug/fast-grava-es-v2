@@ -13,7 +13,7 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-  const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
+  const provided = req.headers.get("x-api-key") || req.headers.get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (provided !== cronApiKey) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,

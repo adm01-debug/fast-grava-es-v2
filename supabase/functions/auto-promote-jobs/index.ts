@@ -24,26 +24,36 @@ serve(async (req) => {
     return new Response('ok', { headers: getCorsHeaders(req) })
   }
 
-  const cronApiKey = Deno.env.get('CRON_API_KEY');
-  if (!cronApiKey) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-    });
-  }
-  const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.replace('Bearer ', '');
-  if (provided !== cronApiKey) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Auth: accept CRON_API_KEY, service-role Bearer, or user JWT with operator/manager/admin role
+    const cronApiKey = Deno.env.get('CRON_API_KEY');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+    const xApiKey = req.headers.get('x-api-key');
+    const bearerToken = req.headers.get('authorization')?.match(/^bearer\s+(.+)$/i)?.[1];
+
+    const isCronKey = cronApiKey && (xApiKey === cronApiKey || bearerToken === cronApiKey);
+    const isServiceRole = supabaseServiceKey && bearerToken === supabaseServiceKey;
+    let authorized = !!(isCronKey || isServiceRole);
+
+    if (!authorized && bearerToken && anonKey) {
+      const anonClient = createClient(supabaseUrl, anonKey);
+      const { data: { user } } = await anonClient.auth.getUser(bearerToken);
+      if (user) {
+        const { data: roleData } = await supabaseClient.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
+        authorized = !!roleData && ['admin', 'manager', 'operator'].includes(roleData.role as string);
+      }
+    }
+
+    if (!authorized) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
 
     console.log('Starting auto-promotion check...')
 

@@ -52,12 +52,14 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
         .from('jobs')
         .select('*', { count: 'exact' });
 
-      // Apply search — strip PostgREST filter meta-characters to prevent filter injection
-      const safeSearch = search.trim().replace(/[,()%]/g, '');
-      if (safeSearch) {
-        query = query.or(
-          `client.ilike.%${safeSearch}%,product.ilike.%${safeSearch}%,order_number.ilike.%${safeSearch}%`
-        );
+      // Apply search — quote values containing PostgREST structural chars (, ( ) ")
+      // so that e.g. "ACME, Inc" is treated as a literal value, not a filter separator.
+      const term = search.trim();
+      if (term) {
+        const ilikePat = `%${term}%`;
+        const needsQuote = /[,"()]/.test(term);
+        const v = needsQuote ? `"${ilikePat.replace(/"/g, '""')}"` : ilikePat;
+        query = query.or(`client.ilike.${v},product.ilike.${v},order_number.ilike.${v}`);
       }
 
       // Apply filters

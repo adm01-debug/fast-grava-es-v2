@@ -36,7 +36,7 @@ serve(async (req: Request): Promise<Response> => {
   // Accept CRON_API_KEY (scheduled jobs) or valid user JWT (frontend)
   const cronApiKey = Deno.env.get("CRON_API_KEY");
   const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
-  const providedKey = req.headers.get("x-api-key") || authHeader?.replace("Bearer ", "");
+  const providedKey = req.headers.get("x-api-key") || authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
   const isCronKey = cronApiKey && providedKey === cronApiKey;
   const hasBearer = authHeader?.startsWith("Bearer ");
 
@@ -51,7 +51,7 @@ serve(async (req: Request): Promise<Response> => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const userClient = createClient(supabaseUrl, anonKey);
     const { data: { user }, error: authError } = await userClient.auth.getUser(
-      authHeader!.replace("Bearer ", "")
+      authHeader!.match(/^Bearer\s+(.+)$/i)?.[1]
     );
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

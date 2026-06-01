@@ -324,21 +324,25 @@ export function useTraceabilityMutations() {
 }
 
 export function useSearchLots(searchTerm: string) {
-  // Compute safeTerm outside queryFn so it can be used in queryKey for correct cache keying
-  const safeTerm = searchTerm.trim().replace(/[,()%]/g, '');
+  const term = searchTerm.trim();
+  // Quote values with PostgREST structural chars (, ( ) ") to prevent filter injection
+  // while preserving legitimate characters (e.g. lot numbers like "LT-001/A").
+  const ilikePat = `%${term}%`;
+  const needsQuote = /[,"()]/.test(term);
+  const quotedTerm = needsQuote ? `"${ilikePat.replace(/"/g, '""')}"` : ilikePat;
+
   return useQuery({
-    queryKey: ['search-lots', safeTerm],
+    queryKey: ['search-lots', term],
     queryFn: async () => {
-      if (!searchTerm || searchTerm.length < 2) return [];
-      if (!safeTerm || safeTerm.length < 2) return [];
+      if (!term || term.length < 2) return [];
       const { data, error } = await supabase
         .from('production_lots')
         .select('id, lot_number, product_name, status')
-        .or(`lot_number.ilike.%${safeTerm}%,product_name.ilike.%${safeTerm}%`)
+        .or(`lot_number.ilike.${quotedTerm},product_name.ilike.${quotedTerm}`)
         .limit(10);
       if (error) throw error;
       return data;
     },
-    enabled: searchTerm.length >= 2
+    enabled: term.length >= 2
   });
 }
