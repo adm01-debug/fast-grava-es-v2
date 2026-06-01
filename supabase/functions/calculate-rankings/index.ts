@@ -62,8 +62,15 @@ serve(async (req: Request): Promise<Response> => {
 
     // Restrict to admin, manager, or coordinator role
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
-    const { data: roleRows } = await serviceClient.from('user_roles')
+    const { data: roleRows, error: roleError } = await serviceClient.from('user_roles')
       .select('role').eq('user_id', user.id).in('role', ['admin', 'manager', 'coordinator']).limit(1);
+    if (roleError) {
+      console.error('[calculate-rankings] Role query error:', roleError.message);
+      return new Response(JSON.stringify({ error: 'Internal server error' }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
     if (!roleRows || roleRows.length === 0) {
       return new Response(JSON.stringify({ error: 'Insufficient permissions' }), {
         status: 403,

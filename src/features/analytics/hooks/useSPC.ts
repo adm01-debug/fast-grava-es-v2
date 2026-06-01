@@ -223,7 +223,7 @@ export function useSPCMutations() {
         .insert({
           parameter_id: data.parameter_id,
           sample_number: (count || 0) + 1,
-          values: data.values,
+          values: values,
           mean_value: mean,
           range_value: range,
           std_deviation: stdDev,

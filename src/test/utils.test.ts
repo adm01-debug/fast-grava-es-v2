@@ -97,6 +97,11 @@ describe('safeParseFloat', () => {
     expect(safeParseFloat('1.234.567,89')).toBeCloseTo(1234567.89);
   });
 
+  it('treats comma-grouped integers as thousands separator', () => {
+    expect(safeParseFloat('1,234')).toBe(1234);
+    expect(safeParseFloat('1,234,567')).toBe(1234567);
+  });
+
   it('returns fallback for non-numeric strings', () => {
     expect(safeParseFloat('abc')).toBe(0);
     expect(safeParseFloat('')).toBe(0);

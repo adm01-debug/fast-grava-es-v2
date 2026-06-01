@@ -23,13 +23,23 @@ export function safeParseFloat(value: unknown, fallback = 0): number {
   if (typeof value !== 'string') return fallback;
   const trimmed = value.trim();
   if (trimmed === '') return fallback;
-  // Detect Brazilian locale format (dot=thousands, comma=decimal) vs standard (dot=decimal).
-  // If the last comma appears after the last dot, comma is the decimal separator.
+  // Locale-aware separator detection:
+  //   both separators present → last one is the decimal (e.g. '1.234,56' or '1,234.56')
+  //   comma only, 3 digits after → thousands grouping (e.g. '1,234' → 1234)
+  //   comma only, other digit count → decimal comma (e.g. '3,14' → 3.14)
   const lastComma = trimmed.lastIndexOf(',');
   const lastDot = trimmed.lastIndexOf('.');
-  const normalized = lastComma > lastDot
-    ? trimmed.replace(/\./g, '').replace(',', '.')  // e.g. '1.234,56' → '1234.56'
-    : trimmed.replace(/,/g, '');                    // e.g. '1,234.56' → '1234.56'
+  let normalized: string;
+  if (lastComma > lastDot) {
+    const afterLastComma = trimmed.slice(lastComma + 1);
+    if (lastDot === -1 && /^\d{3}$/.test(afterLastComma)) {
+      normalized = trimmed.replace(/,/g, '');             // '1,234' → '1234'
+    } else {
+      normalized = trimmed.replace(/\./g, '').replace(',', '.');  // '1.234,56' → '1234.56'
+    }
+  } else {
+    normalized = trimmed.replace(/,/g, '');               // '1,234.56' → '1234.56'
+  }
   const parsed = Number.parseFloat(normalized);
   return Number.isNaN(parsed) ? fallback : parsed;
 }

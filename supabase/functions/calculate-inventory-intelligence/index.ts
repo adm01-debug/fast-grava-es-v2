@@ -48,8 +48,14 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Restrict to admin role
-    const { data: roleRows } = await supabase.from('user_roles')
+    const { data: roleRows, error: roleError } = await supabase.from('user_roles')
       .select('role').eq('user_id', user.id).in('role', ['admin']).limit(1);
+    if (roleError) {
+      console.error('[calculate-inventory-intelligence] Role query error:', roleError.message);
+      return new Response(JSON.stringify({ error: 'Internal server error' }), {
+        status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
+      });
+    }
     if (!roleRows || roleRows.length === 0) {
       return new Response(JSON.stringify({ error: 'Insufficient permissions' }), {
         status: 403, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }

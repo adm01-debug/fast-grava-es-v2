@@ -218,10 +218,12 @@ export default function KanbanBoard() {
       const updates = Array.from(selectedJobs).map(id =>
         supabase.from('jobs').update(updateData).eq('id', id)
       );
-      const results = await Promise.all(updates);
-      const errors = results.map(r => r.error).filter(Boolean);
+      const settled = await Promise.allSettled(updates);
+      const errors = settled.flatMap(r =>
+        r.status === 'fulfilled' ? (r.value.error ? [r.value.error] : []) : [r.reason]
+      );
       if (errors.length > 0) {
-        toast.error(`Erro ao mover jobs: ${errors.map(e => e!.message).join('; ')}`);
+        toast.error(`Erro ao mover jobs: ${errors.map((e: any) => e?.message ?? String(e)).join('; ')}`);
         return;
       }
       const allColumns = [...statusColumns, ...exceptionStatuses];
@@ -233,10 +235,12 @@ export default function KanbanBoard() {
       const updates = Array.from(selectedJobs).map(id =>
         supabase.from('jobs').update({ status: 'rework', updated_at: new Date().toISOString() }).eq('id', id)
       );
-      const results = await Promise.all(updates);
-      const errors = results.map(r => r.error).filter(Boolean);
+      const settled = await Promise.allSettled(updates);
+      const errors = settled.flatMap(r =>
+        r.status === 'fulfilled' ? (r.value.error ? [r.value.error] : []) : [r.reason]
+      );
       if (errors.length > 0) {
-        toast.error(`Erro ao marcar retrabalho: ${errors.map(e => e!.message).join('; ')}`);
+        toast.error(`Erro ao marcar retrabalho: ${errors.map((e: any) => e?.message ?? String(e)).join('; ')}`);
         return;
       }
       toast.success(`${selectedJobs.size} jobs marcados como Retrabalho`);
@@ -246,10 +250,12 @@ export default function KanbanBoard() {
       const updates = Array.from(selectedJobs).map(id =>
         supabase.from('jobs').delete().eq('id', id)
       );
-      const results = await Promise.all(updates);
-      const errors = results.map(r => r.error).filter(Boolean);
+      const settled = await Promise.allSettled(updates);
+      const errors = settled.flatMap(r =>
+        r.status === 'fulfilled' ? (r.value.error ? [r.value.error] : []) : [r.reason]
+      );
       if (errors.length > 0) {
-        toast.error(`Erro ao excluir jobs: ${errors.map(e => e!.message).join('; ')}`);
+        toast.error(`Erro ao excluir jobs: ${errors.map((e: any) => e?.message ?? String(e)).join('; ')}`);
         return;
       }
       toast.success(`${selectedJobs.size} jobs excluídos permanentemente`);
