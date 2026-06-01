@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       });
     }
-    const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.replace('Bearer ', '');
+    const provided = req.headers.get('x-api-key') || req.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1];
     if (provided !== apiKey) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
