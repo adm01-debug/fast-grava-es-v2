@@ -328,7 +328,7 @@ export function useSearchLots(searchTerm: string) {
   // Quote values with PostgREST structural chars (, ( ) ") to prevent filter injection
   // while preserving legitimate characters (e.g. lot numbers like "LT-001/A").
   const ilikePat = `%${term}%`;
-  const needsQuote = /[,"()]/.test(term);
+  const needsQuote = /[,"().:]/.test(term);
   const quotedTerm = needsQuote ? `"${ilikePat.replace(/"/g, '""')}"` : ilikePat;
 
   return useQuery({

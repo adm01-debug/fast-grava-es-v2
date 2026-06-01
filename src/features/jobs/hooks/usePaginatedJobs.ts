@@ -57,7 +57,7 @@ export function usePaginatedJobs(initialOptions?: Partial<PaginationOptions>) {
       const term = search.trim();
       if (term) {
         const ilikePat = `%${term}%`;
-        const needsQuote = /[,"()]/.test(term);
+        const needsQuote = /[,"().:]/.test(term);
         const v = needsQuote ? `"${ilikePat.replace(/"/g, '""')}"` : ilikePat;
         query = query.or(`client.ilike.${v},product.ilike.${v},order_number.ilike.${v}`);
       }

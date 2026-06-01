@@ -1101,11 +1101,13 @@ serve(async (req) => {
         // Validate OAuth state to prevent CSRF token replacement
         const oauthState = url.searchParams.get('state');
         if (!oauthState || !(await verifyOAuthState(oauthState))) {
-          result = {
+          return new Response(JSON.stringify({
             error: 'Invalid or expired OAuth state parameter',
             message: 'Restart the authorization flow using action=oauth-status'
-          };
-          break;
+          }), {
+            status: 400,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
         }
 
         // Handle OAuth callback with authorization code
