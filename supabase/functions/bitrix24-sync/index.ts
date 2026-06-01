@@ -882,20 +882,20 @@ serve(async (req) => {
 
       case 'webhook': {
         // Verify request comes from Bitrix24 using a pre-shared token.
-        // If the token is not yet configured, log a warning and proceed so that
-        // existing deployments remain functional during the migration; once
-        // BITRIX24_WEBHOOK_TOKEN is set, the header/query-param is enforced.
+        // Fail-closed: BITRIX24_WEBHOOK_TOKEN must be configured before webhooks work.
         const webhookToken = Deno.env.get('BITRIX24_WEBHOOK_TOKEN');
-        if (webhookToken) {
-          const providedToken = url.searchParams.get('token') || req.headers.get('x-webhook-secret');
-          if (providedToken !== webhookToken) {
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-              status: 401,
-              headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-            });
-          }
-        } else {
-          console.warn('BITRIX24_WEBHOOK_TOKEN not set; incoming webhook authentication is disabled');
+        if (!webhookToken) {
+          return new Response(JSON.stringify({ error: 'Webhook not configured: BITRIX24_WEBHOOK_TOKEN required' }), {
+            status: 503,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
+        }
+        const providedToken = url.searchParams.get('token') || req.headers.get('x-webhook-secret');
+        if (providedToken !== webhookToken) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
         }
         // Handle incoming Bitrix24 webhook
         const webhookPayload = await req.json();

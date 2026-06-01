@@ -131,10 +131,14 @@ serve(async (req: Request): Promise<Response> => {
     const operatorStats: Record<string, RankingResult> = {};
 
     (jobs || []).forEach((job) => {
-      // Prefer the operator who actually ran the job (set by updateStatus when production starts).
-      // Fall back to the current machine assignment only if no operator was recorded.
-      const operatorId = job.operator_id || machineToOperator[job.machine_id];
-      if (!operatorId) return;
+      // Only attribute jobs that have a recorded operator_id (written by updateStatus
+      // when production starts). Falling back to the current machine→operator map would
+      // silently misattribute credit when assignments change or operators share machines.
+      const operatorId = job.operator_id;
+      if (!operatorId) {
+        console.warn(`Job ${job.id} has no operator_id — skipping from rankings`);
+        return;
+      }
 
       if (!operatorStats[operatorId]) {
         operatorStats[operatorId] = {
