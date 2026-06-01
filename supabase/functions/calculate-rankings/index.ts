@@ -99,6 +99,7 @@ serve(async (req: Request): Promise<Response> => {
         quantity,
         lost_pieces,
         machine_id,
+        operator_id,
         actual_end_time
       `)
       .eq("status", "finished")
@@ -130,7 +131,9 @@ serve(async (req: Request): Promise<Response> => {
     const operatorStats: Record<string, RankingResult> = {};
 
     (jobs || []).forEach((job) => {
-      const operatorId = machineToOperator[job.machine_id] || job.machine_id;
+      // Prefer the operator who actually ran the job (set by updateStatus when production starts).
+      // Fall back to the current machine assignment only if no operator was recorded.
+      const operatorId = job.operator_id || machineToOperator[job.machine_id];
       if (!operatorId) return;
 
       if (!operatorStats[operatorId]) {
