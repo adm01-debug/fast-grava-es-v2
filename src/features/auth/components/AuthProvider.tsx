@@ -106,8 +106,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) return;
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-    events.forEach(event => window.addEventListener(event, updateActivity, { passive: true }));
+    
+    const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    const handleUserActivity = () => updateActivity();
+    
+    activityEvents.forEach(event => 
+      window.addEventListener(event, handleUserActivity, { passive: true })
+    );
     
     refreshIntervalRef.current = setInterval(() => {
       if (isSessionActive()) refreshSession();
@@ -130,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      events.forEach(event => window.removeEventListener(event, updateActivity));
+      activityEvents.forEach(event => window.removeEventListener(event, handleUserActivity));
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };

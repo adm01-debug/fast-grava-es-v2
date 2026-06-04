@@ -31,7 +31,7 @@ const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m
 import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
-import { BIJob, BIMetrics, BIProps } from '@/features/analytics/types';
+import { BIJob, BIMetrics, BIProps } from './types';
 import { Job } from '@/types/job';
 
 export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
@@ -120,16 +120,16 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
     const machineGroups: Record<string, BIMetrics['machineUtilization']> = {};
-    (biMetrics.machineUtilization as BIMetrics['machineUtilization']).forEach((m) => {
+    (biMetrics.machineUtilization || []).forEach((m: any) => {
       const studioName = m.technique.includes('Laser') ? 'Studio Alfa' :
                         m.technique.includes('UV') ? 'Studio Beta' :
                         'Studio Gamma';
       if (!machineGroups[studioName]) machineGroups[studioName] = [];
       machineGroups[studioName].push(m);
     });
-    return Object.entries(machineGroups).map(([name, machines]) => {
-      const totalJobs = machines.reduce((sum: number, m) => sum + m.totalJobs, 0);
-      const avgUtilization = machines.reduce((sum: number, m) => sum + m.utilization, 0) / machines.length;
+    return Object.entries(machineGroups).map(([name, machines]: [string, any]) => {
+      const totalJobs = (machines || []).reduce((sum: number, m: any) => sum + (m.totalJobs || 0), 0);
+      const avgUtilization = (machines || []).reduce((sum: number, m: any) => sum + (m.utilization || 0), 0) / (machines?.length || 1);
       return {
         name,
         jobs: totalJobs,
@@ -339,7 +339,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
             <ResponsiveContainer width="100%" height={300}>
               <RechartsPieChart>
                 <Pie data={biMetrics.statusDistribution} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {biMetrics.statusDistribution.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                  {biMetrics.statusDistribution.map((entry: any, index: number) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                 </Pie>
                 <RechartsTooltip content={<BITooltip />} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />
@@ -352,15 +352,15 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <LossesTable
-            jobs={jobsWithLosses}
+            jobs={jobsWithLosses as any}
             onExport={handleExport}
             onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
           />
         </div>
         <Suspense fallback={<div className="h-full bg-black/20 animate-pulse rounded-2xl" />}>
-          <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+          <BIAIInsights biMetrics={biMetrics as any} oeeData={oeeData} />
         </Suspense>
-        <BIPredictiveROI biMetrics={biMetrics} />
+        <BIPredictiveROI biMetrics={biMetrics as any} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

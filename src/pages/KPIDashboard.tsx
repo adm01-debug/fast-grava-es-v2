@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { BIJob } from '@/features/analytics/types';
+import { BIJob as BIJobLegacy } from '@/features/analytics/types';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -56,6 +56,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { DrillDownDialog } from '@/features/analytics/components/bi/drilldown/DrillDownDialog';
+import { BIJob } from '@/features/analytics/components/bi/types';
 import { useSchedulingData } from '@/features/jobs';
 import { KPIOverviewTab } from '@/features/analytics/components/bi/executive/KPIOverviewTab';
 import { KPIMachinesTab } from '@/features/analytics/components/bi/executive/KPIMachinesTab';
@@ -421,7 +422,7 @@ export default function KPIDashboard() {
       open={drillDownOpen}
       onOpenChange={setDrillDownOpen}
       title={drillDownTitle}
-      jobs={drillDownJobs}
+      jobs={drillDownJobs as any}
       onExport={(format) => handleExport(format, drillDownTitle.replace(/\s+/g, '_'), kpis)}
     />
     </MainLayout>
