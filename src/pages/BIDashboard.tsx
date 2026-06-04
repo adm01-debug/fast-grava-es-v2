@@ -545,7 +545,7 @@ export default function BIDashboard() {
           open={drillDownOpen}
           onOpenChange={setDrillDownOpen}
           title={drillDownTitle}
-          jobs={drillDownJobs}
+          jobs={drillDownJobs as any}
           onExport={handleExport}
         />
       </div>

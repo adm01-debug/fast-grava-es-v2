@@ -352,7 +352,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <LossesTable
-            jobs={jobsWithLosses}
+            jobs={jobsWithLosses as any}
             onExport={handleExport}
             onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
           />
