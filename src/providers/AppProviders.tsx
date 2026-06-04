@@ -13,7 +13,7 @@ import { ProductDesignProvider } from "@/components/design-system/ProductDesignP
 import { CelebrationProvider } from "@/components/ui/celebration";
 import { FeedbackProvider } from "@/components/feedback/FeedbackProvider";
 import { NetworkStatusProvider } from "@/hooks/useNetworkStatus";
-import { OfflineProvider } from "@/hooks/useLocalStorage";
+// OfflineProvider removed (redundant)
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { NavigationListener } from "@/components/navigation/NavigationListener";
 import { InAppNotificationWatcher } from "@/features/notifications/components/InAppNotificationWatcher";
@@ -54,7 +54,7 @@ function ComposedProviders({ children }: { children: ReactNode }) {
           PermissionsProvider,
           OfflineSyncProvider,
           NetworkStatusProvider,
-          OfflineProvider,
+          // OfflineProvider removed as it was redundant with OfflineSyncProvider
           WebSocketProvider,
           EfficiencyNotificationProvider,
           RealtimeNotificationsProvider,

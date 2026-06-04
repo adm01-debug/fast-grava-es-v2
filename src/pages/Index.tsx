@@ -58,7 +58,8 @@ import {
   FileText,
   Brain,
   Users,
-  ShieldCheck
+  ShieldCheck,
+  KeyRound
 } from 'lucide-react';
 
 
@@ -228,6 +229,17 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <DateRangePicker date={dateRange} setDate={setDateRange} className="mr-1" />
             <DashboardExport />
+            {/* Added visual indicator for password reset requests to ensure visibility even if Realtime fails */}
+            {isCoordinator && stats.delayed > 0 && (
+              <Badge 
+                variant="destructive" 
+                className="cursor-pointer animate-pulse"
+                onClick={() => navigate('/settings?tab=users')}
+              >
+                <KeyRound className="h-3.5 w-3.5 mr-1" />
+                Resets Pendentes
+              </Badge>
+            )}
             <ConnectionStatus />
             <VoiceButton className="no-export" />
             <FavoritesDropdown onNavigate={(path) => navigate(path)} className="no-export" />
@@ -310,7 +322,7 @@ const Index = () => {
         </ContentTransition>
 
         {/* Tabbed Dashboard Content - Takes remaining space */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+        <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
           <TabsList className="w-full justify-start glass p-1 h-auto shrink-0 rounded-xl gap-1">
             <TabsTrigger value="overview" className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200">
               <LayoutDashboard className="h-4 w-4" />
@@ -418,6 +430,15 @@ const Index = () => {
                     {bottomWidgets.map(w => renderWidget(w.id))}
                   </SortableWidgetSection>
                 </div>
+              </div>
+            </ScrollArea>
+          </TabsContent>
+          
+          {/* Jobs Tab */}
+          <TabsContent value="jobs" className="flex-1 mt-4 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="pr-2">
+                <RecentJobsTable />
               </div>
             </ScrollArea>
           </TabsContent>
