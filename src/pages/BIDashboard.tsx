@@ -86,7 +86,6 @@ export default function BIDashboard() {
   const [viewMode, setViewMode] = useState<'futuristic' | 'classic'>('futuristic');
   const [studioFilter, setStudioFilter] = useState<string>('all');
   const [collaboratorFilter, setCollaboratorFilter] = useState<string>('all');
-  const [viewStateFilter, setViewStateFilter] = useState<'all' | 'active' | 'archived'>('all');
   const [machineFilter, setMachineFilter] = useState<string>('all');
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
@@ -251,18 +250,14 @@ export default function BIDashboard() {
     return calculatePeriodMetrics(dateRange2);
   }, [comparisonMode, jobs, machines, techniques, dateRange2, calculatePeriodMetrics]);
 
-  const handleDrillDown = (title: string, jobs: BIJob[]) => {
+  const handleDrillDown = useCallback((title: string, jobs: BIJob[]) => {
     setDrillDownTitle(title);
     setDrillDownJobs(jobs);
     setDrillDownOpen(true);
-  };
+  }, []);
 
   const handleExport = async (format: 'csv' | 'pdf') => {
     // Basic export implementation
-  };
-
-  const handleFullExport = async () => {
-    // Basic full export implementation
   };
 
   if (isLoading || !biMetrics || !kpis || !oeeData) {
@@ -316,6 +311,8 @@ export default function BIDashboard() {
             biMetrics={biMetrics as any} 
             kpis={kpis} 
             oeeData={oeeData} 
+            getPeriodLabel={getPeriodLabel}
+            onDrillDown={handleDrillDown}
           />
         )}
 

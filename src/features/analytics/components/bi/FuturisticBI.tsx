@@ -134,7 +134,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
         name,
         jobs: totalJobs,
         utilization: avgUtilization,
-        color: name === 'Studio Alfa' ? CHART_COLORS.PRIMARY : name === 'Studio Beta' ? CHART_COLORS.PURPLE : CHART_COLORS.CYAN
+        color: name === 'Studio Alfa' ? CHART_COLORS.primary : name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
       };
     }).sort((a, b) => b.jobs - a.jobs);
   }, [biMetrics.machineUtilization]);
