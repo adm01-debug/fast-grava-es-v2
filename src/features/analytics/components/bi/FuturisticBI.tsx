@@ -339,7 +339,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
             <ResponsiveContainer width="100%" height={300}>
               <RechartsPieChart>
                 <Pie data={biMetrics.statusDistribution} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {biMetrics.statusDistribution.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                  {biMetrics.statusDistribution.map((entry: any, index: number) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                 </Pie>
                 <RechartsTooltip content={<BITooltip />} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />

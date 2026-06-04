@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { BIJob } from '@/features/analytics/types';
+import { BIJob as BIJobLegacy } from '@/features/analytics/types';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

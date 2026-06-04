@@ -9,9 +9,17 @@ export interface BIMetrics {
   lostPieces: number;
   avgEfficiency: string;
   statusDistribution: { name: string; value: number; color: string }[];
-  dailyProduction: { date: string; pieces: number; efficiency: number }[];
+  dailyTrend: { date: string; produced: number; jobs: number }[];
   lossImpact: number;
   machineUtilization?: { machine: string; value: number }[];
+  periodJobsList: BIJob[];
+  toDoJobs: number;
+  periodLossRate: number;
+  techniquePerformance: any[];
+  periodJobs: number;
+  periodCompletedJobs: number;
+  periodCompletedPieces: number;
+  periodLostPieces: number;
 }
 
 // Fixed BIJob type that is compatible with Table interfaces

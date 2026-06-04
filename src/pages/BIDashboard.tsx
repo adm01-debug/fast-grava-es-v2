@@ -38,7 +38,7 @@ import { DelaysAnalysis } from '@/features/analytics/components/bi/delays/Delays
 import { LossesTable } from '@/features/analytics/components/bi/losses/LossesTable';
 import { AIInsights } from '@/features/analytics/components/bi/AIInsights';
 
-import { BIMetrics, BIJob } from '@/features/analytics/types';
+import { BIMetrics as BIMetricsLocal, BIJob as BIJobLocal } from '@/features/analytics/types';
 type PeriodFilter = '7d' | '30d' | '90d' | 'custom';
 interface DateRange { from: Date; to: Date; }
 
