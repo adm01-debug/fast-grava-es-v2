@@ -16,6 +16,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   },
   global: {
     fetch: async (url, options) => {
+      const urlString = url.toString();
       const start = performance.now();
       try {
         const response = await fetch(url, options);
