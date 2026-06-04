@@ -121,7 +121,7 @@ const Index = () => {
     from: startOfDay(new Date()),
     to: endOfDay(new Date()),
   });
-  const { stats, machines, isLoading, isOperator } = useOperatorDashboardData(dateRange);
+  const { stats, machines, isLoading, isOperator, isCoordinator } = useOperatorDashboardData(dateRange);
   const { profile } = useAuth();
   useSmartDelayAlerts(); // Run background delay monitoring
   const {
