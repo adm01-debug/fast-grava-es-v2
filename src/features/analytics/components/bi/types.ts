@@ -9,9 +9,9 @@ export interface BIMetrics {
   lostPieces: number;
   avgEfficiency: string;
   statusDistribution: { name: string; value: number; color: string }[];
-  dailyTrend: { date: string; produced: number; jobs: number }[];
+  dailyTrend: { date: string; fullDate: string; produced: number; jobs: number; lost: number; efficiency: number }[];
   lossImpact: number;
-  machineUtilization?: { machine: string; value: number }[];
+  machineUtilization?: { machine: string; technique: string; value: number; totalJobs: number; utilization: number }[];
   periodJobsList: BIJob[];
   toDoJobs: number;
   periodLossRate: number;

@@ -120,21 +120,21 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
     const machineGroups: Record<string, BIMetrics['machineUtilization']> = {};
-    (biMetrics.machineUtilization as BIMetrics['machineUtilization']).forEach((m) => {
+    (biMetrics.machineUtilization || []).forEach((m: any) => {
       const studioName = m.technique.includes('Laser') ? 'Studio Alfa' :
                         m.technique.includes('UV') ? 'Studio Beta' :
                         'Studio Gamma';
       if (!machineGroups[studioName]) machineGroups[studioName] = [];
       machineGroups[studioName].push(m);
     });
-    return Object.entries(machineGroups).map(([name, machines]) => {
-      const totalJobs = machines.reduce((sum: number, m) => sum + m.totalJobs, 0);
-      const avgUtilization = machines.reduce((sum: number, m) => sum + m.utilization, 0) / machines.length;
+    return Object.entries(machineGroups).map(([name, machines]: [string, any]) => {
+      const totalJobs = (machines || []).reduce((sum: number, m: any) => sum + (m.totalJobs || 0), 0);
+      const avgUtilization = (machines || []).reduce((sum: number, m: any) => sum + (m.utilization || 0), 0) / (machines?.length || 1);
       return {
         name,
         jobs: totalJobs,
         utilization: avgUtilization,
-        color: name === 'Studio Alfa' ? CHART_COLORS.primary : name === 'Studio Beta' ? CHART_COLORS.purple : CHART_COLORS.cyan
+        color: name === 'Studio Alfa' ? CHART_COLORS.PRIMARY : name === 'Studio Beta' ? CHART_COLORS.PURPLE : CHART_COLORS.CYAN
       };
     }).sort((a, b) => b.jobs - a.jobs);
   }, [biMetrics.machineUtilization]);
@@ -358,9 +358,9 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
           />
         </div>
         <Suspense fallback={<div className="h-full bg-black/20 animate-pulse rounded-2xl" />}>
-          <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
+          <BIAIInsights biMetrics={biMetrics as any} oeeData={oeeData} />
         </Suspense>
-        <BIPredictiveROI biMetrics={biMetrics} />
+        <BIPredictiveROI biMetrics={biMetrics as any} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
