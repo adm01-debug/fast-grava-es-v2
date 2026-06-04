@@ -31,7 +31,7 @@ const BIAIInsights = lazy(() => import('./BIAIInsights').then(m => ({ default: m
 import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
-import { BIJob, BIMetrics, BIProps } from '@/features/analytics/types';
+import { BIJob, BIMetrics, BIProps } from './types';
 import { Job } from '@/types/job';
 
 export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {

@@ -18,6 +18,7 @@ import { BIHeader } from '@/features/analytics/components/bi/BIHeader';
 import { FuturisticBI } from '@/features/analytics/components/bi/FuturisticBI';
 import { BINormalView } from '@/features/analytics/components/bi/BINormalView';
 import { DrillDownDialog } from '@/features/analytics/components/bi/drilldown/DrillDownDialog';
+import { BIJob } from '@/features/analytics/components/bi/types';
 import { useToast } from '@/hooks/use-toast';
 import {
   TrendingUp, AlertTriangle, Printer, CheckCircle, Clock, Target,

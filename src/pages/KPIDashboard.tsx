@@ -56,6 +56,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { DrillDownDialog } from '@/features/analytics/components/bi/drilldown/DrillDownDialog';
+import { BIJob } from '@/features/analytics/components/bi/types';
 import { useSchedulingData } from '@/features/jobs';
 import { KPIOverviewTab } from '@/features/analytics/components/bi/executive/KPIOverviewTab';
 import { KPIMachinesTab } from '@/features/analytics/components/bi/executive/KPIMachinesTab';
