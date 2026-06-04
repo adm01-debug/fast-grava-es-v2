@@ -197,7 +197,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 data={biMetrics.dailyTrend}
                 onClick={(data) => {
                   if (data && data.activeLabel) {
-                    onDrillDown(`PEDIDOS EM ${data.activeLabel}`, 'all');
+                    onDrillDown(`PEDIDOS EM ${data.activeLabel}`, biMetrics.periodJobsList);
                   }
                 }}
               >
@@ -238,8 +238,10 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   dataKey="value"
                   label={({ name, percent }: { name: string; percent: number }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={false}
-                  onClick={(data) => {
-                    if (data && data.name) onDrillDown(`PEDIDOS: ${data.name}`, data.name);
+                  onClick={(data: any) => {
+                    if (data && data.name) {
+                      onDrillDown(`PEDIDOS: ${data.name}`, biMetrics.periodJobsList.filter(j => j.status === (data.name === 'Finalizados' ? 'finished' : data.name === 'Em Produção' ? 'production' : data.name === 'Atrasados' ? 'delayed' : 'scheduled')));
+                    }
                   }}
                 >
                   {biMetrics.statusDistribution.map((entry, index: number) => (
@@ -276,8 +278,8 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.success}
                   name="Produzidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data) => {
-                    if (data && data.name) onDrillDown(`TÉCNICA: ${data.name}`, data.id);
+                  onClick={(data: any) => {
+                    if (data && data.name) onDrillDown(`TÉCNICA: ${data.name}`, biMetrics.periodJobsList.filter(j => j.technique_id === data.id));
                   }}
                 />
                 <Bar
@@ -285,8 +287,8 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.danger}
                   name="Perdidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data) => {
-                    if (data && data.name) onDrillDown(`PERDAS EM ${data.name}`, data.id);
+                  onClick={(data: any) => {
+                    if (data && data.name) onDrillDown(`PERDAS EM ${data.name}`, biMetrics.periodJobsList.filter(j => j.technique_id === data.id && (j.lost_pieces || 0) > 0));
                   }}
                 />
               </BarChart>
