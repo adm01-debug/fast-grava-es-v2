@@ -30,7 +30,6 @@ jobs:
       run: npm run build
     - name: Run E2E tests
       run: npm run test:e2e
-      continue-on-error: true
     - name: Coverage check
       run: npm run test:coverage
       continue-on-error: true
