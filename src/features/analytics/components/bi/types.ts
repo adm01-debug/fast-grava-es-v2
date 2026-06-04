@@ -20,6 +20,8 @@ export interface BIMetrics {
   periodCompletedJobs: number;
   periodCompletedPieces: number;
   periodLostPieces: number;
+  activeMachines: number;
+  activeTechniques: number;
 }
 
 // Fixed BIJob type that is compatible with Table interfaces
