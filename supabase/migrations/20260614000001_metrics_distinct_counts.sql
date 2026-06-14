@@ -11,7 +11,7 @@ RETURNS bigint
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, pg_temp
 AS $$
   SELECT COUNT(DISTINCT j.machine_id)
   FROM public.jobs j
@@ -29,7 +29,7 @@ RETURNS bigint
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, pg_temp
 AS $$
   SELECT COUNT(DISTINCT q.operator_id)
   FROM public.qr_scan_history q
