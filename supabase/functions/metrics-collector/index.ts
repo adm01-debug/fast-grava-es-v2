@@ -33,8 +33,12 @@ serve(async (req) => {
     // operator is considered "active" when they scanned a job today. Distinct
     // count is done in SQL (RPC) to avoid the PostgREST row cap undercounting.
     const { count: totalOperators } = await supabase.from("profiles").select("*", { count: "exact", head: true });
-    const { data: activeOperatorsRpc } = await supabase.rpc("count_active_operators_since", { p_since: todayStartISO });
-    const activeOperators = Number(activeOperatorsRpc ?? 0);
+    const { data: activeOperatorsRpc, error: activeOperatorsError } = await supabase.rpc("count_active_operators_since", { p_since: todayStartISO });
+    if (activeOperatorsError) {
+      console.error("metrics-collector: count_active_operators_since failed:", activeOperatorsError.message);
+    }
+    // null (unknown) on failure — never persist a fake 0 that looks like real data.
+    const activeOperators = activeOperatorsError ? null : Number(activeOperatorsRpc ?? 0);
 
     metrics.operators = { total: totalOperators, active: activeOperators };
 
@@ -44,8 +48,11 @@ serve(async (req) => {
       .from("machines")
       .select("*", { count: "exact", head: true })
       .eq("is_active", true);
-    const { data: runningMachinesRpc } = await supabase.rpc("count_running_machines");
-    const runningMachines = Number(runningMachinesRpc ?? 0);
+    const { data: runningMachinesRpc, error: runningMachinesError } = await supabase.rpc("count_running_machines");
+    if (runningMachinesError) {
+      console.error("metrics-collector: count_running_machines failed:", runningMachinesError.message);
+    }
+    const runningMachines = runningMachinesError ? null : Number(runningMachinesRpc ?? 0);
 
     metrics.machines = { total: totalMachines, running: runningMachines };
 
