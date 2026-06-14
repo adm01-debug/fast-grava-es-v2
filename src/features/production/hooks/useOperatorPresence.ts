@@ -85,7 +85,9 @@ export function useOperatorPresence() {
       });
 
     return () => {
-      channel.unsubscribe();
+      // removeChannel both unsubscribes and drops the channel from the client
+      // registry; bare unsubscribe() leaks the registration across remounts.
+      supabase.removeChannel(channel);
       setIsTracking(false);
     };
   }, [user]);

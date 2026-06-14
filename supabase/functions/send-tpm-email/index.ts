@@ -58,8 +58,11 @@ serve(async (req) => {
     }
 
     const filteredSubscribers = subscribers.filter(s => {
-      const typeMatch = s.notification_types.includes(alert.alert_type);
-      const machineMatch = s.machine_filters.length === 0 || s.machine_filters.includes(alert.machine_id);
+      // notification_types / machine_filters can be NULL in the DB — guard against it.
+      const types = s.notification_types ?? [];
+      const machineFilters = s.machine_filters ?? [];
+      const typeMatch = types.includes(alert.alert_type);
+      const machineMatch = machineFilters.length === 0 || machineFilters.includes(alert.machine_id);
       return typeMatch && machineMatch;
     });
 

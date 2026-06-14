@@ -43,7 +43,7 @@ serve(async (req) => {
     if (scheduleError) throw scheduleError
 
     // 2. Processar cada agendamento e verificar regras de severidade
-    for (const schedule of schedules) {
+    for (const schedule of schedules || []) {
       // Verificar se existe execução em andamento ou aguardando aprovação
       const { data: ongoingRecords } = await supabase
         .from('maintenance_records')
@@ -53,12 +53,12 @@ serve(async (req) => {
         .limit(1)
 
       if (ongoingRecords && ongoingRecords.length > 0) {
-        console.log(`Pulando notificações para ${schedule.machine.code}: Manutenção em execução ou aguardando revisão.`)
+        console.log(`Pulando notificações para ${schedule.machine?.code ?? schedule.machine_id}: Manutenção em execução ou aguardando revisão.`)
         continue
       }
 
       // Lógica de severidade e throttling aqui...
-      console.log(`Verificando máquina: ${schedule.machine.code}`)
+      console.log(`Verificando máquina: ${schedule.machine?.code ?? schedule.machine_id}`)
     }
 
     // 3. Processar Fila (Retentativas)
@@ -72,7 +72,7 @@ serve(async (req) => {
 
     if (queueError) throw queueError
 
-    for (const item of queueItems) {
+    for (const item of queueItems || []) {
       console.log(`Processando item da fila: ${item.id} (${item.channel})`)
       
       // Simular envio

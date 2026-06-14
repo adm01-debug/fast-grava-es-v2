@@ -37,18 +37,34 @@ serve(async (req) => {
       .lt("expires_at", new Date().toISOString());
     results.deletedSessions = sessionsCount || 0;
 
-    // Archive completed jobs older than 6 months
+    // Archive finished jobs older than 6 months.
+    // NOTE: jobs use status 'finished' (not 'completed') and the completion
+    // timestamp column is actual_end_time (there is no completed_at column).
     const sixMonthsAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString();
-    const { data: oldJobs } = await supabase
+    const { data: oldJobs, error: oldJobsError } = await supabase
       .from("jobs")
       .select("*")
-      .eq("status", "completed")
-      .lt("completed_at", sixMonthsAgo);
+      .eq("status", "finished")
+      .lt("actual_end_time", sixMonthsAgo);
 
-    if (oldJobs?.length) {
-      await supabase.from("archived_jobs").insert(oldJobs);
-      await supabase.from("jobs").delete().in("id", oldJobs.map((j: any) => j.id));
-      results.archivedJobs = oldJobs.length;
+    if (oldJobsError) {
+      console.error("Failed to query jobs for archival:", oldJobsError.message);
+    } else if (oldJobs?.length) {
+      // Archive must succeed before we delete, otherwise we lose production data.
+      const { error: archiveError } = await supabase.from("archived_jobs").insert(oldJobs);
+      if (archiveError) {
+        console.error("Archive insert failed, skipping delete to avoid data loss:", archiveError.message);
+      } else {
+        const { error: deleteError } = await supabase
+          .from("jobs")
+          .delete()
+          .in("id", oldJobs.map((j: any) => j.id));
+        if (deleteError) {
+          console.error("Failed to delete archived jobs:", deleteError.message);
+        } else {
+          results.archivedJobs = oldJobs.length;
+        }
+      }
     }
 
     console.log("Cleanup completed:", results);
