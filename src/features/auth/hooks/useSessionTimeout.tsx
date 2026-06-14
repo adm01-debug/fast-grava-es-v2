@@ -68,54 +68,30 @@ export function useSessionTimeout({
   const logoutTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const lastActivityRef = React.useRef<number>(Date.now());
+  // Mirror of showWarning so the activity listener can read it without being a
+  // dependency of the setup effect (which would tear down/rebuild all timers
+  // every time the warning toggles — that bug made the warning flash and reset,
+  // so the session never actually timed out).
+  const showWarningRef = React.useRef(false);
+  const isMountedRef = React.useRef(true);
 
-  // Reset all timers
-  const resetTimers = React.useCallback(() => {
+  const warningTimeoutMs = warningTimeout * 60 * 1000;
+  const logoutTimeoutMs = logoutTimeout * 60 * 1000;
+  const logoutSeconds = logoutTimeout * 60;
+
+  const clearAllTimers = React.useCallback(() => {
     if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
     if (countdownRef.current) clearInterval(countdownRef.current);
-
-    setState((prev) => ({
-      ...prev,
-      showWarning: false,
-      remainingTime: logoutTimeout * 60,
-    }));
-
-    // Set warning timer
-    warningTimerRef.current = setTimeout(() => {
-      setState((prev) => ({ ...prev, showWarning: true }));
-      startCountdown();
-    }, warningTimeout * 60 * 1000);
-
-    lastActivityRef.current = Date.now();
-  }, [warningTimeout, logoutTimeout]);
-
-  // Start countdown when warning is shown
-  const startCountdown = React.useCallback(() => {
-    let remaining = logoutTimeout * 60;
-
-    countdownRef.current = setInterval(() => {
-      remaining -= 1;
-      setState((prev) => ({ ...prev, remainingTime: remaining }));
-
-      if (remaining <= 0) {
-        handleLogout();
-      }
-    }, 1000);
-
-    // Set logout timer as backup
-    logoutTimerRef.current = setTimeout(() => {
-      handleLogout();
-    }, logoutTimeout * 60 * 1000);
-  }, [logoutTimeout]);
+  }, []);
 
   // Handle logout
   const handleLogout = React.useCallback(async () => {
-    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    if (countdownRef.current) clearInterval(countdownRef.current);
-
-    setState({ showWarning: false, remainingTime: 0, isActive: false });
+    clearAllTimers();
+    showWarningRef.current = false;
+    if (isMountedRef.current) {
+      setState({ showWarning: false, remainingTime: 0, isActive: false });
+    }
 
     try {
       await supabase.auth.signOut();
@@ -127,7 +103,70 @@ export function useSessionTimeout({
     } catch (error) {
       logger.warn('Falha ao encerrar sessão por inatividade', error, 'useSessionTimeout');
     }
-  }, [navigate, onSessionExpired]);
+  }, [navigate, onSessionExpired, clearAllTimers]);
+
+  // "Latest" refs so the memoized timer callbacks never capture a stale binding.
+  const handleLogoutRef = React.useRef(handleLogout);
+  React.useEffect(() => {
+    handleLogoutRef.current = handleLogout;
+  }, [handleLogout]);
+
+  // Start countdown when warning is shown
+  const startCountdown = React.useCallback(() => {
+    let remaining = logoutSeconds;
+
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    countdownRef.current = setInterval(() => {
+      remaining -= 1;
+      if (isMountedRef.current) {
+        setState((prev) => ({ ...prev, remainingTime: remaining }));
+      }
+      if (remaining <= 0) {
+        handleLogoutRef.current();
+      }
+    }, 1000);
+
+    // Set logout timer as backup
+    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+    logoutTimerRef.current = setTimeout(() => {
+      handleLogoutRef.current();
+    }, logoutTimeoutMs);
+  }, [logoutSeconds, logoutTimeoutMs]);
+
+  const startCountdownRef = React.useRef(startCountdown);
+  React.useEffect(() => {
+    startCountdownRef.current = startCountdown;
+  }, [startCountdown]);
+
+  // Reset all timers
+  const resetTimers = React.useCallback(() => {
+    clearAllTimers();
+
+    showWarningRef.current = false;
+    if (isMountedRef.current) {
+      setState((prev) => ({
+        ...prev,
+        showWarning: false,
+        remainingTime: logoutSeconds,
+      }));
+    }
+
+    // Set warning timer
+    warningTimerRef.current = setTimeout(() => {
+      showWarningRef.current = true;
+      if (isMountedRef.current) {
+        setState((prev) => ({ ...prev, showWarning: true }));
+      }
+      startCountdownRef.current();
+    }, warningTimeoutMs);
+
+    lastActivityRef.current = Date.now();
+  }, [logoutSeconds, warningTimeoutMs, clearAllTimers]);
+
+  const resetTimersRef = React.useRef(resetTimers);
+  React.useEffect(() => {
+    resetTimersRef.current = resetTimers;
+  }, [resetTimers]);
 
   // Extend session
   const extendSession = React.useCallback(() => {
@@ -138,8 +177,10 @@ export function useSessionTimeout({
     });
   }, [resetTimers, onSessionRenewed]);
 
-  // Activity detection
+  // Activity detection — set up ONCE on mount. Reads live state through refs so
+  // it never re-binds listeners or rebuilds timers mid-cycle.
   React.useEffect(() => {
+    isMountedRef.current = true;
     const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click"];
 
     const handleActivity = () => {
@@ -147,8 +188,8 @@ export function useSessionTimeout({
       const timeSinceLastActivity = now - lastActivityRef.current;
 
       // Only reset if more than 1 minute since last activity (debounce)
-      if (timeSinceLastActivity > 60000 && !state.showWarning) {
-        resetTimers();
+      if (timeSinceLastActivity > 60000 && !showWarningRef.current) {
+        resetTimersRef.current();
       }
 
       lastActivityRef.current = now;
@@ -159,9 +200,10 @@ export function useSessionTimeout({
     });
 
     // Initial timer setup
-    resetTimers();
+    resetTimersRef.current();
 
     return () => {
+      isMountedRef.current = false;
       events.forEach((event) => {
         window.removeEventListener(event, handleActivity);
       });
@@ -169,7 +211,7 @@ export function useSessionTimeout({
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
       if (countdownRef.current) clearInterval(countdownRef.current);
     };
-  }, [resetTimers, state.showWarning]);
+  }, []);
 
   return {
     ...state,

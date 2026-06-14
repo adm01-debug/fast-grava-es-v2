@@ -45,7 +45,10 @@ export function usePushSubscription() {
   }, [user]);
 
   const checkSubscription = useCallback(async () => {
-    if (!isSupported) return false;
+    // Recompute support locally instead of reading the `isSupported` state,
+    // which is still false during the first render where this is called.
+    const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    if (!supported) return false;
 
     try {
       const registration = await navigator.serviceWorker.ready;
@@ -56,7 +59,7 @@ export function usePushSubscription() {
     } catch (error) {
       return false;
     }
-  }, [isSupported]);
+  }, []);
 
   const subscribe = useCallback(async () => {
     if (!user) {
