@@ -53,14 +53,15 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Check if requesting user is coordinator
-    const { data: roleData } = await supabaseAdmin
+    // Check if requesting user is coordinator/admin. Fetch all role rows: a
+    // user may have more than one, and .single() would error in that case.
+    const { data: roleRows } = await supabaseAdmin
       .from('user_roles')
       .select('role')
       .eq('user_id', requestingUser.id)
-      .single()
 
-    if (!['coordinator', 'admin'].includes(roleData?.role ?? '')) {
+    const requesterRoles = (roleRows ?? []).map((r: { role: string }) => r.role)
+    if (!requesterRoles.some((role) => ['coordinator', 'admin'].includes(role))) {
       return new Response(JSON.stringify({ error: 'Apenas coordenadores e administradores podem editar operadores' }), {
         status: 403,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },

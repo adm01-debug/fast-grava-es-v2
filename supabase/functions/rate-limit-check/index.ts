@@ -48,13 +48,16 @@ Deno.serve(async (req) => {
 
     console.log(`Rate limit check for IP: ${ip}, endpoint: ${endpoint}`);
 
-    // Check if IP is blocked
+    // Check if IP is blocked. Use limit(1)+maybeSingle so the common
+    // "not blocked" (0 rows) case doesn't raise an error, and duplicate block
+    // rows don't accidentally let a blocked IP through.
     const { data: blockedIP } = await supabase
       .from('blocked_ips')
       .select('id, expires_at, is_permanent')
       .eq('ip_address', ip)
       .is('unblocked_at', null)
-      .single();
+      .limit(1)
+      .maybeSingle();
 
     if (blockedIP) {
       // Check if block has expired
