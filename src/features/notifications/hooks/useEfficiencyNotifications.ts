@@ -195,7 +195,9 @@ export function useEfficiencyNotifications(config: Partial<EfficiencyNotificatio
   // Keep the latest dataset in a ref so the baseline can be seeded from the
   // data present when initialization completes (not the empty data at mount).
   const latestDataRef = useRef({ criticalCount, warningCount, bottleneckAlerts, loadBalancingSuggestions });
-  latestDataRef.current = { criticalCount, warningCount, bottleneckAlerts, loadBalancingSuggestions };
+  useEffect(() => {
+    latestDataRef.current = { criticalCount, warningCount, bottleneckAlerts, loadBalancingSuggestions };
+  }, [criticalCount, warningCount, bottleneckAlerts, loadBalancingSuggestions]);
 
   // Initialize and run first check after a delay
   useEffect(() => {

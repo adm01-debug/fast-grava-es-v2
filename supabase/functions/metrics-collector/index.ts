@@ -13,6 +13,9 @@ serve(async (req) => {
     );
 
     const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+    const todayStartISO = todayStart.toISOString();
     const metrics: Record<string, any> = {};
 
     // Jobs metrics
@@ -22,19 +25,34 @@ serve(async (req) => {
       .from("jobs")
       .select("*", { count: "exact", head: true })
       .eq("status", "finished")
-      .gte("actual_end_time", (() => { const d = new Date(now); d.setHours(0, 0, 0, 0); return d.toISOString(); })());
+      .gte("actual_end_time", todayStartISO);
 
     metrics.jobs = { total: totalJobs, active: activeJobs, completedToday };
 
-    // Operators metrics
+    // Operators metrics. The profiles table has no "status" column, so an
+    // operator is considered "active" when they scanned a job today.
     const { count: totalOperators } = await supabase.from("profiles").select("*", { count: "exact", head: true });
-    const { count: activeOperators } = await supabase.from("profiles").select("*", { count: "exact", head: true }).eq("status", "active");
+    const { data: scansToday } = await supabase
+      .from("qr_scan_history")
+      .select("operator_id")
+      .gte("scanned_at", todayStartISO)
+      .not("operator_id", "is", null);
+    const activeOperators = new Set((scansToday ?? []).map((s: { operator_id: string }) => s.operator_id)).size;
 
     metrics.operators = { total: totalOperators, active: activeOperators };
 
-    // Machines metrics
-    const { count: totalMachines } = await supabase.from("machines").select("*", { count: "exact", head: true });
-    const { count: runningMachines } = await supabase.from("machines").select("*", { count: "exact", head: true }).eq("status", "running");
+    // Machines metrics. The machines table has no "status" column, so a machine
+    // is considered "running" when it currently has a job in production.
+    const { count: totalMachines } = await supabase
+      .from("machines")
+      .select("*", { count: "exact", head: true })
+      .eq("is_active", true);
+    const { data: productionJobs } = await supabase
+      .from("jobs")
+      .select("machine_id")
+      .eq("status", "production")
+      .not("machine_id", "is", null);
+    const runningMachines = new Set((productionJobs ?? []).map((j: { machine_id: string }) => j.machine_id)).size;
 
     metrics.machines = { total: totalMachines, running: runningMachines };
 

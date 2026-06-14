@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requireCronSecret } from '../_shared/cronAuth.ts';
 
 const ALLOWED_ORIGINS = [
   Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
@@ -20,6 +21,11 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
+
+  // Writes to the security_events audit table with the service-role key, so
+  // gate it behind CRON_SECRET when configured (prevents forged audit records).
+  const unauthorized = requireCronSecret(req);
+  if (unauthorized) return unauthorized;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
