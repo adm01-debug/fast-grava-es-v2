@@ -62,13 +62,14 @@ serve(async (req) => {
 
     // Check user role - only coordinators and managers can export
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
-    const { data: roleData } = await adminClient
+    const { data: roleRows } = await adminClient
       .from('user_roles')
       .select('role')
-      .eq('user_id', user.id)
-      .single();
+      .eq('user_id', user.id);
 
-    if (!roleData || !['coordinator', 'manager'].includes(roleData.role)) {
+    const allowedRoles = ['coordinator', 'manager', 'admin'];
+    const hasExportRole = (roleRows ?? []).some((r: { role: string }) => allowedRoles.includes(r.role));
+    if (!hasExportRole) {
       return new Response(JSON.stringify({ error: "Permissão insuficiente" }), {
         status: 403,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
@@ -83,6 +84,19 @@ serve(async (req) => {
         status: 400,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
+    }
+
+    // Validate caller-supplied columns: only plain identifiers are allowed.
+    // This blocks embedded-relation selects (e.g. "*, user_roles(role)") that
+    // would exfiltrate joined data through the service-role client.
+    const COLUMN_RE = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+    if (columns !== undefined && columns !== null) {
+      if (!Array.isArray(columns) || !columns.every((c: unknown) => typeof c === "string" && COLUMN_RE.test(c))) {
+        return new Response(JSON.stringify({ error: "Parâmetro 'columns' inválido" }), {
+          status: 400,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Build query using service role for data access

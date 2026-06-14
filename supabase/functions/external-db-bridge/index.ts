@@ -158,6 +158,22 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // This bridge runs with the service-role key (bypassing RLS), so it must be
+    // restricted to administrators. Without this, any authenticated user could
+    // run arbitrary CRUD against any table (privilege escalation / data loss).
+    const serviceClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: roleRows } = await serviceClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+    const isAdmin = (roleRows ?? []).some((r: { role: string }) => r.role === "admin");
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: "Forbidden: admin role required" }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
     const validation = validateBridgeRequest(body);
 
@@ -169,6 +185,19 @@ Deno.serve(async (req: Request) => {
     }
 
     const { action, table, rpc, params } = validation.data!;
+
+    // Defense-in-depth: never allow an unscoped (empty match) update/delete,
+    // which would mutate/wipe an entire table.
+    if (action === "delete" || action === "update") {
+      const match = params?.match;
+      const hasScope = match && typeof match === "object" && Object.keys(match as object).length > 0;
+      if (!hasScope) {
+        return new Response(
+          JSON.stringify({ error: `Action '${action}' requires a non-empty 'match' filter` }),
+          { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+    }
     const startTime = performance.now();
     let result: any = null;
     let errorMessage: string | null = null;

@@ -67,12 +67,24 @@ serve(async (req) => {
       return new Response(JSON.stringify({ message: 'No email subscribers found' }), { status: 200 });
     }
 
-    // 3. Get subscriber emails
-    const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers();
-    if (usersError) throw usersError;
+    // 3. Get subscriber emails. listUsers() is paginated (default 50/page), so
+    // we must walk every page or subscribers beyond the first page silently
+    // never receive this critical alert.
+    const subscriberIds = new Set(subscribers.map(s => s.user_id));
+    const emailById = new Map<string, string>();
+    const perPage = 1000;
+    for (let page = 1; ; page++) {
+      const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers({ page, perPage });
+      if (usersError) throw usersError;
+      const users = usersData?.users ?? [];
+      for (const u of users) {
+        if (u.email && subscriberIds.has(u.id)) emailById.set(u.id, u.email);
+      }
+      if (users.length < perPage) break;
+    }
 
     const subscriberEmails = subscribers
-      .map(s => usersData.users.find(u => u.id === s.user_id)?.email)
+      .map(s => emailById.get(s.user_id))
       .filter((email): email is string => !!email);
 
     if (subscriberEmails.length === 0) {

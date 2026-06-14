@@ -33,14 +33,19 @@ interface PushSubscription {
   user_id: string;
 }
 
-// Web Push implementation using fetch API
+type PushResult = "sent" | "expired" | "failed";
+
+// Web Push implementation using fetch API.
+// Returns "expired" ONLY for 404/410 (the push service says the subscription is
+// gone). Any other failure (transient 5xx/429, VAPID/key errors, network) is
+// "failed" and must NOT cause the subscription to be deleted.
 async function sendWebPush(
   subscription: PushSubscription,
   payload: string,
   vapidPublicKey: string,
   vapidPrivateKey: string,
   vapidSubject: string
-): Promise<boolean> {
+): Promise<PushResult> {
   try {
     // Create JWT for VAPID
     const header = { alg: "ES256", typ: "JWT" };
@@ -98,17 +103,17 @@ async function sendWebPush(
 
     if (response.status === 201 || response.status === 200) {
       console.log(`Push sent successfully to ${subscription.endpoint.substring(0, 50)}...`);
-      return true;
+      return "sent";
     } else if (response.status === 410 || response.status === 404) {
       console.log(`Subscription expired: ${subscription.endpoint.substring(0, 50)}...`);
-      return false;
+      return "expired";
     } else {
       console.error(`Push failed with status ${response.status}: ${await response.text()}`);
-      return false;
+      return "failed";
     }
   } catch (error) {
     console.error("Web Push error:", error);
-    return false;
+    return "failed";
   }
 }
 
@@ -222,12 +227,14 @@ serve(async (req: Request): Promise<Response> => {
     for (const sub of subscriptions as PushSubscription[]) {
       try {
         if (vapidPublicKey && vapidPrivateKey) {
-          const success = await sendWebPush(sub, payload, vapidPublicKey, vapidPrivateKey, vapidSubject);
-          if (success) {
+          const result = await sendWebPush(sub, payload, vapidPublicKey, vapidPrivateKey, vapidSubject);
+          if (result === "sent") {
             successCount++;
-          } else {
+          } else if (result === "expired") {
+            // Only 404/410 means the subscription is truly gone — safe to delete.
             expiredEndpoints.push(sub.endpoint);
           }
+          // result === "failed": transient/config error — keep the subscription.
         } else {
           // Fallback: log that push would be sent (VAPID not configured)
           console.log(`[VAPID not configured] Would send to: ${sub.endpoint.substring(0, 50)}...`);
