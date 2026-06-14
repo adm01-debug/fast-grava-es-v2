@@ -66,7 +66,7 @@ serve(async (req) => {
 
     const results = []
 
-    for (const technique of techniques) {
+    for (const technique of techniques || []) {
       // 2. Count current 'ready' jobs for this technique
       const { count: readyCount, error: countError } = await supabaseClient
         .from('jobs')

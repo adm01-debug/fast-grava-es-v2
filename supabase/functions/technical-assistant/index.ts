@@ -422,16 +422,28 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, customKnowledge } = await req.json();
+    const body = await req.json().catch(() => null);
+    const { messages, customKnowledge } = body ?? {};
+
+    // Validate the request body up front so malformed input returns 400, not 500.
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "'messages' must be a non-empty array" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
+
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     // Detectar técnica na última mensagem do usuário
-    const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop();
-    const detectedTechniques = lastUserMessage ? detectTechnique(lastUserMessage.content) : [];
+    const lastUserMessage = messages.filter((m: any) => m && m.role === 'user').pop();
+    const detectedTechniques = lastUserMessage && typeof lastUserMessage.content === 'string'
+      ? detectTechnique(lastUserMessage.content)
+      : [];
 
     // Montar conhecimento contextual
     let contextualKnowledge = "";

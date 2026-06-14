@@ -154,10 +154,14 @@ async function processBitrix24Webhook(supabase: any, event: string, data: any) {
   // Rastreabilidade: registrar tentativa de sincronização. O mapeamento real
   // Bitrix24 → jobs ainda não foi implementado — retornamos `processed: false`
   // para que o emissor não considere o evento como aplicado.
+  // The event is only logged here — the Bitrix24 → jobs mapping is not applied
+  // yet — so record it as 'partial', not 'success', or the sync-history UI would
+  // show logging-only events as completed syncs.
   const { error: logError } = await supabase.from("bitrix24_sync_history").insert({
     sync_type: 'webhook',
-    status: 'success',
+    status: 'partial',
     triggered_by: 'webhook',
+    error_message: 'logged_only: Bitrix24 → jobs mapping not yet implemented',
     details: { event, data },
     completed_at: new Date().toISOString(),
   });

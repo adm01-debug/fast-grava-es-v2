@@ -156,7 +156,8 @@ async function handleJobs(req: Request, supabase: ReturnType<typeof createClient
     const date = url.searchParams.get('date');
     const parsedLimit = parseInt(url.searchParams.get('limit') || '100', 10);
     const parsedOffset = parseInt(url.searchParams.get('offset') || '0', 10);
-    const limit = Math.min(Number.isFinite(parsedLimit) ? parsedLimit : 100, 200);
+    // Clamp limit to [1, 200] so zero/negative values can't break .range().
+    const limit = Math.min(Math.max(Number.isFinite(parsedLimit) ? parsedLimit : 100, 1), 200);
     const offset = Math.max(Number.isFinite(parsedOffset) ? parsedOffset : 0, 0);
 
     let query = supabase
@@ -233,7 +234,7 @@ async function handleLots(req: Request, supabase: ReturnType<typeof createClient
       return jsonResponse(req, data);
     }
     const parsedLimit = parseInt(url.searchParams.get('limit') || '100', 10);
-    const limit = Math.min(Number.isFinite(parsedLimit) ? parsedLimit : 100, 200);
+    const limit = Math.min(Math.max(Number.isFinite(parsedLimit) ? parsedLimit : 100, 1), 200);
     const { data, error } = await supabase.from('production_lots').select('*').order('created_at', { ascending: false }).limit(limit);
     if (error) throw error;
     return jsonResponse(req, data);

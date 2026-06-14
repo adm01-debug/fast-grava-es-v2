@@ -421,6 +421,16 @@ function getMappedValueDynamic(deal: BitrixDeal, fieldName: string, fieldMapping
   return defaultValue;
 }
 
+// Safely convert a raw Bitrix date into a yyyy-MM-dd string. Returns null for
+// empty or unparseable values instead of throwing a RangeError (which would
+// abort the whole deal sync).
+function toDateOnly(rawDate: unknown): string | null {
+  if (!rawDate || typeof rawDate !== 'string') return null;
+  const d = new Date(rawDate);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString().split('T')[0];
+}
+
 // Helper to normalize technique value using dynamic mapping
 function normalizeTechniqueDynamic(value: string | null | undefined, techniqueMapping: Record<string, string>): string {
   if (!value) return 'silk-textile';
@@ -566,7 +576,7 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
         status,
         priority: normalizePriorityDynamic(rawPriority, mappings.priorityMapping),
         gravure_color: getMappedValueDynamic(deal, 'gravure_color', mappings.fieldMapping),
-        scheduled_date: rawDate ? new Date(rawDate).toISOString().split('T')[0] : null,
+        scheduled_date: toDateOnly(rawDate),
         estimated_duration: parseInt(rawDuration) || 60,
         notes: getMappedValueDynamic(deal, 'notes', mappings.fieldMapping, `Importado do Bitrix24 - Deal ID: ${deal.ID}`)
       };
@@ -613,7 +623,7 @@ async function pushToBitrix(jobId: string, newStatus: string, supabase: any) {
   }
 
   // Check if this is a Bitrix-synced job
-  if (!job.order_number.startsWith('BTX-')) {
+  if (!job.order_number?.startsWith('BTX-')) {
     console.log('Not a Bitrix-synced job, skipping push');
     return { skipped: true };
   }
@@ -705,7 +715,7 @@ async function handleBitrixWebhook(payload: any, supabase: any) {
         status,
         priority: normalizePriorityDynamic(rawPriority, mappings.priorityMapping),
         gravure_color: getMappedValueDynamic(deal, 'gravure_color', mappings.fieldMapping),
-        scheduled_date: rawDate ? new Date(rawDate).toISOString().split('T')[0] : null,
+        scheduled_date: toDateOnly(rawDate),
         estimated_duration: parseInt(rawDuration) || 60,
         notes: getMappedValueDynamic(deal, 'notes', mappings.fieldMapping, `Importado do Bitrix24 - Deal ID: ${dealId}`)
       };

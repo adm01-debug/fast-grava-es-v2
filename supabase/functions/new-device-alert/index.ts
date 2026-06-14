@@ -41,8 +41,34 @@ Deno.serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Require an authenticated caller and derive the identity from the JWT so a
+    // caller cannot forge device records or trigger alert emails for arbitrary
+    // users/addresses.
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    const authClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user: authUser } } = await authClient.auth.getUser();
+    if (!authUser) {
+      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+
     const deviceInfo: DeviceInfo = await req.json();
-    
+    // Trust the token, not the body, for identity fields. Do NOT fall back to
+    // the body email when the token has none — that would re-open forged
+    // alert recipients.
+    deviceInfo.user_id = authUser.id;
+    deviceInfo.user_email = authUser.email ?? '';
+
     console.log('Checking device for user:', deviceInfo.user_id);
     console.log('Device fingerprint:', deviceInfo.device_fingerprint);
 

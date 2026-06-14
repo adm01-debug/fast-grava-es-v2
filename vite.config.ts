@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  // `vite preview` (used by the Playwright e2e webServer) defaults to port 4173
+  // and inherits server.host ("::"); pin it to 127.0.0.1:8080 so it matches the
+  // e2e baseURL (http://localhost:8080) and the webServer port readiness check.
+  preview: {
+    host: "127.0.0.1",
+    port: 8080,
+  },
   plugins: [
     react(),
     mode === 'development' &&

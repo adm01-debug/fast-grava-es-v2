@@ -219,7 +219,7 @@ serve(async (req: Request): Promise<Response> => {
         .eq("achievement_type", `top_${rankingType}`)
         .gte("period_start", periodStart.toISOString())
         .lt("period_end", periodEnd.toISOString())
-        .single();
+        .maybeSingle();
 
       if (!existing) {
         const achievementNames: Record<string, string> = {
@@ -250,7 +250,7 @@ serve(async (req: Request): Promise<Response> => {
             .eq("operator_id", ranking.operator_id)
             .eq("achievement_type", "quality_master")
             .gte("achieved_at", periodStart.toISOString())
-            .single();
+            .maybeSingle();
 
           if (!qualityExists) {
             achievements.push({

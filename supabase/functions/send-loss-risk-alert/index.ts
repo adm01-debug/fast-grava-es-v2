@@ -67,12 +67,25 @@ serve(async (req) => {
       return new Response(JSON.stringify({ message: 'No email subscribers found' }), { status: 200 });
     }
 
-    // 3. Get subscriber emails
-    const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers();
-    if (usersError) throw usersError;
+    // 3. Get subscriber emails. listUsers() is paginated (default 50/page), so
+    // we must walk every page or subscribers beyond the first page silently
+    // never receive this critical alert.
+    const subscriberIds = new Set(subscribers.map(s => s.user_id));
+    const emailById = new Map<string, string>();
+    const perPage = 1000;
+    for (let page = 1; ; page++) {
+      const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers({ page, perPage });
+      if (usersError) throw usersError;
+      const users = usersData?.users ?? [];
+      for (const u of users) {
+        if (u.email && subscriberIds.has(u.id)) emailById.set(u.id, u.email);
+      }
+      // Stop early once every subscriber email is resolved or the last page is reached.
+      if (users.length < perPage || emailById.size >= subscriberIds.size) break;
+    }
 
     const subscriberEmails = subscribers
-      .map(s => usersData.users.find(u => u.id === s.user_id)?.email)
+      .map(s => emailById.get(s.user_id))
       .filter((email): email is string => !!email);
 
     if (subscriberEmails.length === 0) {
@@ -108,23 +121,41 @@ serve(async (req) => {
         </div>
       `;
 
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Alertas de Risco 52 STÚDIOS DE GRAVAÇÃO <notifications@resend.dev>',
-          to: subscriberEmails,
-          subject: `🚨 RISCO DE PERDA: ${machine?.code} - ${alert.parameter_name || 'Parâmetro'} fora do range`,
-          html: htmlContent,
-        }),
-      });
+      // Resend allows at most 50 recipients per send, so chunk the list — a
+      // single 100+ recipient request would fail and nobody would be alerted.
+      const RESEND_MAX_RECIPIENTS = 50;
+      let sentCount = 0;
+      const sendErrors: string[] = [];
+      for (let i = 0; i < subscriberEmails.length; i += RESEND_MAX_RECIPIENTS) {
+        const chunk = subscriberEmails.slice(i, i + RESEND_MAX_RECIPIENTS);
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Alertas de Risco 52 STÚDIOS DE GRAVAÇÃO <notifications@resend.dev>',
+            to: chunk,
+            subject: `🚨 RISCO DE PERDA: ${machine?.code} - ${alert.parameter_name || 'Parâmetro'} fora do range`,
+            html: htmlContent,
+          }),
+        });
 
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Failed to send email: ${error}`);
+        if (response.ok) {
+          sentCount += chunk.length;
+        } else {
+          // Don't let one failed batch suppress the others.
+          sendErrors.push(await response.text());
+        }
+      }
+
+      // Only fail the whole request if every batch failed.
+      if (sentCount === 0 && sendErrors.length > 0) {
+        throw new Error(`Failed to send email: ${sendErrors.join('; ')}`);
+      }
+      if (sendErrors.length > 0) {
+        console.error('[send-loss-risk-alert] Some email batches failed:', sendErrors.join('; '));
       }
     }
 

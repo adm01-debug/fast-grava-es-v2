@@ -22,6 +22,13 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
   const setupChannel = useCallback(() => {
     setStatus('connecting');
 
+    // Cancel any pending auto-reconnect timer so a manual reconnect (or a
+    // re-setup) doesn't trigger a second, duplicate reconnect cycle.
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+
     // Remove any previously active channel before opening a new one.
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current);

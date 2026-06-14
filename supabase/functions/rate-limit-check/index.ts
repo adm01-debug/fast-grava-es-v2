@@ -48,13 +48,18 @@ Deno.serve(async (req) => {
 
     console.log(`Rate limit check for IP: ${ip}, endpoint: ${endpoint}`);
 
-    // Check if IP is blocked
+    // Check if IP is blocked. Order so that a permanent / longest-lived block
+    // wins when duplicate rows exist for the same IP (otherwise PostgREST could
+    // return an arbitrary, possibly-expired row and let a blocked IP through).
     const { data: blockedIP } = await supabase
       .from('blocked_ips')
       .select('id, expires_at, is_permanent')
       .eq('ip_address', ip)
       .is('unblocked_at', null)
-      .single();
+      .order('is_permanent', { ascending: false })
+      .order('expires_at', { ascending: false, nullsFirst: false })
+      .limit(1)
+      .maybeSingle();
 
     if (blockedIP) {
       // Check if block has expired
