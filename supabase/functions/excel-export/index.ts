@@ -62,10 +62,19 @@ serve(async (req) => {
 
     // Check user role - only coordinators and managers can export
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
-    const { data: roleRows } = await adminClient
+    const { data: roleRows, error: roleError } = await adminClient
       .from('user_roles')
       .select('role')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    if (roleError) {
+      // Surface backend failures as 500, not a misleading "permission denied".
+      return new Response(JSON.stringify({ error: "Falha ao verificar permissão" }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
     const allowedRoles = ['coordinator', 'manager', 'admin'];
     const hasExportRole = (roleRows ?? []).some((r: { role: string }) => allowedRoles.includes(r.role));

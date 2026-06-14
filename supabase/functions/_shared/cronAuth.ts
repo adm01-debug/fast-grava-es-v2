@@ -2,21 +2,39 @@
  * Shared guard for internal/cron edge functions that run with the service-role
  * key and are NOT meant to be reachable by end users.
  *
- * Behavior is backward-compatible by design:
  *  - If the `CRON_SECRET` environment variable is set, callers MUST send a
  *    matching `x-cron-secret` header (or `Authorization: Bearer <secret>`),
  *    otherwise the request is rejected with 401.
- *  - If `CRON_SECRET` is not configured, the request is allowed but a warning
- *    is logged, so existing deployments keep working while operators are
- *    nudged to lock the function down.
+ *  - If `CRON_SECRET` is not configured:
+ *      - `failClosed: true`  → reject with 401 (use for DESTRUCTIVE functions,
+ *        so an unconfigured deployment can never run them unauthenticated).
+ *      - `failClosed: false` (default) → allow but log a warning, so existing
+ *        non-destructive deployments keep working while operators lock down.
  *
  * Returns `null` when the request may proceed, or a `Response` (401) to return
- * immediately when it must be rejected.
+ * immediately when it must be rejected. Any `corsHeaders` provided are attached
+ * to that 401 so browser callers receive a proper response instead of a CORS error.
  */
-export function requireCronSecret(req: Request): Response | null {
+export function requireCronSecret(
+  req: Request,
+  options: { failClosed?: boolean; corsHeaders?: Record<string, string> } = {}
+): Response | null {
+  const { failClosed = false, corsHeaders = {} } = options;
   const expected = Deno.env.get("CRON_SECRET");
 
+  const reject = () =>
+    new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
   if (!expected) {
+    if (failClosed) {
+      console.error(
+        "[cronAuth] CRON_SECRET is not configured and this function fails closed — rejecting request."
+      );
+      return reject();
+    }
     console.warn(
       "[cronAuth] CRON_SECRET is not configured — this function is unauthenticated. " +
         "Set CRON_SECRET and send it via the x-cron-secret header to lock it down."
@@ -32,8 +50,5 @@ export function requireCronSecret(req: Request): Response | null {
     return null;
   }
 
-  return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    status: 401,
-    headers: { "Content-Type": "application/json" },
-  });
+  return reject();
 }

@@ -184,15 +184,16 @@ export function useSessionTimeout({
     const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click"];
 
     const handleActivity = () => {
+      // `lastActivityRef` tracks the time of the last TIMER RESET (updated by
+      // resetTimers), not the last raw event. Debouncing against the last reset
+      // means continuous activity still re-arms the timers every minute — keying
+      // it to every event would let an active user reach the inactivity timeout.
       const now = Date.now();
-      const timeSinceLastActivity = now - lastActivityRef.current;
+      const timeSinceLastReset = now - lastActivityRef.current;
 
-      // Only reset if more than 1 minute since last activity (debounce)
-      if (timeSinceLastActivity > 60000 && !showWarningRef.current) {
+      if (timeSinceLastReset > 60000 && !showWarningRef.current) {
         resetTimersRef.current();
       }
-
-      lastActivityRef.current = now;
     };
 
     events.forEach((event) => {

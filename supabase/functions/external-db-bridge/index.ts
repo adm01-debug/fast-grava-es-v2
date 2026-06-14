@@ -162,10 +162,18 @@ Deno.serve(async (req: Request) => {
     // restricted to administrators. Without this, any authenticated user could
     // run arbitrary CRUD against any table (privilege escalation / data loss).
     const serviceClient = createClient(supabaseUrl, serviceRoleKey);
-    const { data: roleRows } = await serviceClient
+    const { data: roleRows, error: roleError } = await serviceClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+    if (roleError) {
+      // A backend failure must not masquerade as an authorization denial.
+      return new Response(JSON.stringify({ error: "Failed to verify user role" }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
     const isAdmin = (roleRows ?? []).some((r: { role: string }) => r.role === "admin");
     if (!isAdmin) {
       return new Response(JSON.stringify({ error: "Forbidden: admin role required" }), {

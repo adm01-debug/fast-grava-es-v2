@@ -55,10 +55,19 @@ Deno.serve(async (req) => {
 
     // Check if requesting user is coordinator/admin. Fetch all role rows: a
     // user may have more than one, and .single() would error in that case.
-    const { data: roleRows } = await supabaseAdmin
+    const { data: roleRows, error: roleError } = await supabaseAdmin
       .from('user_roles')
       .select('role')
       .eq('user_id', requestingUser.id)
+      .eq('is_active', true)
+
+    if (roleError) {
+      // Backend failure must not be reported as an authorization denial.
+      return new Response(JSON.stringify({ error: 'Falha ao verificar permissão' }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
 
     const requesterRoles = (roleRows ?? []).map((r: { role: string }) => r.role)
     if (!requesterRoles.some((role) => ['coordinator', 'admin'].includes(role))) {

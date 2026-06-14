@@ -80,7 +80,8 @@ serve(async (req) => {
       for (const u of users) {
         if (u.email && subscriberIds.has(u.id)) emailById.set(u.id, u.email);
       }
-      if (users.length < perPage) break;
+      // Stop early once every subscriber email is resolved or the last page is reached.
+      if (users.length < perPage || emailById.size >= subscriberIds.size) break;
     }
 
     const subscriberEmails = subscribers

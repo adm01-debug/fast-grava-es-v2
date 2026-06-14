@@ -63,9 +63,11 @@ Deno.serve(async (req) => {
     }
 
     const deviceInfo: DeviceInfo = await req.json();
-    // Trust the token, not the body, for identity fields.
+    // Trust the token, not the body, for identity fields. Do NOT fall back to
+    // the body email when the token has none — that would re-open forged
+    // alert recipients.
     deviceInfo.user_id = authUser.id;
-    deviceInfo.user_email = authUser.email ?? deviceInfo.user_email;
+    deviceInfo.user_email = authUser.email ?? '';
 
     console.log('Checking device for user:', deviceInfo.user_id);
     console.log('Device fingerprint:', deviceInfo.device_fingerprint);

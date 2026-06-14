@@ -30,14 +30,11 @@ serve(async (req) => {
     metrics.jobs = { total: totalJobs, active: activeJobs, completedToday };
 
     // Operators metrics. The profiles table has no "status" column, so an
-    // operator is considered "active" when they scanned a job today.
+    // operator is considered "active" when they scanned a job today. Distinct
+    // count is done in SQL (RPC) to avoid the PostgREST row cap undercounting.
     const { count: totalOperators } = await supabase.from("profiles").select("*", { count: "exact", head: true });
-    const { data: scansToday } = await supabase
-      .from("qr_scan_history")
-      .select("operator_id")
-      .gte("scanned_at", todayStartISO)
-      .not("operator_id", "is", null);
-    const activeOperators = new Set((scansToday ?? []).map((s: { operator_id: string }) => s.operator_id)).size;
+    const { data: activeOperatorsRpc } = await supabase.rpc("count_active_operators_since", { p_since: todayStartISO });
+    const activeOperators = Number(activeOperatorsRpc ?? 0);
 
     metrics.operators = { total: totalOperators, active: activeOperators };
 
@@ -47,12 +44,8 @@ serve(async (req) => {
       .from("machines")
       .select("*", { count: "exact", head: true })
       .eq("is_active", true);
-    const { data: productionJobs } = await supabase
-      .from("jobs")
-      .select("machine_id")
-      .eq("status", "production")
-      .not("machine_id", "is", null);
-    const runningMachines = new Set((productionJobs ?? []).map((j: { machine_id: string }) => j.machine_id)).size;
+    const { data: runningMachinesRpc } = await supabase.rpc("count_running_machines");
+    const runningMachines = Number(runningMachinesRpc ?? 0);
 
     metrics.machines = { total: totalMachines, running: runningMachines };
 

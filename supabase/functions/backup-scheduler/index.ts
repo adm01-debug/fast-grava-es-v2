@@ -3,7 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireCronSecret } from "../_shared/cronAuth.ts";
 
 serve(async (req) => {
-  const unauthorized = requireCronSecret(req);
+  // Reads/exports full tables — fail closed if CRON_SECRET is not configured.
+  const unauthorized = requireCronSecret(req, { failClosed: true });
   if (unauthorized) return unauthorized;
 
   try {
