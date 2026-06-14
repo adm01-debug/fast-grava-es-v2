@@ -27,5 +27,8 @@ export default defineConfig({
     command: 'npm run preview',
     port: 8080,
     reuseExistingServer: !process.env.CI,
+    // Give the preview server more headroom to come up on slow/loaded CI
+    // runners; the default 60s was occasionally hit ("Timed out waiting 60000ms").
+    timeout: 120_000,
   },
 });
