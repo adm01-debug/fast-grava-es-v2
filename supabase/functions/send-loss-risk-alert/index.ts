@@ -121,23 +121,41 @@ serve(async (req) => {
         </div>
       `;
 
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Alertas de Risco 52 STÚDIOS DE GRAVAÇÃO <notifications@resend.dev>',
-          to: subscriberEmails,
-          subject: `🚨 RISCO DE PERDA: ${machine?.code} - ${alert.parameter_name || 'Parâmetro'} fora do range`,
-          html: htmlContent,
-        }),
-      });
+      // Resend allows at most 50 recipients per send, so chunk the list — a
+      // single 100+ recipient request would fail and nobody would be alerted.
+      const RESEND_MAX_RECIPIENTS = 50;
+      let sentCount = 0;
+      const sendErrors: string[] = [];
+      for (let i = 0; i < subscriberEmails.length; i += RESEND_MAX_RECIPIENTS) {
+        const chunk = subscriberEmails.slice(i, i + RESEND_MAX_RECIPIENTS);
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Alertas de Risco 52 STÚDIOS DE GRAVAÇÃO <notifications@resend.dev>',
+            to: chunk,
+            subject: `🚨 RISCO DE PERDA: ${machine?.code} - ${alert.parameter_name || 'Parâmetro'} fora do range`,
+            html: htmlContent,
+          }),
+        });
 
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Failed to send email: ${error}`);
+        if (response.ok) {
+          sentCount += chunk.length;
+        } else {
+          // Don't let one failed batch suppress the others.
+          sendErrors.push(await response.text());
+        }
+      }
+
+      // Only fail the whole request if every batch failed.
+      if (sentCount === 0 && sendErrors.length > 0) {
+        throw new Error(`Failed to send email: ${sendErrors.join('; ')}`);
+      }
+      if (sendErrors.length > 0) {
+        console.error('[send-loss-risk-alert] Some email batches failed:', sendErrors.join('; '));
       }
     }
 
