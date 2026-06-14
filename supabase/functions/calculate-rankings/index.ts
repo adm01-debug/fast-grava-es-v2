@@ -97,7 +97,7 @@ serve(async (req: Request): Promise<Response> => {
         machine_id,
         actual_end_time
       `)
-      .eq("status", "completed")
+      .eq("status", "finished")
       .gte("actual_end_time", periodStart.toISOString())
       .lt("actual_end_time", periodEnd.toISOString());
 
@@ -126,7 +126,9 @@ serve(async (req: Request): Promise<Response> => {
     const operatorStats: Record<string, RankingResult> = {};
 
     (jobs || []).forEach((job) => {
-      const operatorId = machineToOperator[job.machine_id] || job.machine_id;
+      // Only attribute production to a real operator. Falling back to the
+      // machine id would fabricate phantom "operators" in the rankings.
+      const operatorId = machineToOperator[job.machine_id];
       if (!operatorId) return;
 
       if (!operatorStats[operatorId]) {

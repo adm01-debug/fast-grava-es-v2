@@ -154,12 +154,16 @@ async function processBitrix24Webhook(supabase: any, event: string, data: any) {
   // Rastreabilidade: registrar tentativa de sincronização. O mapeamento real
   // Bitrix24 → jobs ainda não foi implementado — retornamos `processed: false`
   // para que o emissor não considere o evento como aplicado.
-  await supabase.from("bitrix24_sync_history").insert({
-    event_type: event,
-    payload: data,
-    status: 'received',
-    sync_date: new Date().toISOString()
+  const { error: logError } = await supabase.from("bitrix24_sync_history").insert({
+    sync_type: 'webhook',
+    status: 'success',
+    triggered_by: 'webhook',
+    details: { event, data },
+    completed_at: new Date().toISOString(),
   });
+  if (logError) {
+    console.error("Failed to log Bitrix24 webhook to sync history:", logError.message);
+  }
 
   return {
     source: "bitrix24",

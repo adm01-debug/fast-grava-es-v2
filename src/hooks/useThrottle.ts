@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Returns a throttled version of the callback that executes at most once per `delay` ms.
@@ -9,6 +9,14 @@ export function useThrottle<T extends (...args: any[]) => void>(
 ): T {
   const lastCall = useRef(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clear any pending trailing-edge timer on unmount so the callback does not
+  // fire against an unmounted component.
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   return useCallback(
     ((...args: any[]) => {

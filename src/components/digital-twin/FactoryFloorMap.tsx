@@ -21,7 +21,7 @@ export function FactoryFloorMap() {
       const { data } = await supabase
         .from('jobs')
         .select('*, machines(id, name)')
-        .eq('status', 'in_progress');
+        .eq('status', 'production');
 
       const jobsByMachine: Record<string, any> = {};
       data?.forEach((job: any) => {

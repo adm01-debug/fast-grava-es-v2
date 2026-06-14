@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimeChannel } from '@supabase/supabase-js';
 
@@ -14,9 +14,19 @@ interface UseRealtimeConnectionReturn {
 export function useRealtimeConnection(): UseRealtimeConnectionReturn {
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  // Track the active channel so reconnects can dispose the previous one
+  // instead of leaking a RealtimeChannel on every reconnect.
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setupChannel = useCallback(() => {
     setStatus('connecting');
+
+    // Remove any previously active channel before opening a new one.
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
 
     const channelId = `realtime-status-monitor-${Math.random().toString(36).substring(7)}`;
     const newChannel = supabase
@@ -47,32 +57,44 @@ export function useRealtimeConnection(): UseRealtimeConnectionReturn {
               id: 'realtime-error'
             });
           });
-          const timer = setTimeout(() => {
-            reconnect();
+          if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+          reconnectTimerRef.current = setTimeout(() => {
+            reconnectRef.current?.();
           }, 5000);
-          return () => clearTimeout(timer);
         }
       });
 
+    channelRef.current = newChannel;
     return newChannel;
   }, []);
 
+  // Keep a stable ref to the latest reconnect so setupChannel (deps []) can
+  // call it without capturing a stale/undefined binding.
+  const reconnectRef = useRef<(() => void) | null>(null);
+
+  const reconnect = useCallback(() => {
+    setStatus('connecting');
+    setupChannel();
+  }, [setupChannel]);
+
   useEffect(() => {
-    let ch: RealtimeChannel;
+    reconnectRef.current = reconnect;
+  }, [reconnect]);
+
+  useEffect(() => {
     try {
-      ch = setupChannel();
+      setupChannel();
     } catch (e) {
       setStatus('error');
     }
 
     return () => {
-      if (ch) supabase.removeChannel(ch);
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
-  }, [setupChannel]);
-
-  const reconnect = useCallback(() => {
-    setStatus('connecting');
-    setupChannel();
   }, [setupChannel]);
 
   return {

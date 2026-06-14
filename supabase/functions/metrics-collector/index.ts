@@ -18,7 +18,7 @@ serve(async (req) => {
       .from("jobs")
       .select("*", { count: "exact", head: true })
       .eq("status", "finished")
-      .gte("actual_end_time", new Date(now.setHours(0, 0, 0, 0)).toISOString());
+      .gte("actual_end_time", (() => { const d = new Date(now); d.setHours(0, 0, 0, 0); return d.toISOString(); })());
 
     metrics.jobs = { total: totalJobs, active: activeJobs, completedToday };
 
