@@ -4,8 +4,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRealtimeMock } from '@/test/realtimeMock';
 
-const getAllMock = vi.fn();
-const realtime = createRealtimeMock();
+const { getAllMock, realtime } = vi.hoisted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { createRealtimeMock: make } = require('@/test/realtimeMock') as typeof import('@/test/realtimeMock');
+  return { getAllMock: vi.fn(), realtime: make() };
+});
 
 vi.mock('@/features/jobs', () => ({
   techniquesService: { getAll: (...args: unknown[]) => getAllMock(...args) },
