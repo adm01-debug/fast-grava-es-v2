@@ -92,7 +92,9 @@ export default function ExecutiveDashboard() {
     queryFn: async () => {
       const { data } = await supabase.from('techniques').select('id, name, short_name');
       return data || [];
-    }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const { data: kpis, isLoading, error } = useExecutiveDashboard(
