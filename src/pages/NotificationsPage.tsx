@@ -67,7 +67,7 @@ const NotificationsPage = () => {
   }, [queryClient, playSound, isSoundEnabled]);
 
   useEffect(() => {
-    const channel = supabase.channel('notifications-realtime')
+    const channel = supabase.channel('notifications-page-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'maintenance_alerts' }, () => handleNewNotification('maintenance'))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'machine_predictions' }, () => handleNewNotification('prediction'))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'daily_summaries' }, () => handleNewNotification('summary'))
