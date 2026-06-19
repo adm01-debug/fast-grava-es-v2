@@ -2,18 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import { createRealtimeMock } from '@/test/realtimeMock';
+import type { RealtimeMock } from '@/test/realtimeMock';
 
-const { getAllMock, realtime } = vi.hoisted(async () => {
-  const { createRealtimeMock: make } = await import('@/test/realtimeMock');
-  return { getAllMock: vi.fn(), realtime: make() };
-}) as unknown as { getAllMock: ReturnType<typeof vi.fn>; realtime: ReturnType<typeof createRealtimeMock> };
-
-vi.mock('@/features/jobs', () => ({
-  techniquesService: { getAll: (...args: unknown[]) => getAllMock(...args) },
+const holder = vi.hoisted(() => ({
+  getAllMock: vi.fn(),
+  realtime: null as RealtimeMock | null,
 }));
 
-vi.mock('@/integrations/supabase/client', () => ({ supabase: realtime.supabase }));
+vi.mock('@/features/jobs', () => ({
+  techniquesService: { getAll: (...args: unknown[]) => holder.getAllMock(...args) },
+}));
+
+vi.mock('@/integrations/supabase/client', async () => {
+  const { createRealtimeMock } = await import('@/test/realtimeMock');
+  holder.realtime = createRealtimeMock();
+  return { supabase: holder.realtime.supabase };
+});
 
 import { useTechniques } from './useTechniques';
 
@@ -24,8 +28,8 @@ function makeWrapper(client: QueryClient) {
 
 describe('useTechniques — Realtime invalidation', () => {
   beforeEach(() => {
-    getAllMock.mockReset();
-    getAllMock.mockResolvedValue([{ id: '1', name: 'Bordado' }]);
+    holder.getAllMock.mockReset();
+    holder.getAllMock.mockResolvedValue([{ id: '1', name: 'Bordado' }]);
   });
 
   it('refetches when a Realtime postgres_changes event arrives', async () => {
@@ -34,11 +38,11 @@ describe('useTechniques — Realtime invalidation', () => {
 
     const { result } = renderHook(() => useTechniques(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(getAllMock).toHaveBeenCalledTimes(1);
+    expect(holder.getAllMock).toHaveBeenCalledTimes(1);
 
-    expect(realtime.hasHandler).toBe(true);
-    act(() => realtime.emit({ eventType: 'INSERT' }));
+    expect(holder.realtime!.hasHandler).toBe(true);
+    act(() => holder.realtime!.emit({ eventType: 'INSERT' }));
 
-    await waitFor(() => expect(getAllMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(holder.getAllMock).toHaveBeenCalledTimes(2));
   });
 });

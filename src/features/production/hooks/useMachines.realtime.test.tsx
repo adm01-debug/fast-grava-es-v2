@@ -2,18 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import { createRealtimeMock } from '@/test/realtimeMock';
+import type { RealtimeMock } from '@/test/realtimeMock';
 
-const { getActiveMock, realtime } = vi.hoisted(async () => {
-  const { createRealtimeMock: make } = await import('@/test/realtimeMock');
-  return { getActiveMock: vi.fn(), realtime: make() };
-}) as unknown as { getActiveMock: ReturnType<typeof vi.fn>; realtime: ReturnType<typeof createRealtimeMock> };
-
-vi.mock('../index', () => ({
-  machinesService: { getActive: (...args: unknown[]) => getActiveMock(...args) },
+const holder = vi.hoisted(() => ({
+  getActiveMock: vi.fn(),
+  realtime: null as RealtimeMock | null,
 }));
 
-vi.mock('@/integrations/supabase/client', () => ({ supabase: realtime.supabase }));
+vi.mock('../index', () => ({
+  machinesService: { getActive: (...args: unknown[]) => holder.getActiveMock(...args) },
+}));
+
+vi.mock('@/integrations/supabase/client', async () => {
+  const { createRealtimeMock } = await import('@/test/realtimeMock');
+  holder.realtime = createRealtimeMock();
+  return { supabase: holder.realtime.supabase };
+});
 
 import { useMachines } from './useMachines';
 
@@ -24,8 +28,8 @@ function makeWrapper(client: QueryClient) {
 
 describe('useMachines — Realtime invalidation', () => {
   beforeEach(() => {
-    getActiveMock.mockReset();
-    getActiveMock.mockResolvedValue([{ id: 'm1', name: 'Laser-01', is_active: true }]);
+    holder.getActiveMock.mockReset();
+    holder.getActiveMock.mockResolvedValue([{ id: 'm1', name: 'Laser-01', is_active: true }]);
   });
 
   it('refetches when a Realtime postgres_changes event arrives', async () => {
@@ -34,11 +38,11 @@ describe('useMachines — Realtime invalidation', () => {
 
     const { result } = renderHook(() => useMachines(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(getActiveMock).toHaveBeenCalledTimes(1);
+    expect(holder.getActiveMock).toHaveBeenCalledTimes(1);
 
-    expect(realtime.hasHandler).toBe(true);
-    act(() => realtime.emit({ eventType: 'UPDATE' }));
+    expect(holder.realtime!.hasHandler).toBe(true);
+    act(() => holder.realtime!.emit({ eventType: 'UPDATE' }));
 
-    await waitFor(() => expect(getActiveMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(holder.getActiveMock).toHaveBeenCalledTimes(2));
   });
 });
