@@ -64,6 +64,7 @@ describe('useSchedulingData — Realtime invalidation (múltiplas tabelas)', () 
     holder.jobsGetAll.mockResolvedValue([{ id: 'j1', status: 'queue', technique_id: 't1' }]);
     holder.machinesGetAll.mockResolvedValue([{ id: 'm1', name: 'Laser-01', technique_id: 't1' }]);
     holder.profilesData = [{ id: 'p1', full_name: 'Op', avatar_url: null }];
+    holder.realtime!.removeChannel.mockClear();
     holder.techniquesData = [{ id: 't1', name: 'Bordado' }];
   });
 
