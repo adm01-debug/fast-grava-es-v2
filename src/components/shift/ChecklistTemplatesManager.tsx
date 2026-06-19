@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { ChecklistTemplate } from '@/hooks/useShiftHandover';
 import { TemplateForm, TemplateFormData } from './checklist-templates/TemplateForm';
 import { TemplateCard } from './checklist-templates/TemplateCard';
+import { useTechniques } from '@/features/jobs';
 
 const DEFAULT_FORM: TemplateFormData = {
   name: '', description: '', technique_id: '',
