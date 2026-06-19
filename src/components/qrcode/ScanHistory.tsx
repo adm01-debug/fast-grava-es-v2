@@ -61,7 +61,7 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
 
   // Real-time subscription
   useEffect(() => {
-    let highlightTimeoutId: ReturnType<typeof window.setTimeout> | null = null;
+    let highlightTimeoutId: number | null = null;
 
     const channel = supabase.channel(`scan-history-realtime-${jobId ?? 'all'}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'qr_scan_history' }, async (payload: { new: Record<string, unknown> }) => {
       const newScan = payload.new as { id: string; job_id: string; operator_id: string; action: string };

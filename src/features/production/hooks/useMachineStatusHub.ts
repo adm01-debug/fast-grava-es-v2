@@ -15,7 +15,7 @@ export function useMachineStatusHub() {
 
   useEffect(() => {
     let isMounted = true;
-    let refreshTimeoutId: ReturnType<typeof window.setTimeout> | null = null;
+    let refreshTimeoutId: number | null = null;
 
     async function fetchInitialStatus() {
       try {
