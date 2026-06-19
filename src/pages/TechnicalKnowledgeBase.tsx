@@ -36,7 +36,9 @@ const TechnicalKnowledgeBase = () => {
       const { data, error } = await supabase.from('techniques').select('*').order('name');
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const { data: machines = [] } = useQuery({
@@ -45,7 +47,9 @@ const TechnicalKnowledgeBase = () => {
       const { data, error } = await supabase.from('machines').select('id, name, code').eq('is_active', true).order('name');
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   // Deep linking: read sheet from URL
