@@ -101,7 +101,7 @@ export function ThemeToggle() {
               className={`
                 absolute h-4 w-4
                 ${isDark
-                  ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
+                  ? 'rotate-90 scale-0 opacity-0 transition-all duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)]'
                   : 'scale-100 opacity-100 animate-[spin_8s_linear_infinite]'
                 }
               `}
