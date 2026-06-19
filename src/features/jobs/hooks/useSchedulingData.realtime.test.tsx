@@ -102,4 +102,24 @@ describe('useSchedulingData — Realtime invalidation (múltiplas tabelas)', () 
     await waitFor(() => expect(holder.machinesGetAll).toHaveBeenCalledTimes(2));
     expect(holder.jobsGetAll).toHaveBeenCalledTimes(1);
   });
+
+  it('chama removeChannel no unmount e ignora eventos posteriores', async () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = makeWrapper(client);
+
+    const { unmount } = renderHook(() => useSchedulingData(), { wrapper });
+    await waitFor(() => expect(holder.jobsGetAll).toHaveBeenCalledTimes(1));
+    expect(holder.realtime!.removeChannel).not.toHaveBeenCalled();
+
+    unmount();
+
+    expect(holder.realtime!.removeChannel).toHaveBeenCalledTimes(1);
+
+    // Após o unmount o QueryClient é descartado; novos eventos não devem
+    // disparar refetch no fetcher original.
+    const jobsCallsBefore = holder.jobsGetAll.mock.calls.length;
+    act(() => holder.realtime!.emitFor('jobs', { eventType: 'INSERT' }));
+    await new Promise(r => setTimeout(r, 50));
+    expect(holder.jobsGetAll.mock.calls.length).toBe(jobsCallsBefore);
+  });
 });
