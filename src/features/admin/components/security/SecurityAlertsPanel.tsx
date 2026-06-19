@@ -38,7 +38,7 @@ export function SecurityAlertsPanel() {
   const { data: alerts, isLoading, refetch } = useQuery({
     queryKey: ['security-alerts', user?.id],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user?.id) return [];
 
       const { data, error } = await supabase
         .from('new_device_alerts')
@@ -53,7 +53,7 @@ export function SecurityAlertsPanel() {
 
       return data as NewDeviceAlert[];
     },
-    enabled: !!user,
+    enabled: !!user?.id,
   });
 
   const acknowledgeAlert = async (alertId: string) => {
