@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRealtimeMock } from './realtimeMock';
 
 type RealtimeChannel = {
-  on: (event: string, filter: { table?: string }, cb: (p: unknown) => void) => RealtimeChannel;
+  on: (event: string, filter: { event?: string; schema?: string; table?: string }, cb: (p: unknown) => void) => RealtimeChannel;
   subscribe: () => RealtimeChannel;
 };
 
