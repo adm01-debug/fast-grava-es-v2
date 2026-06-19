@@ -15,6 +15,10 @@ import {
 const AUTH_BOOT_TIMEOUT_MS = 8000;
 const USER_DATA_TIMEOUT_MS = 6000;
 
+function isAppRole(value: unknown): value is AppRole {
+  return value === 'coordinator' || value === 'operator' || value === 'manager' || value === 'admin';
+}
+
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeoutId = window.setTimeout(() => {
@@ -50,21 +54,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .select('*')
             .eq('id', userId)
             .maybeSingle(),
-          supabase.rpc('get_user_role', { _user_id: userId }),
+          supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', userId)
+            .eq('is_active', true)
+            .limit(1),
         ]),
         USER_DATA_TIMEOUT_MS,
         'Carregamento dos dados do usuário'
       );
 
       const profileData = profileResult.status === 'fulfilled' ? profileResult.value?.data : null;
-      const roleData = roleResult.status === 'fulfilled' ? roleResult.value?.data : null;
+      const roleData = roleResult.status === 'fulfilled' ? roleResult.value?.data?.[0]?.role : null;
 
       if (profileData) {
         setProfile(profileData as Profile);
       }
 
-      if (roleData) {
-        setRole(roleData as AppRole);
+      if (isAppRole(roleData)) {
+        setRole(roleData);
       } else {
         // Explicitly set to null if no role is returned to avoid "stuck" states
         setRole(null);
@@ -227,7 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       const result = await AuthService.recordLoginAttempt(email, false, ipAddress);
 
       if (result.locked) {
@@ -244,7 +253,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       }
 
-      return { error };
+      return { error: error instanceof Error ? error : new Error('Falha inesperada ao autenticar') };
     }
   };
 
