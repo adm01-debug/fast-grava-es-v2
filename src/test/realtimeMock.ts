@@ -1,16 +1,23 @@
 import { vi } from 'vitest';
 
+export type RealtimeMock = {
+  supabase: {
+    channel: () => unknown;
+    removeChannel: ReturnType<typeof vi.fn>;
+  };
+  removeChannel: ReturnType<typeof vi.fn>;
+  emit: (payload?: unknown) => void;
+  readonly hasHandler: boolean;
+};
+
 /**
- * Creates a mock of the Supabase client's Realtime API that captures the
- * `postgres_changes` handler so tests can simulate incoming events.
+ * Mock of the Supabase Realtime API. Captures the `postgres_changes` callback
+ * so tests can simulate incoming events via `emit()`.
  *
- * Usage:
- *   const realtime = createRealtimeMock();
- *   vi.mock('@/integrations/supabase/client', () => ({ supabase: realtime.supabase }));
- *   // ...later
- *   realtime.emit({ eventType: 'INSERT' });
+ * Must be created inside `vi.hoisted(() => ({ realtime: createRealtimeMock() }))`
+ * because `vi.mock(...)` is hoisted above top-level code.
  */
-export function createRealtimeMock() {
+export function createRealtimeMock(): RealtimeMock {
   const state: { handler: ((payload: unknown) => void) | null } = { handler: null };
   const removeChannel = vi.fn();
 

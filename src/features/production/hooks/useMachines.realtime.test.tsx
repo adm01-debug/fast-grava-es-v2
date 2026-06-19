@@ -4,8 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRealtimeMock } from '@/test/realtimeMock';
 
-const getActiveMock = vi.fn();
-const realtime = createRealtimeMock();
+const { getActiveMock, realtime } = vi.hoisted(async () => {
+  const { createRealtimeMock: make } = await import('@/test/realtimeMock');
+  return { getActiveMock: vi.fn(), realtime: make() };
+}) as unknown as { getActiveMock: ReturnType<typeof vi.fn>; realtime: ReturnType<typeof createRealtimeMock> };
 
 vi.mock('../index', () => ({
   machinesService: { getActive: (...args: unknown[]) => getActiveMock(...args) },
