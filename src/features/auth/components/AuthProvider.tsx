@@ -260,7 +260,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRole(null);
   };
 
-  const value: AuthContextType = {
+  // Memoizado: evita re-render em cascata de todos os consumidores quando
+  // o AuthProvider re-renderiza sem mudança real de estado relevante.
+  const value = useMemo<AuthContextType>(() => ({
     user,
     session,
     profile,
@@ -273,7 +275,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isOperator: role === 'operator',
     isManager: role === 'manager',
     isAdmin: role === 'admin',
-  };
+  }), [user, session, profile, role, isLoading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
