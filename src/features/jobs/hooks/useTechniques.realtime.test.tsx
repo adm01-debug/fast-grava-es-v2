@@ -4,11 +4,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRealtimeMock } from '@/test/realtimeMock';
 
-const { getAllMock, realtime } = vi.hoisted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createRealtimeMock: make } = require('@/test/realtimeMock') as typeof import('@/test/realtimeMock');
-  return { getAllMock: vi.fn(), realtime: make() };
-});
+const { getAllMock, realtime } = vi.hoisted(() => ({
+  getAllMock: vi.fn(),
+  realtime: (() => {
+    // Lazy require inside hoisted to keep evaluation order safe.
+    const mod = require('@/test/realtimeMock') as typeof import('@/test/realtimeMock');
+    return mod.createRealtimeMock();
+  })(),
+}));
+
+// Re-export type to keep tree-shake happy for the static import above.
+void createRealtimeMock;
 
 vi.mock('@/features/jobs', () => ({
   techniquesService: { getAll: (...args: unknown[]) => getAllMock(...args) },
