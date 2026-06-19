@@ -57,4 +57,22 @@ describe('useJobs — Realtime invalidation', () => {
 
     await waitFor(() => expect(holder.getAllMock).toHaveBeenCalledTimes(2));
   });
+
+  it('chama removeChannel no unmount e ignora eventos posteriores', async () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = makeWrapper(client);
+
+    const { unmount } = renderHook(() => useJobs(), { wrapper });
+    await waitFor(() => expect(holder.getAllMock).toHaveBeenCalledTimes(1));
+    expect(holder.realtime!.removeChannel).not.toHaveBeenCalled();
+
+    unmount();
+
+    expect(holder.realtime!.removeChannel).toHaveBeenCalledTimes(1);
+
+    const callsBefore = holder.getAllMock.mock.calls.length;
+    act(() => holder.realtime!.emit({ eventType: 'INSERT' }));
+    await new Promise(r => setTimeout(r, 50));
+    expect(holder.getAllMock.mock.calls.length).toBe(callsBefore);
+  });
 });
