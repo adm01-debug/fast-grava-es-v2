@@ -8,6 +8,7 @@ import { BookOpen, Plus, Lightbulb } from 'lucide-react';
 import { useTechnicalSheets, useTechnicalSheetMutations, TechnicalSheet } from '@/hooks/useTechnicalSheets';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTechniques } from '@/features/jobs';
 import { TechnicalSheetViewer } from '@/components/knowledge/TechnicalSheetViewer';
 import { TechnicalSheetEditor } from '@/components/knowledge/TechnicalSheetEditor';
 import { KnowledgeBaseStats } from '@/components/knowledge/KnowledgeBaseStats';
@@ -30,16 +31,7 @@ const TechnicalKnowledgeBase = () => {
 
   const { sheets, isLoadingSheets, categories, materials } = useTechnicalSheets();
 
-  const { data: techniques = [] } = useQuery({
-    queryKey: ['techniques'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('techniques').select('*').order('name');
-      if (error) throw error;
-      return data;
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+  const { data: techniques = [] } = useTechniques();
 
   const { data: machines = [] } = useQuery({
     queryKey: ['machines-active'],

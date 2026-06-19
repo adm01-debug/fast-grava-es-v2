@@ -14,6 +14,7 @@ import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
 import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTechniques } from '@/features/jobs';
 import {
   XAxis,
   YAxis,
@@ -89,15 +90,7 @@ export default function ExecutiveDashboard() {
     gcTime: 10 * 60 * 1000,
   });
 
-  const { data: techniques } = useQuery({
-    queryKey: ['techniques-list'],
-    queryFn: async () => {
-      const { data } = await supabase.from('techniques').select('id, name, short_name');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+  const { data: techniques } = useTechniques();
 
   const { data: kpis, isLoading, error } = useExecutiveDashboard(
     selectedRange,
