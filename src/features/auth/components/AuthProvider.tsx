@@ -195,17 +195,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AuthService.recordLoginAttempt(email, true, ipAddress);
 
       if (data.user) {
-        // Set loading true while we fetch profile/role to prevent ProtectedRoute from redirecting too early
-        setIsLoading(true);
-        
-        setSession(data.session);
-        setUser(data.user);
-        
-        // Load user data
-        await fetchUserData(data.user.id);
-        setIsLoading(false);
-        
-        // Check device in background
+        // NÃO chamamos setSession/setUser/fetchUserData aqui — onAuthStateChange
+        // dispara SIGNED_IN logo após signIn e é a única fonte de verdade.
+        // Isso evita double-fetch de profile/role.
+
+        // Verificação de dispositivo em background (não bloqueia o login)
         (async () => {
           try {
             const { data: profileData } = await supabase
