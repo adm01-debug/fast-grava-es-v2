@@ -39,7 +39,10 @@ describe('useJobs — Realtime invalidation', () => {
   beforeEach(() => {
     holder.getAllMock.mockReset();
     holder.getAllMock.mockResolvedValue([{ id: 'j1', status: 'queue' }]);
+    holder.realtime!.removeChannel.mockClear();
   });
+
+
 
   it('refetches when a Realtime postgres_changes event arrives', async () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
