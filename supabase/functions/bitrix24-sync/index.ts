@@ -26,8 +26,11 @@ const BITRIX24_REFRESH_TOKEN_ENV = Deno.env.get('BITRIX24_REFRESH_TOKEN');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-// Base URL for Bitrix24 REST API
-const BITRIX24_DOMAIN = 'https://promobrindes.bitrix24.com.br';
+// Base URL for Bitrix24 REST API (configurado via secret BITRIX24_DOMAIN — sem tenant hardcoded)
+const BITRIX24_DOMAIN = Deno.env.get('BITRIX24_DOMAIN');
+if (!BITRIX24_DOMAIN) {
+  console.error('[bitrix24-sync] BITRIX24_DOMAIN secret is not configured — OAuth endpoints will fail until set');
+}
 
 // Token refresh buffer (refresh 5 minutes before expiry)
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
