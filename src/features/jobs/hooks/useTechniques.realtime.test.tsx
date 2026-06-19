@@ -2,29 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import type { RealtimeMock } from '@/test/realtimeMock';
 
-const getAllMock = vi.fn();
-let capturedHandler: ((payload: unknown) => void) | null = null;
+const holder = vi.hoisted(() => ({
+  getAllMock: vi.fn(),
+  realtime: null as RealtimeMock | null,
+}));
 
 vi.mock('@/features/jobs', () => ({
-  techniquesService: { getAll: (...args: unknown[]) => getAllMock(...args) },
+  techniquesService: { getAll: (...args: unknown[]) => holder.getAllMock(...args) },
 }));
 
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    channel: () => {
-      const ch: any = {
-        on: (_event: string, _filter: unknown, cb: (payload: unknown) => void) => {
-          capturedHandler = cb;
-          return ch;
-        },
-        subscribe: () => ch,
-      };
-      return ch;
-    },
-    removeChannel: vi.fn(),
-  },
-}));
+vi.mock('@/integrations/supabase/client', async () => {
+  const { createRealtimeMock } = await import('@/test/realtimeMock');
+  holder.realtime = createRealtimeMock();
+  return { supabase: holder.realtime.supabase };
+});
 
 import { useTechniques } from './useTechniques';
 
@@ -35,9 +28,8 @@ function makeWrapper(client: QueryClient) {
 
 describe('useTechniques — Realtime invalidation', () => {
   beforeEach(() => {
-    getAllMock.mockReset();
-    getAllMock.mockResolvedValue([{ id: '1', name: 'Bordado' }]);
-    capturedHandler = null;
+    holder.getAllMock.mockReset();
+    holder.getAllMock.mockResolvedValue([{ id: '1', name: 'Bordado' }]);
   });
 
   it('refetches when a Realtime postgres_changes event arrives', async () => {
@@ -46,16 +38,11 @@ describe('useTechniques — Realtime invalidation', () => {
 
     const { result } = renderHook(() => useTechniques(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(getAllMock).toHaveBeenCalledTimes(1);
+    expect(holder.getAllMock).toHaveBeenCalledTimes(1);
 
-    getAllMock.mockResolvedValue([
-      { id: '1', name: 'Bordado' },
-      { id: '2', name: 'Sublimação' },
-    ]);
+    expect(holder.realtime!.hasHandler).toBe(true);
+    act(() => holder.realtime!.emit({ eventType: 'INSERT' }));
 
-    expect(capturedHandler).toBeTypeOf('function');
-    act(() => capturedHandler!({ eventType: 'INSERT' }));
-
-    await waitFor(() => expect(getAllMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(holder.getAllMock).toHaveBeenCalledTimes(2));
   });
 });
