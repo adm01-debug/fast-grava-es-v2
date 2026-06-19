@@ -214,6 +214,84 @@ export function useSchedulingData() {
     return result;
   }, [jobsQuery.data]);
 
+  // OEE History (14 dias) — extraído do return para respeitar Rules of Hooks
+  const oeeTrend = useMemo(() => {
+    const jobs = jobsQuery.data || [];
+    const trend: Array<{ date: string; oee: number }> = [];
+    const now = new Date();
+    const days = 14;
+
+    const jobsByDateMap = new Map<string, DbJob[]>();
+    jobs.forEach(j => {
+      if (j.status === 'finished' && j.actual_end_time) {
+        const d = j.actual_end_time.substring(0, 10);
+        const list = jobsByDateMap.get(d) || [];
+        list.push(j);
+        jobsByDateMap.set(d, list);
+      }
+    });
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(now.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+
+      const dayJobs = jobsByDateMap.get(dateStr) || [];
+
+      if (dayJobs.length === 0) {
+        trend.push({ date: dateStr, oee: 0 });
+        continue;
+      }
+
+      let totalActual = 0, totalEstimated = 0;
+      for (let j = 0; j < dayJobs.length; j++) {
+        const job = dayJobs[j];
+        if (job.actual_start_time && job.actual_end_time) {
+          totalActual += Math.max(0, differenceInMinutes(new Date(job.actual_end_time), new Date(job.actual_start_time)));
+        }
+        totalEstimated += Number(job.estimated_duration) || 60;
+      }
+
+      const oee = totalActual > 0 ? Math.min(100, (totalEstimated / totalActual) * 100) : 100;
+      trend.push({ date: dateStr, oee: Math.round(oee) });
+    }
+    return trend;
+  }, [jobsQuery.data]);
+
+  // Capacity Trend (7 dias) — extraído do return para respeitar Rules of Hooks
+  const capacityTrend = useMemo(() => {
+    const jobs = jobsQuery.data || [];
+    const trend: Array<{ date: string; load: number; jobCount: number; risk: 'high' | 'medium' | 'low' }> = [];
+    const days = 7;
+
+    const jobsByScheduledDateMap = new Map<string, DbJob[]>();
+    jobs.forEach(j => {
+      if (j.scheduled_date) {
+        const d = j.scheduled_date;
+        const existing = jobsByScheduledDateMap.get(d) || [];
+        existing.push(j);
+        jobsByScheduledDateMap.set(d, existing);
+      }
+    });
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+
+      const dayJobs = jobsByScheduledDateMap.get(dateStr) || [];
+      const load = dayJobs.reduce((sum, j) => sum + (j.estimated_duration || 0), 0);
+
+      trend.push({
+        date: dateStr,
+        load,
+        jobCount: dayJobs.length,
+        risk: load > 480 ? 'high' : load > 300 ? 'medium' : 'low',
+      });
+    }
+    return trend;
+  }, [jobsQuery.data]);
+
   return {
     // Raw data
     jobs: jobsQuery.data || [],
@@ -250,82 +328,9 @@ export function useSchedulingData() {
       machinesQuery.refetch();
     },
 
-    // OEE History and Capacity Monitoring - Memoized results
-    oeeTrend: useMemo(() => {
-      const jobs = jobsQuery.data || [];
-      const trend = [];
-      const now = new Date();
-      const days = 14;
-
-      const jobsByDateMap = new Map<string, DbJob[]>();
-      jobs.forEach(j => {
-        if (j.status === 'finished' && j.actual_end_time) {
-          const d = j.actual_end_time.substring(0, 10);
-          const list = jobsByDateMap.get(d) || [];
-          list.push(j);
-          jobsByDateMap.set(d, list);
-        }
-      });
-
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(now);
-        date.setDate(now.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-
-        const dayJobs = jobsByDateMap.get(dateStr) || [];
-
-        if (dayJobs.length === 0) {
-          trend.push({ date: dateStr, oee: 0 });
-          continue;
-        }
-
-        let totalActual = 0, totalEstimated = 0;
-        for (let j = 0; j < dayJobs.length; j++) {
-          const job = dayJobs[j];
-          if (job.actual_start_time && job.actual_end_time) {
-            totalActual += Math.max(0, differenceInMinutes(new Date(job.actual_end_time), new Date(job.actual_start_time)));
-          }
-          totalEstimated += Number(job.estimated_duration) || 60;
-        }
-
-        const oee = totalActual > 0 ? Math.min(100, (totalEstimated / totalActual) * 100) : 100;
-        trend.push({ date: dateStr, oee: Math.round(oee) });
-      }
-      return trend;
-    }, [jobsQuery.data]),
-
-    capacityTrend: useMemo(() => {
-      const jobs = jobsQuery.data || [];
-      const trend = [];
-      const days = 7;
-
-      const jobsByScheduledDateMap = new Map<string, DbJob[]>();
-      jobs.forEach(j => {
-        if (j.scheduled_date) {
-          const d = j.scheduled_date;
-          const existing = jobsByScheduledDateMap.get(d) || [];
-          existing.push(j);
-          jobsByScheduledDateMap.set(d, existing);
-        }
-      });
-      
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-
-        const dayJobs = jobsByScheduledDateMap.get(dateStr) || [];
-        const load = dayJobs.reduce((sum, j) => sum + (j.estimated_duration || 0), 0);
-
-        trend.push({
-          date: dateStr,
-          load,
-          jobCount: dayJobs.length,
-          risk: load > 480 ? 'high' : load > 300 ? 'medium' : 'low'
-        });
-      }
-      return trend;
-    }, [jobsQuery.data]),
+    // OEE History and Capacity Monitoring (memoizados acima)
+    oeeTrend,
+    capacityTrend,
   };
 }
 

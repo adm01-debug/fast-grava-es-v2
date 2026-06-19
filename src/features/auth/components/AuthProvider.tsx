@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode, useCallback, useRef } from 'react';
+import { useEffect, useState, ReactNode, useCallback, useRef, useMemo } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
@@ -141,71 +141,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user, updateActivity, isSessionActive, refreshSession]);
 
+  // Auth boot: onAuthStateChange é a ÚNICA fonte de verdade (dispara INITIAL_SESSION no mount).
+  // Não usar async/await dentro do callback — bloqueia a fila interna de eventos do Supabase.
   useEffect(() => {
-    let isInitialMount = true;
+    let cancelled = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        // Skip INITIAL_SESSION if we already handled it via getSession to avoid race conditions
-        if (event === 'INITIAL_SESSION' && !isInitialMount) return;
-        
-        logger.debug('Auth state change event:', { event, hasSession: !!session }, 'AuthProvider');
-        
-        setSession(session);
-        setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (cancelled) return;
 
-        if (session?.user) {
-          setIsLoading(true);
-          try {
-            await fetchUserData(session.user.id);
-          } finally {
-            setIsLoading(false);
-          }
-        } else {
-          setProfile(null);
-          setRole(null);
-          setIsLoading(false);
-        }
-        
-        isInitialMount = false;
+      logger.debug('Auth state change event:', { event, hasSession: !!nextSession }, 'AuthProvider');
+
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (nextSession?.user) {
+        setIsLoading(true);
+        // Fire-and-forget: nunca await dentro de onAuthStateChange
+        fetchUserData(nextSession.user.id).finally(() => {
+          if (!cancelled) setIsLoading(false);
+        });
+      } else {
+        setProfile(null);
+        setRole(null);
+        setIsLoading(false);
       }
-    );
+    });
 
-    // Initial boot
-    const initAuth = async () => {
-      try {
-        const session = await withTimeout(
-          AuthService.getSession(), 
-          AUTH_BOOT_TIMEOUT_MS, 
-          'Inicialização da sessão'
-        );
-        
-        if (isInitialMount) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          if (session?.user) {
-            await fetchUserData(session.user.id);
-          }
-        }
-      } catch (error) {
-        logger.warn('Não foi possível inicializar a sessão no boot', error, 'AuthProvider');
-        if (isInitialMount) {
-          setSession(null);
-          setUser(null);
-          setProfile(null);
-          setRole(null);
-        }
-      } finally {
-        if (isInitialMount) {
-          setIsLoading(false);
-          isInitialMount = false;
-        }
-      }
-    };
-
-    initAuth();
+    // Safety net: se onAuthStateChange demorar mais que o timeout, libera o loading.
+    const bootTimeoutId = window.setTimeout(() => {
+      if (!cancelled) setIsLoading(false);
+    }, AUTH_BOOT_TIMEOUT_MS);
 
     return () => {
+      cancelled = true;
+      window.clearTimeout(bootTimeoutId);
       subscription.unsubscribe();
     };
   }, []);
@@ -226,17 +195,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AuthService.recordLoginAttempt(email, true, ipAddress);
 
       if (data.user) {
-        // Set loading true while we fetch profile/role to prevent ProtectedRoute from redirecting too early
-        setIsLoading(true);
-        
-        setSession(data.session);
-        setUser(data.user);
-        
-        // Load user data
-        await fetchUserData(data.user.id);
-        setIsLoading(false);
-        
-        // Check device in background
+        // NÃO chamamos setSession/setUser/fetchUserData aqui — onAuthStateChange
+        // dispara SIGNED_IN logo após signIn e é a única fonte de verdade.
+        // Isso evita double-fetch de profile/role.
+
+        // Verificação de dispositivo em background (não bloqueia o login)
         (async () => {
           try {
             const { data: profileData } = await supabase
@@ -297,7 +260,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRole(null);
   };
 
-  const value: AuthContextType = {
+  // Memoizado: evita re-render em cascata de todos os consumidores quando
+  // o AuthProvider re-renderiza sem mudança real de estado relevante.
+  const value = useMemo<AuthContextType>(() => ({
     user,
     session,
     profile,
@@ -310,7 +275,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isOperator: role === 'operator',
     isManager: role === 'manager',
     isAdmin: role === 'admin',
-  };
+  }), [user, session, profile, role, isLoading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
