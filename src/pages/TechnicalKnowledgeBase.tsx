@@ -31,16 +31,7 @@ const TechnicalKnowledgeBase = () => {
 
   const { sheets, isLoadingSheets, categories, materials } = useTechnicalSheets();
 
-  const { data: techniques = [] } = useQuery({
-    queryKey: ['techniques'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('techniques').select('*').order('name');
-      if (error) throw error;
-      return data;
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+  const { data: techniques = [] } = useTechniques();
 
   const { data: machines = [] } = useQuery({
     queryKey: ['machines-active'],
