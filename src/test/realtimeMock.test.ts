@@ -1,14 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRealtimeMock } from './realtimeMock';
 
+type RealtimeChannel = {
+  on: (event: string, filter: { table?: string }, cb: (p: unknown) => void) => RealtimeChannel;
+  subscribe: () => RealtimeChannel;
+};
+
 describe('createRealtimeMock — contrato de tabelas não assinadas', () => {
   it('emitFor lança quando a tabela não tem handler registrado', () => {
     const rt = createRealtimeMock();
 
-    // Registra handler apenas para "jobs"
-    rt.supabase
-      .channel()
-      // @ts-expect-error tipo mínimo do mock
+    (rt.supabase.channel() as RealtimeChannel)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {})
       .subscribe();
 
@@ -21,9 +23,7 @@ describe('createRealtimeMock — contrato de tabelas não assinadas', () => {
     const rt = createRealtimeMock();
     const jobsCb = vi.fn();
 
-    rt.supabase
-      .channel()
-      // @ts-expect-error tipo mínimo do mock
+    (rt.supabase.channel() as RealtimeChannel)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, jobsCb)
       .subscribe();
 
