@@ -33,14 +33,7 @@ export default function ChecklistTemplatesManager() {
     }
   });
 
-  const { data: techniques } = useQuery({
-    queryKey: ['techniques'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('techniques').select('id, name').order('name');
-      if (error) throw error;
-      return data;
-    }
-  });
+  const { data: techniques } = useTechniques();
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['checklist-templates'] });
