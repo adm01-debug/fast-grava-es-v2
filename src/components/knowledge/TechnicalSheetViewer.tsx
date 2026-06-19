@@ -1,7 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -55,14 +54,6 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
   const { toggleFavorite } = useTechnicalSheetMutations();
   const [checklistMode, setChecklistMode] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    if (sheetId) {
-      supabase.rpc('increment_sheet_view_count', { sheet_id: sheetId })
-        .then(({ error }) => {
-        });
-    }
-  }, [sheetId]);
   const [showQR, setShowQR] = useState(false);
   const [productionQuantity, setProductionQuantity] = useState(100);
 
