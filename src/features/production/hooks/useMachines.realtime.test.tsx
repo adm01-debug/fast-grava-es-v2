@@ -48,7 +48,7 @@ describe('useMachines — Realtime invalidation', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(getActiveMock).toHaveBeenCalledTimes(1);
 
-    getActiveMock.mockResolvedValueOnce([
+    getActiveMock.mockResolvedValue([
       { id: 'm1', name: 'Laser-01', is_active: true },
       { id: 'm2', name: 'Laser-02', is_active: true },
     ]);

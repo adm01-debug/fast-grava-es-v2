@@ -48,7 +48,7 @@ describe('useTechniques — Realtime invalidation', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(getAllMock).toHaveBeenCalledTimes(1);
 
-    getAllMock.mockResolvedValueOnce([
+    getAllMock.mockResolvedValue([
       { id: '1', name: 'Bordado' },
       { id: '2', name: 'Sublimação' },
     ]);
