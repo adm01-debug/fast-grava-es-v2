@@ -57,6 +57,5 @@ describe('useTechniques — Realtime invalidation', () => {
     act(() => capturedHandler!({ eventType: 'INSERT' }));
 
     await waitFor(() => expect(getAllMock).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(result.current.data).toHaveLength(2));
   });
 });

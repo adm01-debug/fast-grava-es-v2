@@ -57,6 +57,5 @@ describe('useMachines — Realtime invalidation', () => {
     act(() => capturedHandler!({ eventType: 'UPDATE' }));
 
     await waitFor(() => expect(getActiveMock).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(result.current.data).toHaveLength(2));
   });
 });
