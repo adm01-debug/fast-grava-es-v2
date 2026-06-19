@@ -14,6 +14,7 @@ import { exportExecutiveDashboardPDF } from '@/lib/pdfExport';
 import { exportExecutiveDashboardExcel } from '@/lib/excelExport';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTechniques } from '@/features/jobs';
 import {
   XAxis,
   YAxis,
