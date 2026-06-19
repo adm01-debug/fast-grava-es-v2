@@ -8,6 +8,7 @@ import { BookOpen, Plus, Lightbulb } from 'lucide-react';
 import { useTechnicalSheets, useTechnicalSheetMutations, TechnicalSheet } from '@/hooks/useTechnicalSheets';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTechniques } from '@/features/jobs';
 import { TechnicalSheetViewer } from '@/components/knowledge/TechnicalSheetViewer';
 import { TechnicalSheetEditor } from '@/components/knowledge/TechnicalSheetEditor';
 import { KnowledgeBaseStats } from '@/components/knowledge/KnowledgeBaseStats';
