@@ -2,29 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { createRealtimeMock } from '@/test/realtimeMock';
 
 const getActiveMock = vi.fn();
-let capturedHandler: ((payload: unknown) => void) | null = null;
+const realtime = createRealtimeMock();
 
 vi.mock('../index', () => ({
   machinesService: { getActive: (...args: unknown[]) => getActiveMock(...args) },
 }));
 
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    channel: () => {
-      const ch: any = {
-        on: (_event: string, _filter: unknown, cb: (payload: unknown) => void) => {
-          capturedHandler = cb;
-          return ch;
-        },
-        subscribe: () => ch,
-      };
-      return ch;
-    },
-    removeChannel: vi.fn(),
-  },
-}));
+vi.mock('@/integrations/supabase/client', () => ({ supabase: realtime.supabase }));
 
 import { useMachines } from './useMachines';
 
@@ -37,7 +24,6 @@ describe('useMachines — Realtime invalidation', () => {
   beforeEach(() => {
     getActiveMock.mockReset();
     getActiveMock.mockResolvedValue([{ id: 'm1', name: 'Laser-01', is_active: true }]);
-    capturedHandler = null;
   });
 
   it('refetches when a Realtime postgres_changes event arrives', async () => {
@@ -48,13 +34,8 @@ describe('useMachines — Realtime invalidation', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(getActiveMock).toHaveBeenCalledTimes(1);
 
-    getActiveMock.mockResolvedValue([
-      { id: 'm1', name: 'Laser-01', is_active: true },
-      { id: 'm2', name: 'Laser-02', is_active: true },
-    ]);
-
-    expect(capturedHandler).toBeTypeOf('function');
-    act(() => capturedHandler!({ eventType: 'UPDATE' }));
+    expect(realtime.hasHandler).toBe(true);
+    act(() => realtime.emit({ eventType: 'UPDATE' }));
 
     await waitFor(() => expect(getActiveMock).toHaveBeenCalledTimes(2));
   });
