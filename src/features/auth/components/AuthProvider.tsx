@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode, useCallback, useRef } from 'react';
+import { useEffect, useState, ReactNode, useCallback, useRef, useMemo } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
