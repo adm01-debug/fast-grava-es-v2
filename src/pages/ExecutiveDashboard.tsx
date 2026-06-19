@@ -90,15 +90,7 @@ export default function ExecutiveDashboard() {
     gcTime: 10 * 60 * 1000,
   });
 
-  const { data: techniques } = useQuery({
-    queryKey: ['techniques-list'],
-    queryFn: async () => {
-      const { data } = await supabase.from('techniques').select('id, name, short_name');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+  const { data: techniques } = useTechniques();
 
   const { data: kpis, isLoading, error } = useExecutiveDashboard(
     selectedRange,
