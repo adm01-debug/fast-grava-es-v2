@@ -141,71 +141,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user, updateActivity, isSessionActive, refreshSession]);
 
+  // Auth boot: onAuthStateChange é a ÚNICA fonte de verdade (dispara INITIAL_SESSION no mount).
+  // Não usar async/await dentro do callback — bloqueia a fila interna de eventos do Supabase.
   useEffect(() => {
-    let isInitialMount = true;
+    let cancelled = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        // Skip INITIAL_SESSION if we already handled it via getSession to avoid race conditions
-        if (event === 'INITIAL_SESSION' && !isInitialMount) return;
-        
-        logger.debug('Auth state change event:', { event, hasSession: !!session }, 'AuthProvider');
-        
-        setSession(session);
-        setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (cancelled) return;
 
-        if (session?.user) {
-          setIsLoading(true);
-          try {
-            await fetchUserData(session.user.id);
-          } finally {
-            setIsLoading(false);
-          }
-        } else {
-          setProfile(null);
-          setRole(null);
-          setIsLoading(false);
-        }
-        
-        isInitialMount = false;
+      logger.debug('Auth state change event:', { event, hasSession: !!nextSession }, 'AuthProvider');
+
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (nextSession?.user) {
+        setIsLoading(true);
+        // Fire-and-forget: nunca await dentro de onAuthStateChange
+        fetchUserData(nextSession.user.id).finally(() => {
+          if (!cancelled) setIsLoading(false);
+        });
+      } else {
+        setProfile(null);
+        setRole(null);
+        setIsLoading(false);
       }
-    );
+    });
 
-    // Initial boot
-    const initAuth = async () => {
-      try {
-        const session = await withTimeout(
-          AuthService.getSession(), 
-          AUTH_BOOT_TIMEOUT_MS, 
-          'Inicialização da sessão'
-        );
-        
-        if (isInitialMount) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          if (session?.user) {
-            await fetchUserData(session.user.id);
-          }
-        }
-      } catch (error) {
-        logger.warn('Não foi possível inicializar a sessão no boot', error, 'AuthProvider');
-        if (isInitialMount) {
-          setSession(null);
-          setUser(null);
-          setProfile(null);
-          setRole(null);
-        }
-      } finally {
-        if (isInitialMount) {
-          setIsLoading(false);
-          isInitialMount = false;
-        }
-      }
-    };
-
-    initAuth();
+    // Safety net: se onAuthStateChange demorar mais que o timeout, libera o loading.
+    const bootTimeoutId = window.setTimeout(() => {
+      if (!cancelled) setIsLoading(false);
+    }, AUTH_BOOT_TIMEOUT_MS);
 
     return () => {
+      cancelled = true;
+      window.clearTimeout(bootTimeoutId);
       subscription.unsubscribe();
     };
   }, []);
