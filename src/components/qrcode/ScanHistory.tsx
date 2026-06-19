@@ -61,7 +61,9 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
 
   // Real-time subscription
   useEffect(() => {
-    const channel = supabase.channel('scan-history-realtime').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'qr_scan_history' }, async (payload: { new: Record<string, unknown> }) => {
+    let highlightTimeoutId: number | null = null;
+
+    const channel = supabase.channel(`scan-history-realtime-${jobId ?? 'all'}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'qr_scan_history' }, async (payload: { new: Record<string, unknown> }) => {
       const newScan = payload.new as { id: string; job_id: string; operator_id: string; action: string };
       if (jobId && newScan.job_id !== jobId) return;
       if (soundEnabled) playNotificationSound(newScan.action);
@@ -69,10 +71,13 @@ export const ScanHistory = ({ jobId, limit = 200 }: ScanHistoryProps) => {
       const actionLabel = actionConfig[newScan.action]?.label || newScan.action;
       toast({ title: "Novo scan registrado", description: `${profile?.full_name || "Operador"} ${actionLabel.toLowerCase()} uma produção`, duration: 4000 });
       setNewScanIds(prev => new Set(prev).add(newScan.id));
-      setTimeout(() => { setNewScanIds(prev => { const u = new Set(prev); u.delete(newScan.id); return u; }); }, 3000);
+      highlightTimeoutId = window.setTimeout(() => { setNewScanIds(prev => { const u = new Set(prev); u.delete(newScan.id); return u; }); }, 3000);
       queryClient.invalidateQueries({ queryKey: ['scan-history'] });
     }).subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      if (highlightTimeoutId) window.clearTimeout(highlightTimeoutId);
+      supabase.removeChannel(channel);
+    };
   }, [jobId, toast, queryClient, soundEnabled]);
 
   const operators = useMemo(() => {

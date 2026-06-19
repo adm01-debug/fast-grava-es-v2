@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, type ComponentType } from "react";
 import { ProviderComposer } from "./ProviderComposer";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter } from "react-router-dom";
@@ -35,44 +35,46 @@ import { createQueryClient } from "@/lib/queryConfig";
 
 const queryClient = createQueryClient();
 
+function ProductDesignFeatureProvider({ children }: { children: ReactNode }) {
+  return (
+    <ProductDesignProvider
+      enableOnboarding
+      enableCommandPalette
+      enableKeyboardShortcuts
+      enableToastWithUndo
+    >
+      {children}
+    </ProductDesignProvider>
+  );
+}
+
+const APP_PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
+  ThemeContextProvider,
+  TooltipProvider,
+  UserPreferencesProvider,
+  FeatureFlagsProvider,
+  BreadcrumbProvider,
+  SearchProvider,
+  SidebarProvider,
+  ConfirmationProvider,
+  NotificationsProvider,
+  AuthProvider,
+  ReauthProvider,
+  PermissionsProvider,
+  OfflineSyncProvider,
+  NetworkStatusProvider,
+  WebSocketProvider,
+  EfficiencyNotificationProvider,
+  RealtimeNotificationsProvider,
+  ProductDesignFeatureProvider,
+  CelebrationProvider,
+  FeedbackProvider,
+];
+
 function ComposedProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-      <ProviderComposer
-        providers={[
-          ThemeContextProvider,
-          TooltipProvider,
-          UserPreferencesProvider,
-          FeatureFlagsProvider,
-          BreadcrumbProvider,
-          SearchProvider,
-          SidebarProvider,
-          ConfirmationProvider,
-          NotificationsProvider,
-          AuthProvider,
-          ReauthProvider,
-          PermissionsProvider,
-          OfflineSyncProvider,
-          NetworkStatusProvider,
-          // OfflineProvider removed as it was redundant with OfflineSyncProvider
-          WebSocketProvider,
-          EfficiencyNotificationProvider,
-          RealtimeNotificationsProvider,
-          // Special case for ProductDesignProvider as it has props
-          ({ children }) => (
-            <ProductDesignProvider
-              enableOnboarding
-              enableCommandPalette
-              enableKeyboardShortcuts
-              enableToastWithUndo
-            >
-              {children}
-            </ProductDesignProvider>
-          ),
-          CelebrationProvider,
-          FeedbackProvider,
-        ]}
-      >
+      <ProviderComposer providers={APP_PROVIDERS}>
         {children}
       </ProviderComposer>
     </ThemeProvider>

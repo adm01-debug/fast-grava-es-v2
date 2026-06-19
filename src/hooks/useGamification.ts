@@ -157,13 +157,15 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
   // Calculate user balance
   const balanceQuery = useQuery({
     queryKey: ['user-points-balance', user?.id],
-    enabled: !!user,
+    enabled: !!user?.id,
     queryFn: async () => {
+      if (!user?.id) return 0;
+
       // Points from achievements (the source of truth for earned points)
       const { data: achievements } = await supabase
         .from('operator_achievements')
         .select('points')
-        .eq('operator_id', user!.id);
+        .eq('operator_id', user.id);
 
       const earned = (achievements || []).reduce((sum, a) => sum + a.points, 0);
 
@@ -171,7 +173,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       const { data: redemptions } = await supabase
         .from('reward_redemptions')
         .select('points_spent')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .neq('status', 'cancelled');
 
       const spent = (redemptions || []).reduce((sum, r) => sum + r.points_spent, 0);
@@ -184,12 +186,14 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
   // Fetch redemptions history
   const redemptionsQuery = useQuery({
     queryKey: ['reward-redemptions', user?.id],
-    enabled: !!user,
+    enabled: !!user?.id,
     queryFn: async () => {
+      if (!user?.id) return [];
+
       const { data, error } = await supabase
         .from('reward_redemptions')
         .select('*, reward:gamification_rewards(*)')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
@@ -200,17 +204,21 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
   // Redemption mutation
   const redeemReward = useMutation({
     mutationFn: async (reward: Reward) => {
+      if (!user?.id) {
+        throw new Error('Usuário não autenticado.');
+      }
+
       // Verify current balance to prevent over-redemption
       const { data: achievements } = await supabase
         .from('operator_achievements')
         .select('points')
-        .eq('operator_id', user!.id);
+        .eq('operator_id', user.id);
       const earned = (achievements || []).reduce((s: number, a: { points: number }) => s + a.points, 0);
 
       const { data: existingRedemptions } = await supabase
         .from('reward_redemptions')
         .select('points_spent')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .neq('status', 'cancelled');
       const spent = (existingRedemptions || []).reduce((s: number, r: { points_spent: number }) => s + r.points_spent, 0);
 
@@ -224,7 +232,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       }
 
       const { error } = await supabase.from('reward_redemptions').insert({
-        user_id: user!.id,
+        user_id: user.id,
         reward_id: reward.id,
         points_spent: reward.cost_points,
         status: 'pending'
