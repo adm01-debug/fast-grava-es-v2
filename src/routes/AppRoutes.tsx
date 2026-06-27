@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { type AppRole } from "@/features/auth";
 import { PageTransition } from "@/components/layout/PageTransition";
+import type { TransitionPreset } from "@/lib/transitions";
 import { useRoutePrefetch } from "@/hooks/useRoutePrefetch";
 import {
   DashboardPageSkeleton,
@@ -83,38 +84,54 @@ function getNavigationDirection(prevPath: string, currentPath: string): 'forward
   return currentPath.length >= prevPath.length ? 'forward' : 'backward';
 }
 
+// Route-specific transition overrides (path → preset)
+const ROUTE_TRANSITIONS: Record<string, TransitionPreset> = {
+  '/kiosk': 'fade',
+  '/track': 'fade',
+  '/auth': 'fade',
+  '/reset-password': 'fade',
+};
+
+function resolveRoutePreset(pathname: string): TransitionPreset | undefined {
+  return ROUTE_TRANSITIONS[pathname];
+}
+
 // Helper para rotas protegidas com Suspense
 function ProtectedPage({
   children,
   fallback,
   allowedRoles,
   direction = 'forward',
+  transitionPreset,
 }: {
   children: React.ReactNode;
   fallback: React.ReactNode;
   allowedRoles?: AppRole[];
   direction?: 'forward' | 'backward';
+  transitionPreset?: TransitionPreset;
 }) {
   return (
     <ProtectedRoute allowedRoles={allowedRoles}>
-      <PageTransition direction={direction}>
+      <PageTransition direction={direction} preset={transitionPreset}>
         <Suspense fallback={fallback}>{children}</Suspense>
       </PageTransition>
     </ProtectedRoute>
   );
 }
 
-function PublicPage({ 
-  children, 
-  fallback, 
-  direction = 'forward' 
-}: { 
-  children: React.ReactNode; 
+function PublicPage({
+  children,
+  fallback,
+  direction = 'forward',
+  transitionPreset,
+}: {
+  children: React.ReactNode;
   fallback: React.ReactNode;
   direction?: 'forward' | 'backward';
+  transitionPreset?: TransitionPreset;
 }) {
   return (
-    <PageTransition direction={direction}>
+    <PageTransition direction={direction} preset={transitionPreset}>
       <Suspense fallback={fallback}>{children}</Suspense>
     </PageTransition>
   );
