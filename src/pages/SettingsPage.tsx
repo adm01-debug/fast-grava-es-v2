@@ -18,6 +18,7 @@ import { SettingsGeneralTab } from '@/components/settings/SettingsGeneralTab';
 import { SettingsNotificationsTab } from '@/components/settings/SettingsNotificationsTab';
 import { SettingsAlertsTab } from '@/components/settings/SettingsAlertsTab';
 import { SettingsBackupTab } from '@/components/settings/SettingsBackupTab';
+import { TransitionsSettings } from '@/components/settings/TransitionsSettings';
 
 function usePersistedSettings() {
   const { user } = useAuth();
@@ -87,8 +88,9 @@ export default function SettingsPage() {
           <p className="text-muted-foreground">Gerencie todas as configurações do sistema</p>
         </div>
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="general">Geral</TabsTrigger>
+            <TabsTrigger value="appearance">Aparência</TabsTrigger>
             <TabsTrigger value="techniques">Técnicas</TabsTrigger>
             <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
@@ -98,6 +100,7 @@ export default function SettingsPage() {
             <TabsTrigger value="integrations">Integrações</TabsTrigger>
           </TabsList>
           <TabsContent value="general"><SettingsGeneralTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>
+          <TabsContent value="appearance"><TransitionsSettings /></TabsContent>
           <TabsContent value="techniques"><TechniqueManagement /></TabsContent>
           <TabsContent value="security" className="space-y-4"><TwoFactorSetup /><IPAllowlist /><LoginAuditLog /></TabsContent>
           <TabsContent value="notifications"><SettingsNotificationsTab settings={settings} onSettingChange={handleSettingChange} /></TabsContent>

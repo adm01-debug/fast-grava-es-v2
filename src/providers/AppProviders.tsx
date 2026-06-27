@@ -30,6 +30,7 @@ import { SidebarProvider } from "@/contexts/SidebarContext";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
+import { TransitionConfigProvider } from "@/contexts/TransitionConfigContext";
 
 import { createQueryClient } from "@/lib/queryConfig";
 
@@ -50,6 +51,7 @@ function ProductDesignFeatureProvider({ children }: { children: ReactNode }) {
 
 const APP_PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   ThemeContextProvider,
+  TransitionConfigProvider,
   TooltipProvider,
   UserPreferencesProvider,
   FeatureFlagsProvider,
