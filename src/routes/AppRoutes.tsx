@@ -110,9 +110,11 @@ function ProtectedPage({
   direction?: 'forward' | 'backward';
   transitionPreset?: TransitionPreset;
 }) {
+  const { pathname } = useLocation();
+  const preset = transitionPreset ?? resolveRoutePreset(pathname);
   return (
     <ProtectedRoute allowedRoles={allowedRoles}>
-      <PageTransition direction={direction} preset={transitionPreset}>
+      <PageTransition direction={direction} preset={preset}>
         <Suspense fallback={fallback}>{children}</Suspense>
       </PageTransition>
     </ProtectedRoute>
@@ -130,8 +132,10 @@ function PublicPage({
   direction?: 'forward' | 'backward';
   transitionPreset?: TransitionPreset;
 }) {
+  const { pathname } = useLocation();
+  const preset = transitionPreset ?? resolveRoutePreset(pathname);
   return (
-    <PageTransition direction={direction} preset={transitionPreset}>
+    <PageTransition direction={direction} preset={preset}>
       <Suspense fallback={fallback}>{children}</Suspense>
     </PageTransition>
   );
