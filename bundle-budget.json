@@ -21,7 +21,7 @@
     "lib-pdf": 400,
     "lib-html2canvas": 200,
     "lib-markdown": 200,
-    "lib-qrcode": 80,
+    "lib-qrcode": 120,
     "lib-joyride": 120,
     "lib-confetti": 30,
     "lib-carousel": 60
