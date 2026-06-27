@@ -38,10 +38,11 @@ function walk(dir, files = []) {
   return files;
 }
 
-/** Map filename like "vendor-react-DhJk2.js" → logical chunk name "vendor-react" */
+/** Map filename like "vendor-react-DhJk2Wq8.js" → logical chunk name "vendor-react" */
 function chunkNameFromFile(name) {
   const base = basename(name).replace(/\.(js|css|mjs)$/i, '');
-  return base.replace(/-[A-Za-z0-9_-]{6,}$/, '');
+  // Vite hash: trailing "-" + 8+ alnum chars (no hyphen) at end of name
+  return base.replace(/-[A-Za-z0-9_]{8,}$/, '');
 }
 
 const files = walk(DIST)
