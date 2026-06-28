@@ -3,6 +3,7 @@ import { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/features/auth';
 
 const OPERATORS_ERROR_CONTEXT = {
   fetch: { entity: 'operators', operation: 'fetch' },
@@ -24,6 +25,8 @@ export interface OperatorWithProfile {
 export function useOperators() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user?.id);
 
   const query = useQuery({
     queryKey: ['operators'],
@@ -66,14 +69,14 @@ export function useOperators() {
         return [];
       }
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const removeOperatorMutation = useMutation({
     mutationFn: async ({ operatorId, operatorName, reason }: { operatorId: string; operatorName: string | null; reason?: string }) => {
       // Get current user info for audit
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user?.id) throw new Error('User not authenticated');
 
       // Get performer name
       const { data: performerProfile } = await supabase
@@ -134,8 +137,7 @@ export function useOperators() {
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ operatorId, operatorName, isActive, reason }: { operatorId: string; operatorName: string | null; isActive: boolean; reason?: string }) => {
       // Get current user info for audit
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user?.id) throw new Error('User not authenticated');
 
       // Get performer name
       const { data: performerProfile } = await supabase

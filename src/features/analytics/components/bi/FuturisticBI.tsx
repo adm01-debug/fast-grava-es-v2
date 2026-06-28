@@ -9,7 +9,7 @@ import {
 import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend
-} from 'recharts';
+} from '@/lib/recharts';
 
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';

@@ -53,6 +53,7 @@
     "noResults": "No se encontraron resultados",
     "required": "Obligatorio",
     "language": "Idioma",
+    "changeLanguage": "Cambiar idioma",
     "optional": "Opcional",
     "today": "Hoy",
     "yesterday": "Ayer",
@@ -106,7 +107,10 @@
     "loginSuccess": "¡Inicio de sesión exitoso!",
     "loginError": "Error al iniciar sesión",
     "logoutSuccess": "¡Cierre de sesión exitoso!",
-    "resetRequestSent": "¡Solicitud enviada! Esperando aprobación del gestor."
+    "resetRequestSent": "¡Solicitud enviada! Esperando aprobación del gestor.",
+    "resetNeedsApproval": "Ingresa tu correo. La solicitud se enviará para aprobación del gestor.",
+    "resetApprovalNote": "Tu solicitud será revisada por un gestor antes de enviar el correo de restablecimiento.",
+    "sendRequest": "Enviar Solicitud"
   },
   "dashboard": {
     "title": "Panel Principal",

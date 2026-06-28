@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSchedulingData } from '@/features/jobs';
 import { subDays, isAfter, parseISO } from 'date-fns';
+import { useAuth } from '@/features/auth';
 
 export type ProductivityPeriod = 7 | 30 | 90 | 'all';
 export interface OperatorProductivityMetrics {
@@ -53,6 +54,8 @@ interface OperatorMachineItem {
 }
 
 export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user?.id);
   const { jobs, machines, isLoading: isLoadingScheduling } = useSchedulingData();
 
   // Calculate period start date
@@ -89,6 +92,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
         profile: profiles?.find(p => p.id === role.user_id) || null,
       }));
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -108,6 +112,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       if (error) throw error;
       return (data || []) as ScanHistoryItem[];
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 2,
   });
 
@@ -128,6 +133,7 @@ export function useOperatorProductivity(period: ProductivityPeriod = 'all') {
       if (error) throw error;
       return (data || []) as OperatorMachineItem[];
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,
   });
 

@@ -20,6 +20,10 @@ vi.mock('../../production/services/machinesService', () => ({
   machinesService: { getAll: (...args: unknown[]) => holder.machinesGetAll(...args) },
 }));
 
+vi.mock('@/features/auth', () => ({
+  useAuth: () => ({ user: { id: 'test-user' } }),
+}));
+
 vi.mock('@/integrations/supabase/client', async () => {
   const { createRealtimeMock } = await import('@/test/realtimeMock');
   holder.realtime = createRealtimeMock();

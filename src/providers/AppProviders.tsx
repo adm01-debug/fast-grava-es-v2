@@ -31,16 +31,20 @@ import { ThemeContextProvider } from "@/contexts/ThemeContext";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
 import { TransitionConfigProvider } from "@/contexts/TransitionConfigContext";
+import { useAuth } from "@/features/auth";
 
 import { createQueryClient } from "@/lib/queryConfig";
 
 const queryClient = createQueryClient();
 
 function ProductDesignFeatureProvider({ children }: { children: ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = Boolean(user?.id) && !isLoading;
+
   return (
     <ProductDesignProvider
       enableOnboarding
-      enableCommandPalette
+      enableCommandPalette={isAuthenticated}
       enableKeyboardShortcuts
       enableToastWithUndo
     >
@@ -84,12 +88,19 @@ function ComposedProviders({ children }: { children: ReactNode }) {
 }
 
 function Observers() {
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = Boolean(user?.id) && !isLoading;
+
   return (
     <>
       <NavigationListener />
-      <InAppNotificationWatcher />
-      <SmartAlertsWatcher />
-      <BIAlertsWatcher />
+      {isAuthenticated && (
+        <>
+          <InAppNotificationWatcher />
+          <SmartAlertsWatcher />
+          <BIAlertsWatcher />
+        </>
+      )}
     </>
   );
 }

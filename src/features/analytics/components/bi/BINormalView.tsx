@@ -10,7 +10,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   LineChart as RechartsLineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
-} from 'recharts';
+} from '@/lib/recharts';
 import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { BITooltip } from './BITooltip';

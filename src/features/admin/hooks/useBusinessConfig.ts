@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { useAuth } from '@/features/auth';
 
 export interface BusinessConfig {
   key: string;
@@ -13,6 +14,8 @@ export interface BusinessConfig {
 
 export function useBusinessConfig() {
   const queryClient = useQueryClient();
+  const { user, isLoading: authLoading } = useAuth();
+  const isAuthenticated = Boolean(user?.id) && !authLoading;
 
   const configQuery = useQuery({
     queryKey: ['business-config'],
@@ -28,15 +31,16 @@ export function useBusinessConfig() {
       data?.forEach(item => configMap.set(item.key, item.value));
       return { raw: data as BusinessConfig[], map: configMap };
     },
+    enabled: isAuthenticated,
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const updateConfigMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string, value: any }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.id) throw new Error('Sessão expirada. Faça login novamente.');
       const { data, error } = await supabase
         .from('business_config')
-        .update({ value, updated_by: user?.id, updated_at: new Date().toISOString() })
+        .update({ value, updated_by: user.id, updated_at: new Date().toISOString() })
         .eq('key', key)
         .select()
         .single();

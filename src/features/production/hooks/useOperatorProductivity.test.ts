@@ -10,6 +10,10 @@ vi.mock('@/features/jobs', () => ({
   useSchedulingData: vi.fn(),
 }));
 
+vi.mock('@/features/auth', () => ({
+  useAuth: () => ({ user: { id: 'test-user' } }),
+}));
+
 // Mock Supabase (needed for the other useQuery calls in useOperatorProductivity)
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {

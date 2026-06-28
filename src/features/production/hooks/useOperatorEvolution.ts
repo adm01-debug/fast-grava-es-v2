@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, subDays, eachDayOfInterval, startOfDay, parseISO, isAfter, isBefore } from 'date-fns';
+import { useAuth } from '@/features/auth';
 
 export interface DailyEfficiencyData {
   date: string;
@@ -42,6 +43,8 @@ interface OperatorProfile {
 }
 
 export function useOperatorEvolution(days: number = 30) {
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user?.id);
   const startDate = useMemo(() => subDays(new Date(), days), [days]);
   const dateRange = useMemo(() =>
     eachDayOfInterval({ start: startDate, end: new Date() }),
@@ -61,6 +64,7 @@ export function useOperatorEvolution(days: number = 30) {
       if (error) throw error;
       return (data || []) as FinishedJob[];
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 2,
   });
 
@@ -75,6 +79,7 @@ export function useOperatorEvolution(days: number = 30) {
       if (error) throw error;
       return (data || []) as OperatorMachineAssignment[];
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -102,6 +107,7 @@ export function useOperatorEvolution(days: number = 30) {
         full_name: p.full_name,
       })) as OperatorProfile[];
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,
   });
 

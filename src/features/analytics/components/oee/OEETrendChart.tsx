@@ -12,7 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine
-} from 'recharts';
+} from '@/lib/recharts';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';

@@ -42,10 +42,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const lastActivityRef = useRef<Date>(new Date());
   const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const authRequestSeqRef = useRef(0);
   const ACTIVITY_TIMEOUT_MINUTES = 60;
   const REFRESH_INTERVAL_MINUTES = 30;
 
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = async (userId: string, requestSeq: number) => {
     try {
       const [profileResult, roleResult] = await withTimeout(
         Promise.allSettled([
@@ -68,8 +69,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profileData = profileResult.status === 'fulfilled' ? profileResult.value?.data : null;
       const roleData = roleResult.status === 'fulfilled' ? roleResult.value?.data?.[0]?.role : null;
 
+      if (authRequestSeqRef.current !== requestSeq) return;
+
       if (profileData) {
         setProfile(profileData as Profile);
+      } else {
+        setProfile(null);
       }
 
       if (isAppRole(roleData)) {
@@ -79,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(null);
       }
     } catch (error) {
+      if (authRequestSeqRef.current !== requestSeq) return;
       setRole(null);
       logger.warn('Não foi possível carregar todos os dados do usuário', error, 'AuthProvider');
     }
@@ -162,12 +168,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
+      const requestSeq = ++authRequestSeqRef.current;
 
       if (nextSession?.user) {
         setIsLoading(true);
         // Fire-and-forget: nunca await dentro de onAuthStateChange
-        fetchUserData(nextSession.user.id).finally(() => {
-          if (!cancelled) setIsLoading(false);
+        fetchUserData(nextSession.user.id, requestSeq).finally(() => {
+          if (!cancelled && authRequestSeqRef.current === requestSeq) setIsLoading(false);
         });
       } else {
         setProfile(null);
@@ -262,6 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    authRequestSeqRef.current += 1;
     await AuthService.signOut();
     setUser(null);
     setSession(null);

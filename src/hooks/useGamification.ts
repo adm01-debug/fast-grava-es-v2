@@ -48,6 +48,7 @@ export interface Reward {
 export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly') {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const isAuthenticated = Boolean(user?.id);
   const now = new Date();
 
   let periodStart: Date;
@@ -104,6 +105,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
         };
       }) as OperatorRanking[];
     },
+    enabled: isAuthenticated,
     staleTime: 60000,
   });
 
@@ -120,6 +122,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       if (error) throw error;
       return data as Achievement[];
     },
+    enabled: isAuthenticated,
     staleTime: 60000,
   });
 
@@ -151,6 +154,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       if (error) throw error;
       return data as Reward[];
     },
+    enabled: isAuthenticated,
     staleTime: 300000,
   });
 
