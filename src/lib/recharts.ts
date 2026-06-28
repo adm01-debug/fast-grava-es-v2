@@ -2,7 +2,33 @@
 //
 // Production builds previously split Recharts' ESM graph across route/vendor
 // chunks, which exposed a TDZ/circular-initialization bug in minified output
-// (`Cannot access 'A' before initialization`). Re-exporting from the package's
-// CommonJS build gives Rollup one stable module boundary for every chart import
-// and avoids the broken inter-chunk initialization order.
-export * from 'recharts/lib';
+// (`Cannot access 'A' before initialization`). Importing the package namespace
+// here creates one stable boundary for every chart import and avoids scattered
+// imports from many route chunks.
+import * as Recharts from 'recharts';
+
+export const Area = Recharts.Area;
+export const AreaChart = Recharts.AreaChart;
+export const Bar = Recharts.Bar;
+export const BarChart = Recharts.BarChart;
+export const CartesianGrid = Recharts.CartesianGrid;
+export const Cell = Recharts.Cell;
+export const ComposedChart = Recharts.ComposedChart;
+export const Legend = Recharts.Legend;
+export const Line = Recharts.Line;
+export const LineChart = Recharts.LineChart;
+export const Pie = Recharts.Pie;
+export const PieChart = Recharts.PieChart;
+export const PolarAngleAxis = Recharts.PolarAngleAxis;
+export const PolarGrid = Recharts.PolarGrid;
+export const PolarRadiusAxis = Recharts.PolarRadiusAxis;
+export const Radar = Recharts.Radar;
+export const RadarChart = Recharts.RadarChart;
+export const ReferenceLine = Recharts.ReferenceLine;
+export const ResponsiveContainer = Recharts.ResponsiveContainer;
+export const Tooltip = Recharts.Tooltip;
+export const XAxis = Recharts.XAxis;
+export const YAxis = Recharts.YAxis;
+
+export type TooltipProps<TValue extends Recharts.ValueType, TName extends Recharts.NameType> =
+  Recharts.TooltipProps<TValue, TName>;
