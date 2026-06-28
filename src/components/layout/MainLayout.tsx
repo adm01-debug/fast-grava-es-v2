@@ -234,9 +234,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <Suspense fallback={EmptyFallback}>
           <NotificationIntegrator />
         </Suspense>
-        <Suspense fallback={EmptyFallback}>
-          <CommandPaletteAdvanced />
-        </Suspense>
+        {/* CommandPaletteAdvanced é montado globalmente em ProductDesignProvider (gated por auth) */}
         <Suspense fallback={EmptyFallback}>
           <SystemOnboarding />
         </Suspense>
