@@ -1,30 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, Truck, Package, AlertCircle, TrendingDown, Clock } from 'lucide-react';
+import { Database } from '@/integrations/supabase/types';
+import { useAuth } from '@/features/auth';
+import { Globe, Truck, Package, TrendingDown, Clock } from 'lucide-react';
+
+type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
 
 export function SupplyChainPanel() {
-  const [items, setItems] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchCriticalItems = async () => {
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ['supply-chain-critical-items'],
+    queryFn: async (): Promise<InventoryItemRow[]> => {
       const { data } = await supabase
         .from('inventory_items')
         .select('*')
         .order('current_stock', { ascending: true })
         .limit(3);
 
-      setItems(data || []);
-      setIsLoading(false);
-    };
-
-    fetchCriticalItems();
-  }, []);
+      return data || [];
+    },
+    enabled: Boolean(user?.id),
+  });
 
   // Simulated provider logic based on inventory
-  const providers = items.map(item => ({
+  const providers = useMemo(() => items.map(item => ({
     name: `Provedor ${item.name}`,
     status: item.current_stock < item.min_stock_level ? 'reordering' : 'stocked',
     eta: item.current_stock < item.min_stock_level ? '4h' : 'Scheduled',
@@ -33,7 +36,7 @@ export function SupplyChainPanel() {
     itemName: item.name,
     stock: item.current_stock,
     unit: item.unit
-  }));
+  })), [items]);
 
   return (
     <Card className="glass-card border-primary/20 bg-primary/5 overflow-hidden">
@@ -49,8 +52,8 @@ export function SupplyChainPanel() {
             <div className="p-4 text-center text-[10px] text-muted-foreground animate-pulse font-bold uppercase">
               Sincronizando Cadeia Global...
             </div>
-          ) : providers.map((provider, i) => (
-            <div key={i} className="p-3 flex items-start gap-3 hover:bg-primary/5 transition-colors">
+          ) : providers.map((provider) => (
+            <div key={provider.itemName} className="p-3 flex items-start gap-3 hover:bg-primary/5 transition-colors">
               <div className={`mt-1 p-1.5 rounded-lg border text-primary ${provider.alert ? 'bg-amber-500/10 border-amber-500/30' : 'bg-background border-primary/10'}`}>
                 <Truck className={`h-3 w-3 ${provider.alert ? 'animate-bounce' : ''}`} />
               </div>

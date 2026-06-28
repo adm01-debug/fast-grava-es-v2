@@ -36,6 +36,8 @@ i18n
       'default': ['pt-BR']
     },
     supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
+    nonExplicitSupportedLngs: true,
+    load: 'currentOnly',
     ns: ['translation'],
     defaultNS: 'translation',
 

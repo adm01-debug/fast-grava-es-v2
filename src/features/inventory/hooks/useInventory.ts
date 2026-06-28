@@ -4,6 +4,8 @@ import { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { subDays, isAfter, parseISO } from 'date-fns';
 import { useMemo } from 'react';
+import { useAuth } from '@/features/auth';
+import { logger } from '@/lib/logger';
 
 type DbInventoryItem = Database['public']['Tables']['inventory_items']['Row'];
 type DbInventoryMovement = Database['public']['Tables']['inventory_movements']['Row'];
@@ -41,6 +43,8 @@ export interface InventoryMovement {
 
 export function useInventory() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user?.id);
 
   const itemsQuery = useQuery({
     queryKey: ['inventory-items'],
@@ -52,6 +56,7 @@ export function useInventory() {
       if (error) throw error;
       return data as InventoryItem[];
     },
+    enabled: isAuthenticated,
   });
 
   const calculateAIIntelligence = useMutation({
@@ -93,10 +98,11 @@ export function useInventory() {
         }
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.id) throw new Error('Sessão expirada. Faça login novamente.');
+
       const { data, error } = await supabase
         .from('inventory_movements')
-        .insert([{ ...movement, user_id: user?.id }])
+        .insert([{ ...movement, user_id: user.id }])
         .select()
         .single();
       if (error) throw error;
@@ -107,10 +113,10 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Movimentação registrada');
     },
-    onError: (error: any) => {
-      console.error('Failed to record movement:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao registrar movimentação de estoque', error, 'useInventory');
       toast.error('Erro ao registrar movimentação', {
-        description: error.message || 'Verifique sua conexão e tente novamente.'
+        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.'
       });
     },
   });
@@ -133,12 +139,13 @@ export function useInventory() {
 
   const transferItemsMutation = useMutation({
     mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.id) throw new Error('Sessão expirada. Faça login novamente.');
+
       const results = await Promise.all(itemIds.map(async (itemId) => {
         const { error: updateError } = await supabase.from('inventory_items').update({ location: toLocation }).eq('id', itemId);
         if (updateError) throw updateError;
         await supabase.from('inventory_movements').insert([{
-          item_id: itemId, user_id: user?.id, type: 'TRANSFER', quantity: 0,
+          item_id: itemId, user_id: user.id, type: 'TRANSFER', quantity: 0,
           from_location: fromLocation, to_location: toLocation,
           reason: `Transferência de ${fromLocation} para ${toLocation}`
         }]);
@@ -167,6 +174,8 @@ export function useInventory() {
 }
 
 export function useInventoryMovements(itemId?: string) {
+  const { user } = useAuth();
+
   return useQuery({
     queryKey: ['inventory-movements', itemId],
     queryFn: async () => {
@@ -183,5 +192,6 @@ export function useInventoryMovements(itemId?: string) {
       if (error) throw error;
       return data;
     },
+    enabled: Boolean(user?.id),
   });
 }

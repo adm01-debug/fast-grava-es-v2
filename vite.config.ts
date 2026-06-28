@@ -68,11 +68,26 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('@supabase/')) return 'vendor-supabase';
 
           // ── Heavy dashboard-only libs: dynamic chunks, loaded on-demand ──
+          // Recharts has circular/transitive ESM edges through victory-vendor,
+          // d3, react-smooth and react-is. Keep the whole graph in one chunk to
+          // avoid Rollup/Vite TDZ crashes in production preview
+          // ("Cannot access 'X' before initialization" in lib-charts).
           if (
             id.includes('/recharts/') ||
             id.includes('/d3-') ||
+            id.includes('/d3-array/') ||
+            id.includes('/d3-color/') ||
+            id.includes('/d3-ease/') ||
+            id.includes('/d3-format/') ||
+            id.includes('/d3-interpolate/') ||
+            id.includes('/d3-path/') ||
+            id.includes('/d3-scale/') ||
+            id.includes('/d3-shape/') ||
+            id.includes('/d3-time/') ||
+            id.includes('/d3-time-format/') ||
             id.includes('/victory-vendor/') ||
             id.includes('/react-smooth/') ||
+            id.includes('/react-is/') ||
             id.includes('/internmap/') ||
             id.includes('/fast-equals/') ||
             id.includes('/eventemitter3/') ||
