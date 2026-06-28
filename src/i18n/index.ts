@@ -8,11 +8,20 @@ import esES from './locales/es-ES.json';
 
 // Resources estruturados corretamente com namespaces
 export const resources = {
+  'pt': {
+    translation: ptBR,
+  },
   'pt-BR': {
     translation: ptBR,
   },
+  'en': {
+    translation: enUS,
+  },
   'en-US': {
     translation: enUS,
+  },
+  'es': {
+    translation: esES,
   },
   'es-ES': {
     translation: esES,
@@ -35,7 +44,7 @@ i18n
       'pt': ['pt-BR'],
       'default': ['pt-BR']
     },
-    supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
+    supportedLngs: ['pt-BR', 'pt', 'en-US', 'en', 'es-ES', 'es'],
     nonExplicitSupportedLngs: true,
     load: 'currentOnly',
     ns: ['translation'],
