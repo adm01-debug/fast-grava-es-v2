@@ -2,10 +2,10 @@
 //
 // Production builds previously split Recharts' ESM graph across route/vendor
 // chunks, which exposed a TDZ/circular-initialization bug in minified output
-// (`Cannot access 'A' before initialization`). Importing the package namespace
-// here creates one stable boundary for every chart import and avoids scattered
-// imports from many route chunks.
-import * as Recharts from 'recharts';
+// (`Cannot access 'A' before initialization`). Importing Recharts' CommonJS
+// bundle here creates one stable boundary and avoids the broken ESM inter-chunk
+// initialization order seen in production previews.
+import * as Recharts from 'recharts/lib';
 import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import type { LegendProps } from 'recharts';
 
