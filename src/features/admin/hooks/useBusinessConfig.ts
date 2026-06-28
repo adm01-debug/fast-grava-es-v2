@@ -38,10 +38,9 @@ export function useBusinessConfig() {
   const updateConfigMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string, value: any }) => {
       if (!user?.id) throw new Error('Sessão expirada. Faça login novamente.');
-      const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('business_config')
-        .update({ value, updated_by: user?.id, updated_at: new Date().toISOString() })
+        .update({ value, updated_by: user.id, updated_at: new Date().toISOString() })
         .eq('key', key)
         .select()
         .single();
