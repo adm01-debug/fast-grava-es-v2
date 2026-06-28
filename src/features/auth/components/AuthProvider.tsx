@@ -269,6 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    authRequestSeqRef.current += 1;
     await AuthService.signOut();
     setUser(null);
     setSession(null);
