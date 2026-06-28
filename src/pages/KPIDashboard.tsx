@@ -66,7 +66,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, Legend
-} from 'recharts/lib';
+} from '@/lib/recharts';
 
 export default function KPIDashboard() {
   const [activeTab, setActiveTab] = useState('overview');

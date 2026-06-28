@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts/lib';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from '@/lib/recharts';
 import { ABCCostPool, ABCJobCost } from '@/hooks/useABCCosts';
 
 interface ABCCostBreakdownChartProps {

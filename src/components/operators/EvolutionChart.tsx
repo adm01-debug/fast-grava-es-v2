@@ -7,7 +7,7 @@ import { TrendingUp as TrendingUpIcon } from 'lucide-react';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   Legend, Line, Area, AreaChart,
-} from 'recharts/lib';
+} from '@/lib/recharts';
 import { format } from 'date-fns';
 
 function calculateLinearRegression(data: { x: number; y: number }[]) {

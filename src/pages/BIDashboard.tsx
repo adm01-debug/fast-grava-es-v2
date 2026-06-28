@@ -29,7 +29,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
-} from 'recharts/lib';
+} from '@/lib/recharts';
 import { format, subDays, startOfDay, endOfDay, isWithinInterval, parseISO, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';

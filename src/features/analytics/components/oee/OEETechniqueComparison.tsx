@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
   ReferenceLine
-} from 'recharts/lib';
+} from '@/lib/recharts';
 import { TechniqueOEE } from '@/features/production';
 import { ChevronRight } from 'lucide-react';
 

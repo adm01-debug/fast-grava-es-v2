@@ -5,7 +5,7 @@
 // (`Cannot access 'A' before initialization`). Importing Recharts' CommonJS
 // bundle here creates one stable boundary and avoids the broken ESM inter-chunk
 // initialization order seen in production previews.
-import * as Recharts from 'recharts/lib';
+import * as Recharts from '@/lib/recharts';
 import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import type { LegendProps } from 'recharts';
 

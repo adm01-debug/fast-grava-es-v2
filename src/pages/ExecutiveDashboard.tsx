@@ -28,7 +28,7 @@ import {
   Cell,
   AreaChart,
   Area
-} from 'recharts/lib';
+} from '@/lib/recharts';
 import {
   FileDown,
   TrendingUp,
