@@ -68,7 +68,18 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('@supabase/')) return 'vendor-supabase';
 
           // ── Heavy dashboard-only libs: dynamic chunks, loaded on-demand ──
-          if (id.includes('/recharts/') || id.includes('/d3-')) return 'lib-charts';
+          if (
+            id.includes('/recharts/') ||
+            id.includes('/d3-') ||
+            id.includes('/victory-vendor/') ||
+            id.includes('/react-smooth/') ||
+            id.includes('/internmap/') ||
+            id.includes('/fast-equals/') ||
+            id.includes('/eventemitter3/') ||
+            id.includes('/decimal.js-light/') ||
+            id.includes('/react-transition-group/') ||
+            (id.includes('/lodash') && !id.includes('lodash-es'))
+          ) return 'lib-charts';
           if (id.includes('/mermaid/') || id.includes('/cytoscape')) return 'lib-mermaid';
           if (id.includes('/exceljs/') || id.includes('/jszip/') || id.includes('/file-saver/')) return 'lib-excel';
           if (id.includes('/jspdf')) return 'lib-pdf';
