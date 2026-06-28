@@ -53,6 +53,7 @@
     "noResults": "No results found",
     "required": "Required",
     "language": "Language",
+    "changeLanguage": "Change language",
     "optional": "Optional",
     "today": "Today",
     "yesterday": "Yesterday",
@@ -106,7 +107,10 @@
     "loginSuccess": "Login successful!",
     "loginError": "Login error",
     "logoutSuccess": "Logout successful!",
-    "resetRequestSent": "Request sent! Awaiting manager approval."
+    "resetRequestSent": "Request sent! Awaiting manager approval.",
+    "resetNeedsApproval": "Enter your email. The request will be sent for manager approval.",
+    "resetApprovalNote": "Your request will be reviewed by a manager before the reset email is sent.",
+    "sendRequest": "Send Request"
   },
   "dashboard": {
     "title": "Dashboard",

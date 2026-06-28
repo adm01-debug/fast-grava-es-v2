@@ -75,6 +75,8 @@ export default defineConfig(({ mode }) => ({
             id.includes('/react-smooth/') ||
             id.includes('/internmap/') ||
             id.includes('/fast-equals/') ||
+            id.includes('/eventemitter3/') ||
+            id.includes('/decimal.js-light/') ||
             id.includes('/react-transition-group/') ||
             id.includes('/prop-types/') ||
             id.includes('/react-is/') ||
