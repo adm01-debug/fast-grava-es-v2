@@ -6,6 +6,8 @@
 // here creates one stable boundary for every chart import and avoids scattered
 // imports from many route chunks.
 import * as Recharts from 'recharts';
+import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import type { LegendProps } from 'recharts';
 
 export const Area = Recharts.Area;
 export const AreaChart = Recharts.AreaChart;
@@ -30,5 +32,6 @@ export const Tooltip = Recharts.Tooltip;
 export const XAxis = Recharts.XAxis;
 export const YAxis = Recharts.YAxis;
 
-export type TooltipProps<TValue extends Recharts.ValueType, TName extends Recharts.NameType> =
+export type { LegendProps, NameType, ValueType };
+export type TooltipProps<TValue extends ValueType, TName extends NameType> =
   Recharts.TooltipProps<TValue, TName>;
