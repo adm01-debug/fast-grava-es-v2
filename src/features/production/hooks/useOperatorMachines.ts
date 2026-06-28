@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
+import { useAuth } from '@/features/auth';
 
 const OPERATOR_MACHINES_CONTEXT = {
   fetch: { entity: 'operator_machines', operation: 'fetch' },
@@ -20,6 +21,8 @@ export interface OperatorMachine {
 
 export function useOperatorMachines(operatorId?: string) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user?.id);
 
   const { data: assignments, isLoading } = useQuery({
     queryKey: ['operator-machines', operatorId],
@@ -41,11 +44,14 @@ export function useOperatorMachines(operatorId?: string) {
         throw error;
       }
     },
+    enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,
   });
 
   // Subscribe to realtime updates for operator machine assignments
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const channel = supabase
       .channel('operator-machines-changes')
       .on(
@@ -64,19 +70,19 @@ export function useOperatorMachines(operatorId?: string) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, isAuthenticated]);
 
   const assignMachine = useMutation({
     mutationFn: async ({ operatorId, machineId }: { operatorId: string; machineId: string }) => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        if (!user?.id) throw new Error('Usuário não autenticado');
 
         const { error } = await supabase
           .from('operator_machines')
           .insert({
             operator_id: operatorId,
             machine_id: machineId,
-            assigned_by: user?.id,
+            assigned_by: user.id,
           });
 
         if (error) throw error;

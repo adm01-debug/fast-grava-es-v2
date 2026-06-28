@@ -9,6 +9,7 @@ import { QUERY_KEYS, STALE_TIMES, calculateRetryDelay } from '@/lib/queryConfig'
 import { createAppError } from '@/lib/errorHandling';
 import { jobsService } from '../services/jobsService';
 import { machinesService } from '../../production/services/machinesService';
+import { useAuth } from '@/features/auth';
 
 // Retry configuration for connection failures
 const RETRY_CONFIG = {
@@ -33,6 +34,8 @@ const SCHEDULING_ERROR_CONTEXT = {
  */
 export function useSchedulingData() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user?.id);
 
   // Using useQueries for parallel data fetching
   const results = useQueries({
@@ -44,6 +47,7 @@ export function useSchedulingData() {
           if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.profiles);
           return data;
         },
+        enabled: isAuthenticated,
         staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
@@ -54,6 +58,7 @@ export function useSchedulingData() {
           if (error) throw createAppError(error, SCHEDULING_ERROR_CONTEXT.techniques);
           return data as DbTechnique[];
         },
+        enabled: isAuthenticated,
         staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
@@ -66,6 +71,7 @@ export function useSchedulingData() {
             throw createAppError(error, SCHEDULING_ERROR_CONTEXT.machines);
           }
         },
+        enabled: isAuthenticated,
         staleTime: STALE_TIMES.STATIC,
         ...RETRY_CONFIG,
       },
@@ -79,6 +85,7 @@ export function useSchedulingData() {
             throw createAppError(error, SCHEDULING_ERROR_CONTEXT.jobs);
           }
         },
+        enabled: isAuthenticated,
         staleTime: STALE_TIMES.DYNAMIC,
         ...RETRY_CONFIG,
       },
@@ -89,7 +96,7 @@ export function useSchedulingData() {
 
   // Centralized realtime subscription for core tables
   useEffect(() => {
-    if (!queryClient) return;
+    if (!queryClient || !isAuthenticated) return;
 
     const channel = supabase
       .channel('app-core-sync')
@@ -113,7 +120,7 @@ export function useSchedulingData() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, isAuthenticated]);
 
   // Pre-build Maps for O(1) lookups instead of O(n) .find()
   const techniquesMap = useMemo(() => {
