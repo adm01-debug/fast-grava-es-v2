@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => ({
           // ("Cannot access 'X' before initialization" in lib-charts).
           if (
             id.includes('/recharts/') ||
-            id.includes('/d3-') ||
+            id.includes('/d3-') || id.includes('/d3/') ||
             id.includes('/d3-array/') ||
             id.includes('/d3-color/') ||
             id.includes('/d3-ease/') ||
@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => ({
             id.includes('/d3-shape/') ||
             id.includes('/d3-time/') ||
             id.includes('/d3-time-format/') ||
-            id.includes('/victory-vendor/') ||
+            id.includes('/victory-vendor/') || id.includes('/prop-types/') ||
             id.includes('/react-smooth/') ||
             id.includes('/react-is/') ||
             id.includes('/internmap/') ||
@@ -93,7 +93,7 @@ export default defineConfig(({ mode }) => ({
             id.includes('/eventemitter3/') ||
             id.includes('/decimal.js-light/') ||
             id.includes('/react-transition-group/') ||
-            (id.includes('/lodash') && !id.includes('lodash-es'))
+            id.includes('/lodash/') || id.includes('/lodash-es/')
           ) return 'lib-charts';
           if (id.includes('/mermaid/') || id.includes('/cytoscape')) return 'lib-mermaid';
           if (id.includes('/exceljs/') || id.includes('/jszip/') || id.includes('/file-saver/')) return 'lib-excel';
