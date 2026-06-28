@@ -23,7 +23,7 @@ const QuickFavoritesBar = lazy(() => import('./QuickFavoritesBar').then(m => ({ 
 const OfflineReadyIndicator = lazy(() => import('../offline/OfflineReadyIndicator').then(m => ({ default: m.OfflineReadyIndicator })));
 const MobileNavigation = lazy(() => import('../navigation/MobileNavigation').then(m => ({ default: m.MobileNavigation })));
 const MobileQuickActions = lazy(() => import('../navigation/MobileQuickActions').then(m => ({ default: m.MobileQuickActions })));
-const CommandPaletteAdvanced = lazy(() => import('../navigation/CommandPaletteAdvanced').then(m => ({ default: m.CommandPaletteAdvanced })));
+
 const SystemOnboarding = lazy(() => import('../onboarding/SystemOnboarding').then(m => ({ default: m.SystemOnboarding })));
 const Breadcrumbs = lazy(() => import('../navigation/Breadcrumbs').then(m => ({ default: m.Breadcrumbs })));
 const BackButton = lazy(() => import('../navigation/BackButton').then(m => ({ default: m.BackButton })));
@@ -234,9 +234,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <Suspense fallback={EmptyFallback}>
           <NotificationIntegrator />
         </Suspense>
-        <Suspense fallback={EmptyFallback}>
-          <CommandPaletteAdvanced />
-        </Suspense>
+        {/* CommandPaletteAdvanced é montado globalmente em ProductDesignProvider (gated por auth) */}
         <Suspense fallback={EmptyFallback}>
           <SystemOnboarding />
         </Suspense>
