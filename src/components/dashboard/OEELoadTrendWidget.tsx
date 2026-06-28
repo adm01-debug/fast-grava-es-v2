@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Minus, BarChart3, Activity } from 'lucide-rea
 import { useOEE } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, LineChart, Line, Legend } from '@/lib/recharts';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, LineChart, Line, Legend } from 'recharts/lib';
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';

@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell
-} from '@/lib/recharts';
+} from 'recharts/lib';
 import { Badge } from '@/components/ui/badge';
 
 interface ParetoLossesChartProps {

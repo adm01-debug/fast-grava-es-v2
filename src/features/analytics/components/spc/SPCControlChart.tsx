@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Activity, BarChart2, Plus, Sparkles, TrendingUp, History, Info, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Area } from '@/lib/recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Area } from 'recharts/lib';
 import { SPCParameter } from '@/features/analytics/hooks/useSPC';
 import { cn } from '@/lib/utils';
 

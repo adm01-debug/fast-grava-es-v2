@@ -13,7 +13,7 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   Cell
-} from '@/lib/recharts';
+} from 'recharts/lib';
 
 interface MachineReliabilityTabProps {
   machineId: string;

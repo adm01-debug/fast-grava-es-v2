@@ -14,7 +14,7 @@ import {
   Legend,
   AreaChart,
   Area
-} from '@/lib/recharts';
+} from 'recharts/lib';
 import { TrendingUp, Target, AlertCircle, Package } from 'lucide-react';
 
 interface OperatorPerformanceTabProps {

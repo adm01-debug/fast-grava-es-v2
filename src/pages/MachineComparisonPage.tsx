@@ -22,7 +22,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-} from '@/lib/recharts';
+} from 'recharts/lib';
 import { Cpu, ArrowLeftRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

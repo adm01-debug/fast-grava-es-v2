@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
-} from "@/lib/recharts";
+} from "recharts/lib";
 import { BarChart3, TrendingUp, Clock } from "lucide-react";
 
 interface TelemetryRow {

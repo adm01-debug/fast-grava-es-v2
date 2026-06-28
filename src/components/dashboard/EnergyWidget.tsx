@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer
-} from '@/lib/recharts';
+} from 'recharts/lib';
 
 export function EnergyWidget() {
   const { stats, isLoading } = useEnergy();

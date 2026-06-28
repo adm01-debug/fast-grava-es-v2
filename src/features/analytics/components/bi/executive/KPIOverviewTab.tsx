@@ -12,7 +12,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, Legend
-} from '@/lib/recharts';
+} from 'recharts/lib';
 import { KPITooltip, KPI_DEFINITIONS } from '@/components/ui/kpi-tooltip';
 import { KPIData } from '@/features/analytics/hooks/useKPIs';
 
