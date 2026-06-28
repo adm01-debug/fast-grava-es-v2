@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { History, CheckCircle2, AlertCircle, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Webhook, Filter, BarChart3, Clock, TrendingUp, Activity } from 'lucide-react';
 import { formatDistanceToNow, format, subDays, parseISO, startOfDay, differenceInSeconds } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from '@/lib/recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
 interface SyncDetails {

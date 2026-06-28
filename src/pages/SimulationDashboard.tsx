@@ -11,7 +11,7 @@ const SCENARIOS = generateScenarios();
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell 
-} from 'recharts';
+} from '@/lib/recharts';
 
 export default function SimulationDashboard() {
   const [isRunning, setIsLoading] = useState(false);
