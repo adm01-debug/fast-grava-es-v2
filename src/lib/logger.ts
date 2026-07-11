@@ -15,10 +15,11 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   context?: string;
-  data?: any;
+  data?: unknown;
   timestamp: string;
   severity?: number; // 0-4 scale for monitoring
 }
+
 
 const SEVERITY_MAP: Record<LogLevel, number> = {
   debug: 0,
