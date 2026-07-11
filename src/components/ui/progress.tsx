@@ -30,11 +30,20 @@ const Progress = React.forwardRef<
   };
 
   const numericValue = typeof value === 'number' ? value : 0;
-  // Default accessible label when caller didn't provide one — keeps axe happy.
-  const ariaLabel = (props as { 'aria-label'?: string })['aria-label']
-    ?? (props as { 'aria-labelledby'?: string })['aria-labelledby']
-    ? undefined
-    : `Progresso: ${Math.round(numericValue)}%`;
+  // Fallback accessible label; caller-supplied aria-label/labelledby via ...props overrides it.
+  const defaultAriaLabel = `Progresso: ${Math.round(numericValue)}%`;
+
+  return (
+    <ProgressPrimitive.Root
+      ref={ref}
+      aria-label={defaultAriaLabel}
+      className={cn(
+        "relative h-4 w-full overflow-hidden rounded-full bg-secondary dark:bg-muted",
+        className
+      )}
+      value={value}
+      {...props}
+    >
 
   return (
     <ProgressPrimitive.Root
