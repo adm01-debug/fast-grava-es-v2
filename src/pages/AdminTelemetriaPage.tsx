@@ -63,6 +63,15 @@ type TimeFilter = "1h" | "6h" | "24h" | "7d" | "custom";
 type UntypedFrom = (table: string) => ReturnType<typeof supabase.from>;
 const untypedDb = supabase as unknown as { from: UntypedFrom };
 
+const attrStr = (attrs: Record<string, unknown> | null | undefined, key: string, fallback = ''): string => {
+  const v = attrs?.[key];
+  return v == null ? fallback : String(v);
+};
+const attrNum = (attrs: Record<string, unknown> | null | undefined, key: string): number => {
+  const v = attrs?.[key];
+  return typeof v === 'number' ? v : Number(v) || 0;
+};
+
 export default function AdminTelemetriaPage() {
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("24h");
