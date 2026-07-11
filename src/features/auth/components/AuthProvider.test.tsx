@@ -35,9 +35,12 @@ describe('AuthContext', () => {
     vi.clearAllMocks();
     
     // Default setup for onAuthStateChange
-    (supabase.auth.onAuthStateChange as any).mockReturnValue({
-      data: { subscription: { unsubscribe: vi.fn() } }
+    (supabase.auth.onAuthStateChange as any).mockImplementation((cb: any) => {
+      // Simula o INITIAL_SESSION disparado pelo Supabase no mount (sem sessão)
+      queueMicrotask(() => cb('INITIAL_SESSION', null));
+      return { data: { subscription: { unsubscribe: vi.fn() } } };
     });
+
     
     // Default setup for getSession
     (supabase.auth.getSession as any).mockResolvedValue({
