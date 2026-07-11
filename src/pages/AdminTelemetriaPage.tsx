@@ -42,7 +42,7 @@ interface PerformanceTrace {
   name: string;
   duration_ms: number;
   service_name: string;
-  attributes: any;
+  attributes: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -52,12 +52,16 @@ interface ErrorLog {
   stack: string | null;
   component_name: string | null;
   url: string | null;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 }
 
 type SeverityFilter = "all" | "slow" | "very_slow" | "error";
 type TimeFilter = "1h" | "6h" | "24h" | "7d" | "custom";
+
+// Escape hatch tipado para tabelas de telemetria ausentes nos types gerados
+type UntypedFrom = (table: string) => ReturnType<typeof supabase.from>;
+const untypedDb = supabase as unknown as { from: UntypedFrom };
 
 export default function AdminTelemetriaPage() {
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
