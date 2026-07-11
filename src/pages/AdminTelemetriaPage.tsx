@@ -59,9 +59,7 @@ interface ErrorLog {
 type SeverityFilter = "all" | "slow" | "very_slow" | "error";
 type TimeFilter = "1h" | "6h" | "24h" | "7d" | "custom";
 
-// Escape hatch tipado para tabelas de telemetria ausentes nos types gerados
-type UntypedFrom = (table: string) => ReturnType<typeof supabase.from>;
-const untypedDb = supabase as unknown as { from: UntypedFrom };
+// Tabelas query_telemetry e telemetry_traces são acessadas diretamente via supabase tipado
 
 const attrStr = (attrs: Record<string, unknown> | null | undefined, key: string, fallback = ''): string => {
   const v = attrs?.[key];
