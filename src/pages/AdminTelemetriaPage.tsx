@@ -128,7 +128,7 @@ export default function AdminTelemetriaPage() {
     queryFn: async () => {
       const { from, to } = getTimeThreshold();
       let query = supabase
-        .from("query_telemetry" as any)
+        untypedDb.from("query_telemetry")
         .select("*")
         .gte("created_at", from)
         .lte("created_at", to)
@@ -154,7 +154,7 @@ export default function AdminTelemetriaPage() {
     queryFn: async () => {
       const { from, to } = getTimeThreshold();
       const { data, error } = await supabase
-        .from("telemetry_traces" as any)
+        untypedDb.from("telemetry_traces")
         .select("*")
         .gte("created_at", from)
         .lte("created_at", to)
@@ -195,7 +195,7 @@ export default function AdminTelemetriaPage() {
   const handleCleanup = async () => {
     const threshold = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase
-      .from("query_telemetry" as any)
+      untypedDb.from("query_telemetry")
       .delete()
       .lt("created_at", threshold);
     
@@ -224,7 +224,7 @@ export default function AdminTelemetriaPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Select value={timeFilter} onValueChange={(v: any) => setTimeFilter(v)}>
+            <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)}>
               <SelectTrigger className="w-[140px] h-9 bg-background">
                 <CalendarIcon className="h-3.5 w-3.5 mr-2 opacity-50" />
                 <SelectValue />
@@ -360,7 +360,7 @@ export default function AdminTelemetriaPage() {
                   <Layout className="h-4 w-4" />
                   Histórico de Execução (SQL)
                 </CardTitle>
-                <Select value={severityFilter} onValueChange={(v: any) => setSeverityFilter(v)}>
+                <Select value={severityFilter} onValueChange={(v) => setSeverityFilter(v as SeverityFilter)}>
                   <SelectTrigger className="w-[120px] h-8 text-xs">
                     <SelectValue placeholder="Severidade" />
                   </SelectTrigger>
