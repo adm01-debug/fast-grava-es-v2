@@ -2,31 +2,20 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { subDays, format } from 'date-fns';
 import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
+import type { BIJob } from '@/features/analytics/components/bi/types';
 
-type JobRow = {
-  id?: string | null;
-  order_number?: string | null;
-  client_name?: string | null;
-  product_name?: string | null;
-  status?: string | null;
-  quantity?: number | null;
-  produced_quantity?: number | null;
-  lost_pieces?: number | null;
-  scheduled_date?: string | null;
-  [key: string]: unknown;
-};
+type JobRow = Partial<BIJob> & Record<string, unknown>;
 
 interface ExportData {
-  periodJobsList?: JobRow[];
+  periodJobsList?: BIJob[];
   dailyTrend?: Array<Record<string, unknown>>;
   statusDistribution?: Array<Record<string, unknown>>;
 }
 
 type ExtraExportData = {
-  jobsWithLosses?: JobRow[];
-  delayedJobsList?: JobRow[];
-  [key: string]: unknown;
-};
+  jobsWithLosses?: BIJob[];
+  delayedJobsList?: BIJob[];
+} & Record<string, unknown>;
 
 export function useBIExport(biMetrics: ExportData) {
   const [isExporting, setIsExporting] = useState(false);
