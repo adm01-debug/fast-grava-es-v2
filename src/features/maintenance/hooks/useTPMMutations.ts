@@ -340,8 +340,10 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       // Requisito: pelo menos uma foto se algum item de checklist exigir foto
-      const hasPhotoRequired = (record.responses || []).some((r: any) => r.requires_photo);
-      const hasPhoto = (record.responses || []).some((r: any) => r.photo_url);
+      type ResponseRow = { requires_photo?: boolean | null; photo_url?: string | null };
+      const responses = (record.responses || []) as ResponseRow[];
+      const hasPhotoRequired = responses.some((r) => r.requires_photo);
+      const hasPhoto = responses.some((r) => r.photo_url);
       if (hasPhotoRequired && !hasPhoto) {
         throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
       }
