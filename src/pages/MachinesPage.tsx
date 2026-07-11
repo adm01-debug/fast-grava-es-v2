@@ -61,7 +61,7 @@ export default function MachinesPage() {
   const [machineForQR, setMachineForQR] = useState<DbMachine | null>(null);
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
   const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [selectedSchedule, setSelectedSchedule] = useState<MaintenanceSchedule | null>(null);
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
 
   const [selectedMachines, setSelectedMachines] = useState<Set<string>>(new Set());
