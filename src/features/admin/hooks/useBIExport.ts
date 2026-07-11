@@ -10,15 +10,15 @@ import { exportProductionReport, exportLossesReport, exportDelaysReport } from '
 type ExportRow = Record<string, unknown>;
 
 interface ExportData {
-  periodJobsList?: ExportRow[];
-  dailyTrend?: ExportRow[];
-  statusDistribution?: ExportRow[];
+  periodJobsList?: unknown[];
+  dailyTrend?: unknown[];
+  statusDistribution?: unknown[];
 }
 
-type ExtraExportData = Record<string, unknown> & {
-  jobsWithLosses?: ExportRow[];
-  delayedJobsList?: ExportRow[];
-};
+interface ExtraExportData {
+  jobsWithLosses?: unknown[];
+  delayedJobsList?: unknown[];
+}
 
 const asNumber = (v: unknown): number => (typeof v === 'number' ? v : Number(v) || 0);
 const asString = (v: unknown, fallback = ''): string => (v == null ? fallback : String(v));
