@@ -74,19 +74,20 @@ export default function MachinesPage() {
       return;
     }
 
-    const schedule = schedules.find((s: any) => s.id === scheduleId);
-    setSelectedSchedule(schedule);
+    const schedule = schedules.find((s: MaintenanceSchedule) => s.id === scheduleId);
+    setSelectedSchedule(schedule ?? null);
 
     startMaintenance.mutate({
       schedule_id: scheduleId,
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record: any) => {
+      onSuccess: (record: MaintenanceRecord) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
     });
+
   };
 
   const handleCompleteMaintenance = (data: Parameters<NonNullable<React.ComponentProps<typeof MaintenanceExecutionModal>['onComplete']>>[0]) => {
