@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
-import { DbMachine } from '@/features/jobs';
+import { DbMachine, Technique } from '@/features/jobs';
+import type { MaintenanceSchedule, MaintenanceRecord } from '@/features/maintenance/hooks/types';
+
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
