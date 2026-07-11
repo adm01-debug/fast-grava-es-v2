@@ -210,7 +210,7 @@ const Index = () => {
         {/* Compact Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 px-1 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-1.5 h-8 rounded-full gradient-primary animate-pulse-glow" />
+            <div className="w-1.5 h-8 rounded-full gradient-primary motion-safe:animate-pulse-glow" />
             <h1 className="text-display-lg tracking-tighter">
               <span className="gradient-text">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
             </h1>

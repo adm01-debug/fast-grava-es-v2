@@ -230,7 +230,7 @@ export const VoiceButton = forwardRef<HTMLDivElement, {
         onClick={toggleListening}
         className={cn(
           'relative transition-all',
-          isListening && 'animate-pulse'
+          isListening && 'motion-safe:animate-pulse'
         )}
       >
         {isListening ? (
@@ -352,7 +352,7 @@ export function VoiceFeedbackButton({ text }: { text: string }) {
       className="h-8 w-8"
       title={isSpeaking ? 'Parar' : 'Ouvir'}
     >
-      <Volume2 className={cn('h-4 w-4', isSpeaking && 'text-primary animate-pulse')} />
+      <Volume2 className={cn('h-4 w-4', isSpeaking && 'text-primary motion-safe:animate-pulse')} />
     </Button>
   );
 }

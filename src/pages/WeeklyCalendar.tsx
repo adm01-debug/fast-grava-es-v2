@@ -55,7 +55,7 @@ function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabel
               'border transition-all duration-200 hover:scale-[1.02]',
               'focus:outline-none focus:ring-2 focus:ring-primary/40',
               statusColorsSolid[job.status as JobStatus],
-              isConflict && 'ring-2 ring-destructive/70 animate-pulse'
+              isConflict && 'ring-2 ring-destructive/70 motion-safe:animate-pulse'
             )}
           >
             <span className="text-white/90 inline-flex items-center gap-1">

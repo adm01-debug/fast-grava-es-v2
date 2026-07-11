@@ -117,7 +117,7 @@ export function KanbanAIAdvisor() {
           <div className="p-1.5 rounded-lg bg-background border border-border/50 text-muted-foreground relative">
             <Bell className="h-4 w-4" />
             {totalInsights > 0 && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full motion-safe:animate-pulse" />
             )}
           </div>
         </div>
@@ -279,7 +279,7 @@ export function KanbanAIAdvisor() {
                     <h4 className="font-bold text-sm text-red-400 flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4" /> Alerta de Gargalo
                     </h4>
-                    <Badge variant="destructive" className="text-[10px] uppercase font-black px-1.5 animate-pulse">
+                    <Badge variant="destructive" className="text-[11px] uppercase font-black px-1.5 motion-safe:animate-pulse">
                       Crítico
                     </Badge>
                   </div>
