@@ -209,9 +209,9 @@ export default function TraceabilityPage() {
   const getExpirationBadge = (lot: ProductionLot) => {
     if (!lot.expiration_date || lot.status !== 'active') return null;
     const daysLeft = differenceInDays(parseDateOnly(lot.expiration_date)!, new Date());
-    if (daysLeft < 0) return <Badge variant="destructive" className="text-[10px]">Expirado</Badge>;
-    if (daysLeft <= 3) return <Badge variant="destructive" className="text-[10px] animate-pulse">⚠ {daysLeft}d</Badge>;
-    if (daysLeft <= 7) return <Badge variant="outline" className="text-[10px] text-orange-500 border-orange-500/30">⏰ {daysLeft}d</Badge>;
+    if (daysLeft < 0) return <Badge variant="destructive" className="text-[11px]">Expirado</Badge>;
+    if (daysLeft <= 3) return <Badge variant="destructive" className="text-[11px] motion-safe:animate-pulse">⚠ {daysLeft}d</Badge>;
+    if (daysLeft <= 7) return <Badge variant="outline" className="text-[11px] text-warning border-warning/40 bg-warning/10">⏰ {daysLeft}d</Badge>;
     return null;
   };
 

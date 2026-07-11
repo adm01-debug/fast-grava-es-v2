@@ -41,7 +41,7 @@ export default function DigitalTwin() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3">
-              <Cpu className="h-8 w-8 text-primary animate-pulse" />
+              <Cpu className="h-8 w-8 text-primary motion-safe:animate-pulse" />
               Gêmeo Digital 12/10 (IA Quântica)
             </h1>
             <p className="text-muted-foreground mt-1 font-medium italic">Simulação de Hiper-Performance e Orquestração Global Autônoma</p>

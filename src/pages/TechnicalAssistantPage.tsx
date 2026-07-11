@@ -157,10 +157,10 @@ const TechnicalAssistantPage = () => {
       <div className="flex flex-col h-[calc(100vh-8rem)] gap-4 animate-in fade-in duration-500">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest text-primary border-primary/20 bg-primary/5">Status: Online</Badge>
+            <Badge variant="outline" className="text-[11px] font-black uppercase tracking-widest text-primary border-primary/30 bg-primary/10">Status: Online</Badge>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">Sincronizado com SPC</span>
+              <span className="w-2 h-2 rounded-full bg-success motion-safe:animate-pulse" aria-hidden="true"></span>
+              <span className="text-[11px] font-bold text-muted-foreground uppercase">Sincronizado com SPC</span>
             </div>
           </div>
           <div className="flex items-center gap-2">

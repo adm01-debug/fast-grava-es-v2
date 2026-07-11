@@ -210,7 +210,7 @@ export function CelebrationMoment({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className={cn(
-                'text-2xl font-display font-bold text-foreground',
+                'text-display text-foreground',
                 'text-center'
               )}
             >
