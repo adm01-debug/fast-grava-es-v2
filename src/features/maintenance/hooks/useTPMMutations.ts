@@ -348,9 +348,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
       }
 
-      const { data: recordData, error: recordFetchError } = await (supabase
+      const { data: recordData, error: recordFetchError } = await supabase
         .from('maintenance_records')
-        .select('*, schedule:maintenance_schedules(*)') as never)
+        .select('*, schedule:maintenance_schedules(*)')
         .eq('id', data.record_id)
         .maybeSingle();
 
@@ -358,7 +358,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Registro não encontrado');
       }
 
-      const scheduleData = recordData.schedule as any;
+      const scheduleData = (recordData as { schedule?: { id: string; interval_days?: number } | null }).schedule ?? null;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
 
 
