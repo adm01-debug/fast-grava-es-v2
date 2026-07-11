@@ -92,7 +92,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   });
 }
 
-function enqueuePersist(level: LogLevel, message: string, context: string | undefined, data: any): void {
+function enqueuePersist(level: LogLevel, message: string, context: string | undefined, data: unknown): void {
   persistQueue.push({
     message,
     stack: data instanceof Error ? data.stack ?? null : (data !== undefined ? safeStringify(data) : null),
@@ -101,7 +101,7 @@ function enqueuePersist(level: LogLevel, message: string, context: string | unde
     metadata: {
       level,
       severity: SEVERITY_MAP[level],
-      data: data instanceof Error ? { name: data.name, message: data.message } : data,
+      data: data instanceof Error ? { name: data.name, message: data.message } : (data as never),
     },
   });
   // Bound memory: drop the oldest entries if the DB is unreachable for a while.
@@ -110,6 +110,7 @@ function enqueuePersist(level: LogLevel, message: string, context: string | unde
   }
   scheduleFlush();
 }
+
 
 function safeStringify(value: unknown): string {
   try {
