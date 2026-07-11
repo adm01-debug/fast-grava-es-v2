@@ -228,7 +228,7 @@ const TechnicalKnowledgeBase = () => {
                   <h3 className="text-base sm:text-lg font-medium text-muted-foreground">
                     Selecione uma ficha técnica
                   </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground/70 mt-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                     Escolha uma ficha na lista para visualizar
                   </p>
                 </div>

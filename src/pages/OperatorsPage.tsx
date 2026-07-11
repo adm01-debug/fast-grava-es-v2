@@ -323,7 +323,7 @@ export default function OperatorsPage() {
                           Desde {format(new Date(operator.created_at), "MMM yyyy", { locale: ptBR })}
                         </span>
                         {!isOnline(operator.user_id) && getLastSeen(operator.user_id) && (
-                          <span className="flex items-center gap-1 text-muted-foreground/70">
+                          <span className="flex items-center gap-1 text-muted-foreground">
                             <Clock className="h-3 w-3" />
                             Visto {formatLastSeen(getLastSeen(operator.user_id))}
                           </span>

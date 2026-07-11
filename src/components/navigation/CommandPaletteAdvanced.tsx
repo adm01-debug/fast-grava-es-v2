@@ -127,7 +127,7 @@ export function CommandPaletteAdvanced() {
             <Search className="h-12 w-12 text-muted-foreground/30" />
             <div className="text-center">
               <p className="text-muted-foreground font-medium">Nenhum resultado para "{query}"</p>
-              <p className="text-sm text-muted-foreground/70 mt-1">Tente palavras-chave diferentes</p>
+              <p className="text-sm text-muted-foreground mt-1">Tente palavras-chave diferentes</p>
             </div>
           </div>
         </CommandEmpty>

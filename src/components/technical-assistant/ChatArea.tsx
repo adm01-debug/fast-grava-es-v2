@@ -303,7 +303,7 @@ export function ChatArea({
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-1.5">
                     <Keyboard className="h-3 w-3 text-muted-foreground/50" />
-                    <span className="text-[9px] font-bold uppercase text-muted-foreground/70">
+                    <span className="text-[9px] font-bold uppercase text-muted-foreground">
                       <kbd className="bg-muted px-1 rounded text-[8px]">ENT</kbd> Enviar
                     </span>
                   </div>
@@ -313,7 +313,7 @@ export function ChatArea({
                   </div>
                   <div className="flex items-center gap-1.5 cursor-pointer group" onClick={() => setDiagnosticMode(!diagnosticMode)}>
                     <Activity className={cn("h-3 w-3 transition-colors", diagnosticMode ? "text-primary animate-pulse" : "text-muted-foreground/50")} />
-                    <span className={cn("text-[9px] font-black uppercase tracking-widest", diagnosticMode ? "text-primary" : "text-muted-foreground/70 group-hover:text-primary transition-colors")}>
+                    <span className={cn("text-[9px] font-black uppercase tracking-widest", diagnosticMode ? "text-primary" : "text-muted-foreground group-hover:text-primary transition-colors")}>
                       {diagnosticMode ? "Diagnostic Active" : "Diagnostic Mode"}
                     </span>
                   </div>
