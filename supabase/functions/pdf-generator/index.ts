@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+
+// NOTE — esta função NÃO gera PDFs binários hoje: ela monta um relatório em
+// texto plano. Para não induzir clientes ao erro (Content-Type application/pdf
+// com bytes de texto), respondemos honestamente como `text/plain`. A geração
+// de PDF real deve ser implementada com `pdf-lib` ou similar; até lá o texto
+// pode ser convertido para PDF do lado do cliente via jspdf, se necessário.
 
 const ALLOWED_ORIGINS = [
   Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
@@ -11,8 +17,8 @@ function getCorsHeaders(req: Request): Record<string, string> {
   const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Vary': 'Origin',
   };
 }
@@ -21,29 +27,55 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: getCorsHeaders(req) });
 
   try {
+    // Auth check — endpoint retorna dados de produção (jobs/máquinas), não pode
+    // ser público. Basta um JWT válido; a autorização fina fica no consumidor.
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const { data: claims, error: authErr } = await supabase.auth.getClaims(
+      authHeader.replace("Bearer ", ""),
+    );
+    if (authErr || !claims?.claims) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
     const { type, data, options } = await req.json();
 
-    let pdfContent: Uint8Array;
+    let textContent: Uint8Array;
 
     switch (type) {
       case "job-report":
-        pdfContent = await generateJobReport(data, options);
+        textContent = await generateJobReport(data, options);
         break;
       case "quality-report":
-        pdfContent = await generateQualityReport(data, options);
+        textContent = await generateQualityReport(data, options);
         break;
       case "maintenance-report":
-        pdfContent = await generateMaintenanceReport(data, options);
+        textContent = await generateMaintenanceReport(data, options);
         break;
       default:
         throw new Error(`Unknown report type: ${type}`);
     }
 
-    return new Response(pdfContent.buffer as ArrayBuffer, {
+    return new Response(textContent.buffer as ArrayBuffer, {
       headers: {
         ...getCorsHeaders(req),
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${type}-${Date.now()}.pdf"`,
+        // Honesto: o corpo é texto UTF-8, não um PDF binário.
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Report-Format": "text",
+        "Content-Disposition": `attachment; filename="${type}-${Date.now()}.txt"`,
       },
     });
   } catch (error) {
