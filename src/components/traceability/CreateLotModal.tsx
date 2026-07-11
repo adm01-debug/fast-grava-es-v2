@@ -6,14 +6,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+export interface NewLotState {
+  lot_number: string;
+  product_name: string;
+  quantity: number;
+  job_id: string;
+  production_date: string;
+  expiration_date: string;
+  notes: string;
+}
+
 interface CreateLotModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  newLot: {
-    lot_number: string; product_name: string; quantity: number; job_id: string;
-    production_date: string; expiration_date: string; notes: string;
-  };
-  setNewLot: React.Dispatch<React.SetStateAction<any>>;
+  newLot: NewLotState;
+  setNewLot: React.Dispatch<React.SetStateAction<NewLotState>>;
   jobs: Array<{ id: string; order_number: string; client: string }> | undefined;
   onCreateLot: () => void;
   isPending: boolean;
