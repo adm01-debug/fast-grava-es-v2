@@ -28,7 +28,7 @@ const severityConfig: Record<string, {
   warning: {
     icon: AlertTriangle,
     variant: 'outline',
-    className: 'text-amber-500'
+    className: 'text-warning'
   },
   error: {
     icon: AlertCircle,

@@ -139,14 +139,14 @@ function AlertCard({
   return (
     <div className={cn(
       "p-4 border rounded-lg transition-colors",
-      !alert.acknowledged && "border-amber-500/50 bg-amber-500/5",
+      !alert.acknowledged && "border-warning/50 bg-warning/5",
       alert.acknowledged && "bg-muted/30"
     )}>
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div className={cn(
           "p-2 rounded-full flex-shrink-0",
-          !alert.acknowledged ? "bg-amber-500/10 text-amber-600" : "bg-green-500/10 text-green-600"
+          !alert.acknowledged ? "bg-warning/10 text-warning" : "bg-green-500/10 text-green-600"
         )}>
           {!alert.acknowledged ? (
             <AlertTriangle className="h-5 w-5" />

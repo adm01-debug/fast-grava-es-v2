@@ -129,7 +129,7 @@ export function TPMNotificationSettings() {
 
                 <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-secondary/10">
                   <div className="flex items-center gap-3">
-                    <Bell className="h-5 w-5 text-emerald-500" />
+                    <Bell className="h-5 w-5 text-success" />
                     <div>
                       <p className="font-medium">Push (Navegador)</p>
                       <p className="text-xs text-muted-foreground">Notificações em tempo real na tela</p>
@@ -285,7 +285,7 @@ export function TPMNotificationSettings() {
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       { id: 'upcoming', label: 'Próximas', icon: <Calendar className="h-4 w-4 text-blue-400" /> },
-                      { id: 'due', label: 'Vence Hoje', icon: <Clock className="h-4 w-4 text-amber-400" /> },
+                      { id: 'due', label: 'Vence Hoje', icon: <Clock className="h-4 w-4 text-warning" /> },
                       { id: 'overdue', label: 'Atrasadas', icon: <AlertTriangle className="h-4 w-4 text-orange-400" /> },
                       { id: 'critical', label: 'Críticas', icon: <AlertCircle className="h-4 w-4 text-destructive" /> },
                     ].map(type => (

@@ -43,7 +43,7 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
             key={key}
             className={`p-3 rounded-lg border ${
               outOfRange ? 'bg-destructive/5 border-destructive/20' :
-              differsFromRecommended ? 'bg-amber-500/10 border-amber-500/30' :
+              differsFromRecommended ? 'bg-warning/10 border-warning/30' :
               'bg-secondary/20 border-border/50'
             }`}
           >
@@ -60,7 +60,7 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
               </p>
             )}
             {differsFromRecommended && !outOfRange && (
-              <p className="text-[9px] text-amber-600 font-medium">Rec: {recommended}</p>
+              <p className="text-[9px] text-warning font-medium">Rec: {recommended}</p>
             )}
           </div>
         );

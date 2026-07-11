@@ -187,7 +187,7 @@ export function ChecklistManager() {
                 variant="outline"
                 size="sm"
                 onClick={handleToggleActive}
-                className={currentChecklist.is_active ? "text-destructive" : "text-emerald-600"}
+                className={currentChecklist.is_active ? "text-destructive" : "text-success"}
               >
                 {currentChecklist.is_active ? 'Desativar' : 'Ativar'}
               </Button>

@@ -30,9 +30,9 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
+        return <CheckCircle2 className="h-5 w-5 text-success" />;
       case 'completed':
-        return <Clock className="h-5 w-5 text-amber-500" />;
+        return <Clock className="h-5 w-5 text-warning" />;
       case 'in_progress':
         return <Wrench className="h-5 w-5 text-blue-500" />;
       default:
@@ -72,7 +72,7 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
                     </span>
                   </div>
                   {record.status === 'approved' && (
-                    <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200 text-[10px]">
+                    <Badge className="bg-success/10 text-success border-success text-[10px]">
                       APROVADO
                     </Badge>
                   )}

@@ -59,7 +59,7 @@ export const OEELossDrilldown = memo(function OEELossDrilldown({ filters }: OEEL
         label: id === 'quality' ? 'Qualidade' : id === 'performance' ? 'Performance' : 'Disponibilidade',
         value,
         type: 'category' as const,
-        color: id === 'quality' ? 'text-amber-500' : id === 'performance' ? 'text-blue-500' : 'text-red-500',
+        color: id === 'quality' ? 'text-warning' : id === 'performance' ? 'text-blue-500' : 'text-red-500',
         icon: id === 'quality' ? Target : id === 'performance' ? Gauge : Clock
       }));
     }

@@ -34,7 +34,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
       return <Badge className="bg-blue-500 text-[10px] h-5">Hoje</Badge>;
     }
     if (daysUntil <= 3) {
-      return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 text-[10px] h-5">Próximo</Badge>;
+      return <Badge variant="secondary" className="bg-warning/20 text-warning text-[10px] h-5">Próximo</Badge>;
     }
     return <Badge variant="outline" className="text-[10px] h-5">Agendado</Badge>;
   };

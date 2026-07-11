@@ -455,7 +455,7 @@ export function MaintenanceExecutionModal({
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700">
+              <div className="flex items-center gap-3 p-4 rounded-lg bg-warning/10 border border-warning/20 text-warning">
                 <AlertTriangle className="h-5 w-5" />
                 <p className="text-sm">Nenhum checklist configurado para este tipo de manutenção.</p>
               </div>
@@ -471,7 +471,7 @@ export function MaintenanceExecutionModal({
             {/* Technical Sheet & Adjustments */}
             <div className="space-y-4 pt-4 border-t border-border/50">
               <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" />
+                <Zap className="h-5 w-5 text-warning" />
                 Regulagem Técnica
               </h3>
               <div className="space-y-4">
@@ -586,12 +586,12 @@ export function MaintenanceExecutionModal({
                 {selectedSheetId && technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist && (technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.length || 0) > 0 && (
                   <div className="space-y-3 pt-2">
                     <Label className="text-sm font-semibold flex items-center gap-2">
-                      <CheckSquare className="h-4 w-4 text-emerald-500" />
+                      <CheckSquare className="h-4 w-4 text-success" />
                       Checklist de Qualidade (Obrigatório)
                     </Label>
                     <div className="grid grid-cols-1 gap-3">
                       {technicalSheets.find(s => s.id === selectedSheetId)?.quality_checklist?.map((item) => (
-                        <div key={item.id} className="space-y-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                        <div key={item.id} className="space-y-2 p-3 rounded-lg bg-success/5 border border-success/10">
                           <div className="flex items-center gap-3">
                             <Checkbox
                               id={`quality-${item.id}`}

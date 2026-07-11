@@ -60,8 +60,8 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
             Telemetria em Tempo Real (IIoT)
           </CardTitle>
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-medium text-emerald-500 uppercase">Live</span>
+            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            <span className="text-[10px] font-medium text-success uppercase">Live</span>
           </div>
         </div>
       </CardHeader>
@@ -73,7 +73,7 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
             <span className="text-xl font-bold font-display">{currentValues.vibration} mm/s</span>
           </div>
           <div className="p-4 border-r border-border/50 flex flex-col items-center">
-            <Thermometer className="h-4 w-4 text-amber-500 mb-1" />
+            <Thermometer className="h-4 w-4 text-warning mb-1" />
             <span className="text-[10px] text-muted-foreground uppercase">Temp</span>
             <span className="text-xl font-bold font-display">{currentValues.temperature}°C</span>
           </div>
