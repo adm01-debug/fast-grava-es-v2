@@ -260,7 +260,7 @@ export function createMutationErrorHandler(
   customMessage?: string,
   context?: Record<string, unknown>
 ) {
-  return (error: any) => {
+  return (error: unknown) => {
     showErrorToast(error, customMessage, context);
   };
 }
@@ -268,14 +268,14 @@ export function createMutationErrorHandler(
 /**
  * Checks if an error is a specific type
  */
-export function isErrorCode(error: any, code: ErrorCode): boolean {
+export function isErrorCode(error: unknown, code: ErrorCode): boolean {
   return categorizeError(error) === code;
 }
 
 /**
  * Checks if the error is network-related
  */
-export function isNetworkError(error: any): boolean {
+export function isNetworkError(error: unknown): boolean {
   const code = categorizeError(error);
   return code === ErrorCodes.NETWORK_ERROR || code === ErrorCodes.TIMEOUT;
 }
@@ -283,9 +283,10 @@ export function isNetworkError(error: any): boolean {
 /**
  * Checks if the error is auth-related
  */
-export function isAuthError(error: any): boolean {
+export function isAuthError(error: unknown): boolean {
   const code = categorizeError(error);
   return code === ErrorCodes.UNAUTHORIZED ||
          code === ErrorCodes.FORBIDDEN ||
          code === ErrorCodes.SESSION_EXPIRED;
 }
+
