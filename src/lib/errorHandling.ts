@@ -167,10 +167,11 @@ export function createAppError(
  * Shows an error toast with appropriate styling
  */
 export function showErrorToast(
-  error: any,
+  error: unknown,
   customMessage?: string,
   context?: Record<string, unknown>
 ): void {
+
   const appError = createAppError(error, context);
   const message = customMessage || appError.message;
 
