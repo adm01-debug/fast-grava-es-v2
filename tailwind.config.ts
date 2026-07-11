@@ -32,7 +32,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Outfit", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
-        display: ["Plus Jakarta Sans", "Outfit", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        display: ["Outfit", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {
