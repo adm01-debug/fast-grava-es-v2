@@ -350,7 +350,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       const { data: recordData, error: recordFetchError } = await (supabase
         .from('maintenance_records')
-        .select('*, schedule:maintenance_schedules(*)') as any)
+        .select('*, schedule:maintenance_schedules(*)') as unknown as ReturnType<typeof supabase.from<'maintenance_records'>>)
         .eq('id', data.record_id)
         .maybeSingle();
 
