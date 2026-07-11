@@ -102,7 +102,7 @@ export default function OperatorView() {
 
         <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold"><span className="gradient-text">Visão do Operador</span></h1>
+            <h1 className="text-display"><span className="gradient-text">Visão do Operador</span></h1>
             <p className="text-muted-foreground text-sm">Gerencie suas produções {!isOnline && '(Modo Offline)'}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
