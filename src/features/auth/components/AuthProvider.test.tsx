@@ -63,15 +63,14 @@ describe('AuthContext', () => {
       <AuthProvider>{children}</AuthProvider>
     );
 
-    let result: any;
-    await act(async () => {
-      const renderResult = renderHook(() => useAuth(), { wrapper });
-      result = renderResult.result;
-    });
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
-    expect(result.current.isLoading).toBe(false); // After act, loading should be done
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
     expect(result.current.user).toBeNull();
   });
+
 
   it('should sign in successfully', async () => {
     const mockUser = { id: 'test-user', email: 'test@example.com' };
