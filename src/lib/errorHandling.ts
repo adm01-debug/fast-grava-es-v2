@@ -129,9 +129,10 @@ export function categorizeError(error: unknown): ErrorCode {
  * Creates a standardized AppError from any error
  */
 export function createAppError(
-  error: any,
+  error: unknown,
   context?: Record<string, unknown>
 ): AppError {
+
   const code = categorizeError(error);
   const message = ErrorMessages[code];
 
