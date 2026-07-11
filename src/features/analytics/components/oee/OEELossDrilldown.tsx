@@ -35,6 +35,25 @@ interface PathItem {
   type: 'category' | 'reason' | 'job';
 }
 
+interface LossRecord {
+  id: string;
+  quantity: number;
+  loss_type?: string | null;
+  notes?: string | null;
+  job_id: string;
+  job?: { order_number?: string | null; client?: string | null } | null;
+}
+
+interface DrilldownItem {
+  id: string;
+  label: string;
+  sublabel?: string;
+  value: number;
+  type: 'category' | 'reason' | 'job';
+  color: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
 export const OEELossDrilldown = memo(function OEELossDrilldown({ filters }: OEELossDrilldownProps) {
   const [path, setPath] = useState<PathItem[]>([]);
   const { losses, isLoading } = useProductionLosses(undefined, filters);
