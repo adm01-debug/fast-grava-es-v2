@@ -170,7 +170,7 @@ export default function KPIDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
+            <h1 className="text-display">
               <span className="gradient-text">Dashboard de KPIs</span>
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base">
