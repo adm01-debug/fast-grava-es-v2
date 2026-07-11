@@ -126,7 +126,7 @@ export default function MachinesPage() {
   };
 
   const filteredMachines = useMemo(() => {
-    return machines.filter((m: any) => {
+    return machines.filter((m: DbMachine) => {
       const matchesSearch = m.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            m.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'all' ||
@@ -137,15 +137,16 @@ export default function MachinesPage() {
   }, [machines, searchTerm, statusFilter]);
 
   const machinesByTechnique = useMemo(() => {
-    return filteredMachines.reduce((acc: any, machine: any) => {
+    return filteredMachines.reduce<Record<string, DbMachine[]>>((acc, machine) => {
       const techniqueId = machine.technique_id;
       if (!acc[techniqueId]) {
         acc[techniqueId] = [];
       }
       acc[techniqueId].push(machine);
       return acc;
-    }, {} as Record<string, typeof machines>);
+    }, {});
   }, [filteredMachines]);
+
 
   if (isLoadingMachines) {
     return (
