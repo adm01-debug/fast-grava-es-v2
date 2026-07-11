@@ -124,7 +124,7 @@ export default function SPCDashboard() {
         <Breadcrumbs />
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black font-display tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl font-black text-title tracking-tight flex items-center gap-3">
               <Activity className="h-8 w-8 text-primary" />
               Statistical Process Control (SPC)
             </h1>
@@ -174,11 +174,11 @@ export default function SPCDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card border-amber-500/20 bg-warning/5">
+          <Card className="glass-card border-warning/20 bg-warning/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                  <TrendingUp className="h-5 w-5 text-warning" />
-                 <Badge variant="outline" className="text-[10px] font-black uppercase text-warning border-amber-500/30">Capacidade</Badge>
+                 <Badge variant="outline" className="text-[10px] font-black uppercase text-warning border-warning/30">Capacidade</Badge>
               </div>
               <p className="text-3xl font-black text-warning">{capability?.cpk?.toFixed(2) || '-'}</p>
               <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Cpk (Índice Médio)</p>
@@ -215,7 +215,7 @@ export default function SPCDashboard() {
             />
 
             {selectedParameter && runRuleViolations.length > 0 && (
-              <Card className="border-amber-500/20 bg-warning/5 overflow-hidden">
+              <Card className="border-warning/20 bg-warning/5 overflow-hidden">
                 <CardHeader className="py-3 bg-warning/10">
                    <CardTitle className="text-sm font-black uppercase tracking-widest text-warning flex items-center gap-2">
                      <BrainCircuit className="h-4 w-4" />
@@ -225,7 +225,7 @@ export default function SPCDashboard() {
                 <CardContent className="pt-4">
                   <div className="grid gap-3 md:grid-cols-2">
                     {runRuleViolations.map((violation, idx) => (
-                      <div key={idx} className="p-3 rounded-lg bg-background border border-amber-500/30 flex items-start gap-3 shadow-sm">
+                      <div key={idx} className="p-3 rounded-lg bg-background border border-warning/30 flex items-start gap-3 shadow-sm">
                          <div className="p-2 rounded-full bg-warning/10 text-warning">
                            <AlertTriangle className="h-4 w-4" />
                          </div>

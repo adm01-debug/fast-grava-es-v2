@@ -79,7 +79,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-display font-bold text-foreground">
+              <h1 className="text-2xl text-title font-bold text-foreground">
                 Algo deu errado
               </h1>
               <p className="text-muted-foreground">

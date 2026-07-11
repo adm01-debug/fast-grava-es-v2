@@ -70,7 +70,7 @@ export function MLNotificationSettings() {
         <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
           <div className="flex items-center gap-3">
             {permission === 'granted' ? (
-              <Bell className="h-5 w-5 text-emerald-500" />
+              <Bell className="h-5 w-5 text-success" />
             ) : (
               <BellOff className="h-5 w-5 text-muted-foreground" />
             )}
@@ -91,7 +91,7 @@ export function MLNotificationSettings() {
             </Button>
           )}
           {permission === 'granted' && (
-            <Badge variant="default" className="bg-emerald-500">
+            <Badge variant="default" className="bg-success">
               Ativo
             </Badge>
           )}
@@ -122,7 +122,7 @@ export function MLNotificationSettings() {
           />
 
           <NotificationToggle
-            icon={<Zap className="h-5 w-5 text-amber-500" />}
+            icon={<Zap className="h-5 w-5 text-warning" />}
             label="Risco Médio (40-59%)"
             description="Aviso para riscos moderados"
             checked={preferences.mediumRisk}

@@ -245,7 +245,7 @@ export default function ExecutiveDashboard() {
                 <ShieldCheck className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-display font-black tracking-tighter">
+                <h1 className="text-3xl sm:text-4xl text-title font-black tracking-tighter">
                   <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
                 </h1>
                 <div className="flex flex-wrap items-center gap-2 mt-1">

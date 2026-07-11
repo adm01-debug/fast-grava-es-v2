@@ -22,8 +22,8 @@ const poolTypeLabels: Record<string, string> = {
 
 const poolTypeColors: Record<string, string> = {
   direct_labor: 'bg-blue-500',
-  machine: 'bg-emerald-500',
-  overhead: 'bg-amber-500',
+  machine: 'bg-success',
+  overhead: 'bg-warning',
   material: 'bg-purple-500',
   setup: 'bg-rose-500',
 };

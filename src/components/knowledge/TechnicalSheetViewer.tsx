@@ -238,7 +238,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                   <span className="text-[10px] text-muted-foreground">{format(new Date(sheet.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <TrendingUp className="h-3 w-3 text-emerald-500" />
+                  <TrendingUp className="h-3 w-3 text-success" />
                   <span className="text-[10px] text-muted-foreground font-semibold uppercase">{sheet.view_count || 0} ACESSOS</span>
                 </div>
               </div>
@@ -251,7 +251,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                 variant="ghost"
                 size="icon"
                 onClick={() => toggleFavorite.mutate({ sheetId, isFavorite: favorites.includes(sheetId) })}
-                className={favorites.includes(sheetId) ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}
+                className={favorites.includes(sheetId) ? "text-warning fill-amber-500" : "text-muted-foreground"}
                 title={favorites.includes(sheetId) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               >
                 <Star className="h-4 w-4" />
@@ -386,7 +386,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
 
                     {sheet.machine_settings && Object.values(sheet.machine_settings).some(v => v) && (
                       <div className="space-y-4">
-                        <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-600">
+                        <h3 className="flex items-center gap-2 text-sm font-semibold text-warning">
                           <Zap className="h-4 w-4" />
                           Regulagem da Máquina
                         </h3>
@@ -404,13 +404,13 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                             if (!value && (!range || (!range.min && !range.max))) return null;
 
                             return (
-                              <div key={param} className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                              <div key={param} className="p-3 rounded-lg bg-warning/5 border border-warning/10">
                                 <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                                   {param === 'temperature' ? <Thermometer className="h-3 w-3" /> : param === 'squeegee_passes' ? <MoveHorizontal className="h-3 w-3" /> : <Zap className="h-3 w-3" />} {labels[param]}
                                 </Label>
                                 <p className="text-sm font-bold">{value || '-'}</p>
                                 {range && (range.min || range.max) && (
-                                  <p className="text-[10px] text-muted-foreground mt-1 border-t border-amber-500/10 pt-1">
+                                  <p className="text-[10px] text-muted-foreground mt-1 border-t border-warning/10 pt-1">
                                     Faixa: {range.min || '-'} a {range.max || '-'}
                                   </p>
                                 )}
@@ -460,14 +460,14 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
 
                   {sheet.quality_checklist && sheet.quality_checklist.length > 0 && (
                     <div className="space-y-4">
-                      <h3 className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                      <h3 className="flex items-center gap-2 text-sm font-semibold text-success">
                         <CheckSquare className="h-4 w-4" />
                         Critérios de Qualidade
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {sheet.quality_checklist.map((item) => (
-                          <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-success/5 border border-success/10">
+                            <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
                             <span className="text-sm font-medium">{item.description}</span>
                             {item.required && <Badge variant="outline" className="ml-auto text-[8px] h-4">REQ</Badge>}
                           </div>
@@ -493,16 +493,16 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                             </div>
                           )}
                           {sheet.quality_requirements && (
-                            <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                              <Label className="text-[10px] text-muted-foreground uppercase font-bold text-emerald-700">Requisitos de Qualidade</Label>
+                            <div className="p-3 rounded-lg bg-success/5 border border-success/10">
+                              <Label className="text-[10px] text-muted-foreground uppercase font-bold text-success">Requisitos de Qualidade</Label>
                               <p className="text-sm font-medium">{sheet.quality_requirements}</p>
                             </div>
                           )}
                         </div>
 
                         {sheet.challenges_notes && (
-                          <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                            <Label className="text-[10px] text-amber-700 uppercase font-bold flex items-center gap-1">
+                          <div className="p-3 rounded-lg bg-warning/5 border border-warning/10">
+                            <Label className="text-[10px] text-warning uppercase font-bold flex items-center gap-1">
                               <AlertTriangle className="h-3 w-3" /> Desafios Técnicos
                             </Label>
                             <p className="text-sm mt-1 whitespace-pre-wrap">{sheet.challenges_notes}</p>
@@ -635,7 +635,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                       auditLogs.map((log: any) => (
                         <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
                           <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
-                            log.action === 'CREATE' ? 'bg-emerald-500' :
+                            log.action === 'CREATE' ? 'bg-success' :
                             log.action === 'DELETE' ? 'bg-rose-500' : 'bg-primary'
                           } shadow-sm`} />
                           <div className="bg-muted/30 p-4 rounded-lg border border-border/50">

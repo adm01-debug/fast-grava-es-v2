@@ -29,7 +29,7 @@ export function CardVariants() {
             <CardContent><div className="text-2xl font-bold text-foreground">1,234</div><code className="text-xs text-primary mt-2 block">variant="stat"</code></CardContent>
           </Card>
           <Card variant="premium">
-            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Coins className="h-4 w-4 text-amber-500" />Premium</CardTitle><CardDescription>Destaque especial com acento dourado</CardDescription></CardHeader>
+            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Coins className="h-4 w-4 text-warning" />Premium</CardTitle><CardDescription>Destaque especial com acento dourado</CardDescription></CardHeader>
             <CardContent><code className="text-xs text-primary">variant="premium"</code></CardContent>
           </Card>
         </div>

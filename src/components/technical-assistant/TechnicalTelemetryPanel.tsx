@@ -45,7 +45,7 @@ export function TechnicalTelemetryPanel() {
             <Activity className="h-4 w-4 text-primary animate-pulse" />
             Telemetria Industrial
           </CardTitle>
-          <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-500 border-emerald-500/20 animate-pulse">
+          <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-success/20 animate-pulse">
             SISTEMA NOMINAL
           </Badge>
         </div>
@@ -63,7 +63,7 @@ export function TechnicalTelemetryPanel() {
           >
             <div className="flex items-center justify-between mb-1">
               <Thermometer className={cn("h-3 w-3", activeMetric === 'temp' ? "text-orange-500" : "text-muted-foreground")} />
-              <TrendingUp className="h-2.5 w-2.5 text-emerald-500" />
+              <TrendingUp className="h-2.5 w-2.5 text-success" />
             </div>
             <p className="text-[9px] font-bold uppercase text-muted-foreground group-hover:text-foreground transition-colors">Temp</p>
             <p className="text-lg font-black tracking-tight">{data[data.length - 1].temp.toFixed(1)}°C</p>
@@ -78,7 +78,7 @@ export function TechnicalTelemetryPanel() {
           >
             <div className="flex items-center justify-between mb-1">
               <Gauge className={cn("h-3 w-3", activeMetric === 'pressure' ? "text-blue-500" : "text-muted-foreground")} />
-              <CheckCircle2 className="h-2.5 w-2.5 text-emerald-500" />
+              <CheckCircle2 className="h-2.5 w-2.5 text-success" />
             </div>
             <p className="text-[9px] font-bold uppercase text-muted-foreground group-hover:text-foreground transition-colors">Pressão</p>
             <p className="text-lg font-black tracking-tight">{data[data.length - 1].pressure.toFixed(2)} bar</p>
@@ -161,7 +161,7 @@ export function TechnicalTelemetryPanel() {
                 <Database className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                 <span className="text-[10px] font-black uppercase tracking-tighter">Knowledge Base</span>
               </div>
-              <Badge variant="outline" className="text-[8px] h-4 border-emerald-500/20 text-emerald-500 bg-emerald-500/5">SYNCED</Badge>
+              <Badge variant="outline" className="text-[8px] h-4 border-success/20 text-success bg-success/5">SYNCED</Badge>
             </div>
             <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/30 transition-all group cursor-pointer">
               <div className="flex items-center gap-2">
@@ -169,8 +169,8 @@ export function TechnicalTelemetryPanel() {
                 <span className="text-[10px] font-black uppercase tracking-tighter">API Latency</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-black text-emerald-500">12ms</span>
+                <div className="w-1 h-1 rounded-full bg-success" />
+                <span className="text-[10px] font-black text-success">12ms</span>
               </div>
             </div>
             <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/30 transition-all group cursor-pointer">

@@ -212,8 +212,8 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
             </section>
           )}
 
-          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2">
-            <div className="flex items-center gap-2 mb-1 text-amber-500">
+          <div className="p-4 rounded-xl bg-warning/5 border border-warning/20 space-y-2">
+            <div className="flex items-center gap-2 mb-1 text-warning">
               <Lightbulb className="h-4 w-4" />
               <h5 className="text-xs font-bold uppercase tracking-wider">Desafios e Dicas</h5>
             </div>

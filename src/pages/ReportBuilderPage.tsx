@@ -292,7 +292,7 @@ export default function ReportBuilderPage() {
         <Breadcrumbs />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-black flex items-center gap-3 tracking-tighter uppercase">
+            <h1 className="text-2xl sm:text-3xl text-title font-black flex items-center gap-3 tracking-tighter uppercase">
               <FileDown className="h-8 w-8 text-primary" />
               FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
@@ -519,13 +519,13 @@ export default function ReportBuilderPage() {
                 </CardContent>
              </Card>
 
-             <Card className="glass-card border-amber-500/20 bg-warning/5">
+             <Card className="glass-card border-warning/20 bg-warning/5">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-warning">Formato de Saída</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Select value={formatType} onValueChange={(v: 'csv' | 'pdf' | 'excel') => setFormatType(v)}>
-                    <SelectTrigger className="bg-background/50 border-amber-500/20 text-warning font-bold h-9">
+                    <SelectTrigger className="bg-background/50 border-warning/20 text-warning font-bold h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

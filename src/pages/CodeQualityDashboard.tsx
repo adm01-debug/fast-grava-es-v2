@@ -40,7 +40,7 @@ export default function CodeQualityDashboard() {
       <div className="space-y-6 animate-fade-in">
         <Breadcrumbs />
         <div className="flex items-center justify-between">
-          <div><h1 className="text-3xl font-display font-bold text-foreground">Qualidade de Código</h1><p className="text-muted-foreground mt-1">Métricas de testes, cobertura e complexidade</p></div>
+          <div><h1 className="text-3xl text-title font-bold text-foreground">Qualidade de Código</h1><p className="text-muted-foreground mt-1">Métricas de testes, cobertura e complexidade</p></div>
           <Badge variant="outline" className="text-sm"><GitBranch className="h-3 w-3 mr-1" />main</Badge>
         </div>
 

@@ -279,7 +279,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold flex items-center gap-2">
-              <CheckSquare className="h-4 w-4 text-emerald-500" />
+              <CheckSquare className="h-4 w-4 text-success" />
               Checklist de Qualidade
             </h3>
             <Button
@@ -437,7 +437,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
 
         <div className="space-y-4">
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            <Maximize2 className="h-4 w-4 text-emerald-500" />
+            <Maximize2 className="h-4 w-4 text-success" />
             Padrões Visuais de Qualidade
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -466,7 +466,7 @@ export function EditorBasicInfo({ formData, setFormData, techniques, categories,
 
         <div className="space-y-4">
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <AlertTriangle className="h-4 w-4 text-warning" />
             Orientações de Produção e Qualidade
           </h3>
 

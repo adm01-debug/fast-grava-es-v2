@@ -111,7 +111,7 @@ export default function PublicTrackingPage() {
             <ShieldCheck className="h-3 w-3" />
             {t('tracking.portalName')}
           </div>
-          <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tighter mb-4">
+          <h1 className="text-4xl sm:text-5xl text-title font-black tracking-tighter mb-4">
             {t('tracking.title')}
           </h1>
           <p className="text-muted-foreground max-w-md mx-auto">

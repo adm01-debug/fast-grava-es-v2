@@ -88,7 +88,7 @@ export default function GamificationPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold">
+              <h1 className="text-2xl sm:text-3xl text-title font-bold">
                 <span className="gradient-text">{t('gamification.ranking')}</span>
               </h1>
               <FavoriteButton

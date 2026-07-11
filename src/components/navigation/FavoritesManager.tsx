@@ -113,7 +113,7 @@ export function FavoriteButton({ path, name, icon, variant = "icon", className }
       variant="ghost"
       className={cn(
         "transition-colors h-9 w-9",
-        isStarred ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-amber-500",
+        isStarred ? "text-warning hover:text-warning" : "text-muted-foreground hover:text-warning",
         className
       )}
       onClick={(e) => {

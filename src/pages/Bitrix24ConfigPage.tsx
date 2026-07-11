@@ -112,7 +112,7 @@ const Bitrix24ConfigPage = () => {
         <Breadcrumbs />
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-3"><Settings2 className="h-7 w-7 text-primary" />Configuração Bitrix24</h1>
+            <h1 className="text-2xl text-title font-bold text-foreground flex items-center gap-3"><Settings2 className="h-7 w-7 text-primary" />Configuração Bitrix24</h1>
             <p className="text-muted-foreground mt-1">Configure a integração, mapeamento de campos e categorias de deals</p>
           </div>
           <Bitrix24MappingDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} newMapping={newMapping} setNewMapping={setNewMapping} onSave={saveMapping} isLoading={isLoading} bitrixFields={bitrixFields} />

@@ -67,7 +67,7 @@ export default function ABCCostingDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-display font-black tracking-tighter uppercase">
+                <h1 className="text-3xl text-title font-black tracking-tighter uppercase">
                   <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
                 </h1>
             </div>

@@ -354,7 +354,7 @@ export default function KanbanBoard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl text-title font-bold">
                   <span className="gradient-text">Kanban</span>
                 </h1>
                 <FavoriteButton path="/kanban" name="Kanban" />

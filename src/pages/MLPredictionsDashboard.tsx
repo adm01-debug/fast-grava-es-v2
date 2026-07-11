@@ -55,7 +55,7 @@ export default function MLPredictionsDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-3 uppercase">
+            <h1 className="text-3xl text-title font-black tracking-tighter flex items-center gap-3 uppercase">
               <Brain className="h-8 w-8 text-primary" />
               FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>

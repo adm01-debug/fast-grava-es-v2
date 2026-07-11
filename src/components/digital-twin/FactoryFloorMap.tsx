@@ -70,8 +70,8 @@ export function FactoryFloorMap() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className="gap-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[9px] font-bold">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <Badge variant="outline" className="gap-2 bg-success/10 text-success border-success/20 text-[9px] font-bold">
+            <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             MOTOR DE SINCRO V2.4 ATIVO
           </Badge>
         </div>
@@ -88,8 +88,8 @@ export function FactoryFloorMap() {
           <div className="absolute top-0 left-1/2 w-[2px] h-full bg-primary animate-[shimmer_3s_infinite]" />
 
           <div className="absolute top-[20%] left-0 w-2 h-2 bg-primary rounded-full animate-[ping_1.5s_infinite] shadow-glow-primary" style={{ left: '25%' }} />
-          <div className="absolute top-[40%] left-0 w-2 h-2 bg-emerald-500 rounded-full animate-[ping_2s_infinite] shadow-glow-success" style={{ left: '65%' }} />
-          <div className="absolute top-[80%] left-0 w-2 h-2 bg-amber-500 rounded-full animate-[ping_2.5s_infinite] shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ left: '45%' }} />
+          <div className="absolute top-[40%] left-0 w-2 h-2 bg-success rounded-full animate-[ping_2s_infinite] shadow-glow-success" style={{ left: '65%' }} />
+          <div className="absolute top-[80%] left-0 w-2 h-2 bg-warning rounded-full animate-[ping_2.5s_infinite] shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ left: '45%' }} />
         </div>
 
         {/* Walls/Areas */}
@@ -121,7 +121,7 @@ export function FactoryFloorMap() {
                         className={cn(
                           "w-full aspect-square rounded-lg border-2 flex flex-col items-center justify-center p-4 transition-all duration-500 cursor-pointer relative overflow-hidden",
                           isWorking ? "bg-primary/5 border-primary/40 shadow-glow-primary" : "bg-muted/20 border-border/30 grayscale opacity-70",
-                          heatmapType === 'load' && isWorking && status.load > 90 ? "bg-amber-500/20 border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-[1.02]" :
+                          heatmapType === 'load' && isWorking && status.load > 90 ? "bg-warning/20 border-warning/60 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-[1.02]" :
                           heatmapType === 'temp' && isWorking && status.temp > 60 ? "bg-rose-500/20 border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.4)] scale-[1.02]" :
                           selectedMachine === machine.id ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.05] z-50 bg-primary/10" : ""
                         )}>
@@ -144,7 +144,7 @@ export function FactoryFloorMap() {
                         {isWorking && (
                           <div className="mt-2 w-full space-y-1">
                             <div className="h-1 w-full bg-background/50 rounded-full overflow-hidden">
-                              <div className={cn("h-full transition-all duration-1000", status.load > 90 ? 'bg-amber-500' : 'bg-primary')}
+                              <div className={cn("h-full transition-all duration-1000", status.load > 90 ? 'bg-warning' : 'bg-primary')}
                                    style={{ width: `${status.load}%` }} />
                             </div>
                           </div>
@@ -165,7 +165,7 @@ export function FactoryFloorMap() {
                                 <Activity className="h-3 w-3 text-primary" /> {status.efficiency}%
                               </div>
                               <div className="flex items-center gap-1">
-                                <Thermometer className="h-3 w-3 text-amber-500" /> {status.temp}°C
+                                <Thermometer className="h-3 w-3 text-warning" /> {status.temp}°C
                               </div>
                             </div>
                           </div>

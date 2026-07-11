@@ -33,8 +33,8 @@ export function MLRiskDistributionChart({ predictions }: MLRiskDistributionChart
 
   const getTrendIcon = () => {
     if (highRiskPercentage > 30) return <TrendingUp className="h-4 w-4 text-primary" />;
-    if (highRiskPercentage > 15) return <Minus className="h-4 w-4 text-amber-500" />;
-    return <TrendingDown className="h-4 w-4 text-emerald-500" />;
+    if (highRiskPercentage > 15) return <Minus className="h-4 w-4 text-warning" />;
+    return <TrendingDown className="h-4 w-4 text-success" />;
   };
 
   return (

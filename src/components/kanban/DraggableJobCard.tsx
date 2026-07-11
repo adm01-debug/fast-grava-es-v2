@@ -243,7 +243,7 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
             </Badge>
           ))}
           {outOfStockItems.length === 0 && lowStockItems.map(item => (
-            <Badge key={item} variant="outline" className="text-[8px] px-1 py-0 h-4 font-black uppercase bg-warning/10 text-warning border-amber-500/30">
+            <Badge key={item} variant="outline" className="text-[8px] px-1 py-0 h-4 font-black uppercase bg-warning/10 text-warning border-warning/30">
               BAIXO {item}
             </Badge>
           ))}

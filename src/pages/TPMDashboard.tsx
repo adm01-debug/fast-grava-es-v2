@@ -118,7 +118,7 @@ export default function TPMDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-black tracking-tighter uppercase">
+              <h1 className="text-3xl text-title font-black tracking-tighter uppercase">
                 <span className="gradient-text motion-safe:animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
               </h1>
               <FavoriteButton
@@ -194,7 +194,7 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-3 hover:shadow-[0_0_20px_hsl(38_92%_50%/0.3)] hover:border-amber-500/30 transition-all duration-300 group">
+          <Card className="glass-card hover-lift stagger-3 hover:shadow-[0_0_20px_hsl(38_92%_50%/0.3)] hover:border-warning/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-warning/10 group-hover:bg-warning/20 group-hover:shadow-[0_0_15px_hsl(38_92%_50%/0.4)] transition-all duration-300">
@@ -222,7 +222,7 @@ export default function TPMDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift stagger-5 hover:shadow-glow-success hover:border-emerald-500/30 transition-all duration-300 group">
+          <Card className="glass-card hover-lift stagger-5 hover:shadow-glow-success hover:border-success/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-success/10 group-hover:bg-success/20 group-hover:shadow-glow-success transition-all duration-300">

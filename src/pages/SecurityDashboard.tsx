@@ -74,7 +74,7 @@ export default function SecurityDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-black tracking-tighter">
+              <h1 className="text-3xl text-title font-black tracking-tighter">
                 <span className="gradient-text animate-pulse-glow">Cyber Resilience 10/10</span>
               </h1>
               <FavoriteButton

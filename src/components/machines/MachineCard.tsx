@@ -65,7 +65,7 @@ export function MachineCard({ machine, isSelected, onSelect, onOpenSettings, ind
               <span>OEE {metrics?.oee ? `${metrics.oee}%` : '--'}</span>
             </div>
             <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-              <Zap className={cn("h-3 w-3", (metrics?.availability || 0) < 80 ? "text-amber-500" : "text-success")} />
+              <Zap className={cn("h-3 w-3", (metrics?.availability || 0) < 80 ? "text-warning" : "text-success")} />
               <span>{metrics?.availability ? `${metrics.availability}%` : '--'} Disponib.</span>
             </div>
           </div>

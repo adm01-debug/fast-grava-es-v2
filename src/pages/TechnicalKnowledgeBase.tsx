@@ -137,7 +137,7 @@ const TechnicalKnowledgeBase = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-display font-black text-foreground flex items-center gap-2 sm:gap-3 tracking-tighter uppercase">
+            <h1 className="text-xl sm:text-2xl text-title font-black text-foreground flex items-center gap-2 sm:gap-3 tracking-tighter uppercase">
               <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 text-primary" />
               <span className="text-base sm:text-2xl">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
             </h1>

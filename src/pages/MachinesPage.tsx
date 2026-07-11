@@ -172,7 +172,7 @@ export default function MachinesPage() {
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">Máquinas</h1>
+            <h1 className="text-2xl text-title font-bold gradient-text">Máquinas</h1>
             <p className="text-muted-foreground">Orquestração e monitoramento de equipamentos industriais</p>
           </div>
           <div className="flex items-center gap-3">
@@ -568,9 +568,9 @@ function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques:
     const today = new Date().toISOString().split('T')[0];
     const scheduledToday = jobs.filter(j => j.machine_id === machine.id && j.scheduled_date === today).length;
 
-    if (scheduledToday > 0) return 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]';
+    if (scheduledToday > 0) return 'bg-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]';
 
-    return 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]';
+    return 'bg-success shadow-[0_0_10px_rgba(16,185,129,0.2)]';
   };
 
   const getMachineStats = (machine: any) => {
@@ -602,7 +602,7 @@ function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques:
             </div>
             <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-tighter shrink-0">
               <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500" /> Carga Alta</div>
-              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Normal</div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-success" /> Normal</div>
               <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-slate-400" /> Inativo</div>
             </div>
           </div>

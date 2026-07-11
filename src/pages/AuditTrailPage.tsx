@@ -34,9 +34,9 @@ export default function AuditTrailPage() {
               <ShieldCheckIcon className="h-7 w-7 text-primary" aria-hidden />
             </div>
             <div>
-              <h1 className="text-3xl font-display font-black tracking-tighter flex items-center gap-2 uppercase">
+              <h1 className="text-3xl text-title font-black tracking-tighter flex items-center gap-2 uppercase">
                 <span className="gradient-text animate-pulse-glow">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
-                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest bg-success/10 text-success border-emerald-500/20">
+                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest bg-success/10 text-success border-success/20">
                   <Lock className="h-2 w-2 mr-1" /> Imutável
                 </Badge>
               </h1>

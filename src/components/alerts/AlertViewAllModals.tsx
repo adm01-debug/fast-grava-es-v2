@@ -141,7 +141,7 @@ export function StuckJobsViewAll({ stuckJobs, onJobClick, getTechniqueById }: St
               className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                 stuck.severity === 'critical'
                   ? 'bg-primary/10 border-primary/30 hover:bg-primary/20'
-                  : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20'
+                  : 'bg-warning/10 border-warning/30 hover:bg-warning/20'
               }`}
             >
               <div className="flex items-center justify-between">
