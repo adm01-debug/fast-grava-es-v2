@@ -451,14 +451,14 @@ export default function AdminTelemetriaPage() {
                                   <div className="flex items-center gap-2">
                                     <span className="font-bold text-sm">{p.name}</span>
                                     <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
-                                      {p.attributes?.type || 'trace'}
+                                      {attrStr(p.attributes, 'type', 'trace')}
                                     </Badge>
                                   </div>
                                   <p className="text-[10px] text-muted-foreground flex items-center gap-2">
                                     <CalendarIcon className="h-3 w-3" />
                                     {format(new Date(p.created_at), 'dd/MM/yyyy HH:mm:ss')}
                                     <span className="text-primary/40">•</span>
-                                    {p.attributes?.url || '/'}
+                                    {attrStr(p.attributes, 'url', '/')}
                                   </p>
                                 </div>
                                 <div className="text-right">
@@ -468,9 +468,9 @@ export default function AdminTelemetriaPage() {
                                   )}>
                                     {p.duration_ms.toFixed(1)}ms
                                   </p>
-                                  {p.attributes?.reFetchCount > 0 && (
+                                  {attrNum(p.attributes, 'reFetchCount') > 0 && (
                                     <p className="text-[10px] font-bold text-primary">
-                                      {p.attributes.reFetchCount} Re-fetches
+                                      {attrNum(p.attributes, 'reFetchCount')} Re-fetches
                                     </p>
                                   )}
                                 </div>
