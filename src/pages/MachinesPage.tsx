@@ -82,7 +82,7 @@ export default function MachinesPage() {
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record: MaintenanceRecord) => {
+      onSuccess: (record: { id: string }) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
