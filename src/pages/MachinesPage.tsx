@@ -1,5 +1,8 @@
 import { useState, useMemo, useCallback } from 'react';
-import { DbMachine } from '@/features/jobs';
+import { DbMachine, DbTechnique } from '@/features/jobs';
+import type { MaintenanceSchedule } from '@/features/maintenance/hooks/types';
+
+
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -59,7 +62,7 @@ export default function MachinesPage() {
   const [machineForQR, setMachineForQR] = useState<DbMachine | null>(null);
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
   const [createScheduleModalOpen, setCreateScheduleModalOpen] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [selectedSchedule, setSelectedSchedule] = useState<MaintenanceSchedule | null>(null);
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
 
   const [selectedMachines, setSelectedMachines] = useState<Set<string>>(new Set());
@@ -72,19 +75,20 @@ export default function MachinesPage() {
       return;
     }
 
-    const schedule = schedules.find((s: any) => s.id === scheduleId);
-    setSelectedSchedule(schedule);
+    const schedule = schedules.find((s: MaintenanceSchedule) => s.id === scheduleId);
+    setSelectedSchedule(schedule ?? null);
 
     startMaintenance.mutate({
       schedule_id: scheduleId,
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record: any) => {
+      onSuccess: (record: { id: string }) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
     });
+
   };
 
   const handleCompleteMaintenance = (data: Parameters<NonNullable<React.ComponentProps<typeof MaintenanceExecutionModal>['onComplete']>>[0]) => {
@@ -123,7 +127,7 @@ export default function MachinesPage() {
   };
 
   const filteredMachines = useMemo(() => {
-    return machines.filter((m: any) => {
+    return machines.filter((m: DbMachine) => {
       const matchesSearch = m.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            m.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'all' ||
@@ -134,15 +138,16 @@ export default function MachinesPage() {
   }, [machines, searchTerm, statusFilter]);
 
   const machinesByTechnique = useMemo(() => {
-    return filteredMachines.reduce((acc: any, machine: any) => {
+    return filteredMachines.reduce<Record<string, DbMachine[]>>((acc, machine) => {
       const techniqueId = machine.technique_id;
       if (!acc[techniqueId]) {
         acc[techniqueId] = [];
       }
       acc[techniqueId].push(machine);
       return acc;
-    }, {} as Record<string, typeof machines>);
+    }, {});
   }, [filteredMachines]);
+
 
   if (isLoadingMachines) {
     return (
@@ -312,7 +317,7 @@ export default function MachinesPage() {
                               />
                               <span>{technique?.name || 'Técnica Desconhecida'}</span>
                               <Badge variant="secondary" className="text-[10px] uppercase font-bold tracking-widest">
-                                {(techMachines as any[]).length}
+                                {(techMachines as DbMachine[]).length}
                               </Badge>
                             </CardTitle>
                             <Button
@@ -320,10 +325,10 @@ export default function MachinesPage() {
                               size="sm"
                               className="text-[10px] uppercase font-bold tracking-tighter"
                               onClick={() => {
-                                const allSelected = (techMachines as any[]).every((m: any) => selectedMachines.has(m.id));
+                                const allSelected = (techMachines as DbMachine[]).every((m) => selectedMachines.has(m.id));
                                 setSelectedMachines(prev => {
                                   const next = new Set(prev);
-                                  (techMachines as any[]).forEach((m: any) => {
+                                  (techMachines as DbMachine[]).forEach((m) => {
                                     if (allSelected) next.delete(m.id);
                                     else next.add(m.id);
                                   });
@@ -331,13 +336,14 @@ export default function MachinesPage() {
                                 });
                               }}
                             >
-                              {(techMachines as any[]).every((m: any) => selectedMachines.has(m.id)) ? 'Deselecionar' : 'Selecionar Grupo'}
+                              {(techMachines as DbMachine[]).every((m) => selectedMachines.has(m.id)) ? 'Deselecionar' : 'Selecionar Grupo'}
                             </Button>
                           </div>
                         </CardHeader>
                         <CardContent className="pt-6">
                           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {(techMachines as any[]).map((machine: any, idx: number) => {
+                            {(techMachines as DbMachine[]).map((machine, idx: number) => {
+
                               const machineMetrics = oeeData?.byMachine.find(m => m.machineId === machine.id);
                               return (
                                 <div key={machine.id} className="relative group">
@@ -507,7 +513,7 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
-  const { exportAuditTrail } = useDataExport('machines' as any);
+  const { exportAuditTrail } = useDataExport('machines');
 
   const handleExport = useCallback((format: 'csv' | 'pdf') => {
     exportAuditTrail({
@@ -553,10 +559,10 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
   );
 }
 
-function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques: any[] }) {
+function FactoryHeatmap({ machines, techniques }: { machines: DbMachine[]; techniques: DbTechnique[] }) {
   const { jobs } = useSchedulingData();
 
-  const getHeatColor = (machine: any) => {
+  const getHeatColor = (machine: DbMachine) => {
     if (!machine.is_active) return 'bg-slate-200 dark:bg-slate-800 opacity-40';
 
     // Count jobs in production for this machine
@@ -573,7 +579,8 @@ function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques:
     return 'bg-success shadow-[0_0_10px_rgba(16,185,129,0.2)]';
   };
 
-  const getMachineStats = (machine: any) => {
+  const getMachineStats = (machine: DbMachine) => {
+
     const machineJobs = jobs.filter(j => j.machine_id === machine.id);
     const productionCount = machineJobs.filter(j => j.status === 'production').length;
     const today = new Date().toISOString().split('T')[0];
