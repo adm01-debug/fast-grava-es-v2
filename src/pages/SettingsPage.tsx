@@ -84,7 +84,7 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <Breadcrumbs />
         <div>
-          <h1 className="text-2xl font-display font-bold gradient-text">Configurações Avançadas</h1>
+          <h1 className="text-title gradient-text">Configurações Avançadas</h1>
           <p className="text-muted-foreground">Gerencie todas as configurações do sistema</p>
         </div>
         <Tabs defaultValue="general" className="space-y-4">

@@ -343,7 +343,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                <Badge className="bg-primary text-primary-foreground border-none text-[8px] font-black uppercase tracking-tighter px-1.5 py-0 h-4">Industrial Intelligence</Badge>
                <div className="h-px w-12 bg-primary/20" />
             </div>
-            <h1 className="text-2xl md:text-4xl font-black font-display flex items-center gap-3 tracking-tighter">
+            <h1 className="text-display-lg flex items-center gap-3 tracking-tighter">
               <span className="text-primary italic">FAST</span> GRAVAÇÕES - GESTÃO DE GRAVAÇÃO
             </h1>
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-70">

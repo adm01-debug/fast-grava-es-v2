@@ -133,11 +133,11 @@ export function CommandPaletteAdvanced() {
         </CommandEmpty>
         {!query && mode === "default" && (
           <div className="flex gap-2 p-2 border-b">
-            <button onClick={() => setMode("actions")} className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors">
-              <Zap className="h-3 w-3" />Ações<Badge variant="outline" className="text-[10px] px-1">⌘⇧P</Badge>
+            <button onClick={() => setMode("actions")} aria-label="Filtrar por ações" className="flex items-center gap-2 px-3 min-h-11 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Zap className="h-3 w-3" aria-hidden="true" />Ações<Badge variant="outline" className="text-[11px] px-1">⌘⇧P</Badge>
             </button>
-            <button onClick={() => setMode("navigation")} className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors">
-              <ArrowRight className="h-3 w-3" />Ir para<Badge variant="outline" className="text-[10px] px-1">⌘G</Badge>
+            <button onClick={() => setMode("navigation")} aria-label="Filtrar por navegação" className="flex items-center gap-2 px-3 min-h-11 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <ArrowRight className="h-3 w-3" aria-hidden="true" />Ir para<Badge variant="outline" className="text-[11px] px-1">⌘G</Badge>
             </button>
           </div>
         )}
@@ -146,22 +146,26 @@ export function CommandPaletteAdvanced() {
             {groupIndex > 0 && <CommandSeparator />}
             <CommandGroup heading={heading}>
               {commands.map((cmd) => (
-                <CommandItem key={cmd.id} onSelect={cmd.action} className="group flex items-center gap-3 py-2.5">
+                <CommandItem key={cmd.id} onSelect={cmd.action} className="group flex items-center gap-3 py-3 min-h-11">
                   <div className={cn("flex items-center justify-center w-8 h-8 rounded-lg", "bg-muted group-hover:bg-primary/10 transition-colors")}>{cmd.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium"><HighlightMatch text={cmd.name} query={query} /></span>
-                      {cmd.badge && <Badge variant={cmd.badgeVariant || "secondary"} className="text-[10px]">{cmd.badge}</Badge>}
+                      {cmd.badge && <Badge variant={cmd.badgeVariant || "secondary"} className="text-[11px]">{cmd.badge}</Badge>}
                     </div>
                     {cmd.description && <p className="text-xs text-muted-foreground truncate"><HighlightMatch text={cmd.description} query={query} /></p>}
                   </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={(e) => { e.stopPropagation(); toggleFavorite(cmd.id); }} className="p-1 hover:bg-muted rounded">
-                      {favorites.includes(cmd.id) ? <Star className="h-3.5 w-3.5 text-warning fill-warning" /> : <StarOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                  <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleFavorite(cmd.id); }}
+                      aria-label={favorites.includes(cmd.id) ? `Remover ${cmd.name} dos favoritos` : `Adicionar ${cmd.name} aos favoritos`}
+                      className="flex items-center justify-center min-h-11 min-w-11 sm:min-h-9 sm:min-w-9 hover:bg-muted rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {favorites.includes(cmd.id) ? <Star className="h-4 w-4 text-warning fill-warning" aria-hidden="true" /> : <StarOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
                     </button>
                   </div>
                   {cmd.shortcut && <Badge variant="outline" className="text-xs font-mono shrink-0">{cmd.shortcut}</Badge>}
-                  <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+                  <ChevronRight className="h-4 w-4 text-muted-foreground/50" aria-hidden="true" />
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -184,11 +188,12 @@ export function CommandPaletteTriggerAdvanced({ className }: { className?: strin
   return (
     <button
       onClick={() => { document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })); }}
-      className={cn("flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground border rounded-lg hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-ring", className)}
+      aria-label="Abrir paleta de comandos"
+      className={cn("flex items-center gap-2 px-3 min-h-11 text-sm text-muted-foreground hover:text-foreground border rounded-lg hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-ring", className)}
     >
-      <Search className="h-4 w-4" />
+      <Search className="h-4 w-4" aria-hidden="true" />
       <span className="hidden sm:inline">Buscar...</span>
-      <Badge variant="outline" className="hidden md:flex text-xs gap-1"><Command className="h-3 w-3" />K</Badge>
+      <Badge variant="outline" className="hidden md:flex text-xs gap-1"><Command className="h-3 w-3" aria-hidden="true" />K</Badge>
     </button>
   );
 }
