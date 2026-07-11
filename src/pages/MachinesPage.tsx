@@ -512,7 +512,7 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
-  const { exportAuditTrail } = useDataExport('machines' as any);
+  const { exportAuditTrail } = useDataExport('machines');
 
   const handleExport = useCallback((format: 'csv' | 'pdf') => {
     exportAuditTrail({
