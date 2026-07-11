@@ -3,16 +3,34 @@ import { toast } from 'sonner';
 import { subDays, format } from 'date-fns';
 import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
 
+type JobRow = {
+  id?: string;
+  order_number?: string;
+  client_name?: string;
+  product_name?: string;
+  status?: string;
+  quantity?: number;
+  produced_quantity?: number;
+  lost_pieces?: number;
+  scheduled_date?: string;
+  [key: string]: unknown;
+};
+
 interface ExportData {
-  periodJobsList?: any[];
-  dailyTrend?: any[];
-  statusDistribution?: any[];
+  periodJobsList?: JobRow[];
+  dailyTrend?: Array<Record<string, unknown>>;
+  statusDistribution?: Array<Record<string, unknown>>;
+}
+
+interface ExtraExportData {
+  jobsWithLosses?: JobRow[];
+  delayedJobsList?: JobRow[];
 }
 
 export function useBIExport(biMetrics: ExportData) {
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraData?: any) => {
+  const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraData?: ExtraExportData) => {
     setIsExporting(true);
     const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
 
@@ -20,17 +38,17 @@ export function useBIExport(biMetrics: ExportData) {
       if (formatType === 'csv') {
         toast.info(`Gerando CSV para ${type}...`);
 
-        let dataToExport: any[] = [];
+        let dataToExport: JobRow[] = [];
         const filename = `BI_Export_${type}_${format(new Date(), 'yyyyMMdd')}`;
 
         if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
-          dataToExport = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
+          dataToExport = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j) => (j.lost_pieces || 0) > 0);
         } else if (type.includes('Atrasos')) {
           dataToExport = extraData?.delayedJobsList || [];
         } else if (type.includes('Pedidos_A_Fazer')) {
-          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'scheduled' || j.status === 'queue');
+          dataToExport = (biMetrics.periodJobsList || []).filter((j) => j.status === 'scheduled' || j.status === 'queue');
         } else if (type.includes('Producao_Atual')) {
-          dataToExport = (biMetrics.periodJobsList || []).filter((j: any) => j.status === 'production');
+          dataToExport = (biMetrics.periodJobsList || []).filter((j) => j.status === 'production');
         } else {
           dataToExport = biMetrics.periodJobsList || [];
         }
@@ -41,8 +59,8 @@ export function useBIExport(biMetrics: ExportData) {
         }
 
         // Clean data for CSV
-        const cleanedData = dataToExport.map(item => {
-          const cleaned: any = {};
+        const cleanedData = dataToExport.map((item) => {
+          const cleaned: Record<string, unknown> = {};
           Object.entries(item).forEach(([key, val]) => {
             if (typeof val !== 'object' || val === null) {
               cleaned[key] = val;
@@ -69,12 +87,12 @@ export function useBIExport(biMetrics: ExportData) {
         toast.info(`Gerando PDF para ${type}...`);
 
         if (type.includes('Taxa_Perda') || type.includes('Perdas')) {
-          const losses = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j: any) => (j.lost_pieces || 0) > 0);
+          const losses = extraData?.jobsWithLosses || (biMetrics.periodJobsList || []).filter((j) => (j.lost_pieces || 0) > 0);
           await exportLossesReport(losses, dateRange);
         } else if (type.includes('Atrasos')) {
           await exportDelaysReport(extraData?.delayedJobsList || [], dateRange);
         } else {
-          const jobs = (biMetrics.periodJobsList || []).map((j: any) => ({
+          const jobs = (biMetrics.periodJobsList || []).map((j) => ({
             order_number: j.order_number || `OS-${j.id?.slice(0, 5)}`,
             client: j.client_name || 'Cliente',
             product: j.product_name || 'Produto',
