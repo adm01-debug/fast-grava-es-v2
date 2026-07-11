@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { AuthProvider } from './AuthProvider';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,9 +35,12 @@ describe('AuthContext', () => {
     vi.clearAllMocks();
     
     // Default setup for onAuthStateChange
-    (supabase.auth.onAuthStateChange as any).mockReturnValue({
-      data: { subscription: { unsubscribe: vi.fn() } }
+    (supabase.auth.onAuthStateChange as any).mockImplementation((cb: any) => {
+      // Simula o INITIAL_SESSION disparado pelo Supabase no mount (sem sessão)
+      queueMicrotask(() => cb('INITIAL_SESSION', null));
+      return { data: { subscription: { unsubscribe: vi.fn() } } };
     });
+
     
     // Default setup for getSession
     (supabase.auth.getSession as any).mockResolvedValue({
@@ -63,15 +66,14 @@ describe('AuthContext', () => {
       <AuthProvider>{children}</AuthProvider>
     );
 
-    let result: any;
-    await act(async () => {
-      const renderResult = renderHook(() => useAuth(), { wrapper });
-      result = renderResult.result;
-    });
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
-    expect(result.current.isLoading).toBe(false); // After act, loading should be done
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
     expect(result.current.user).toBeNull();
   });
+
 
   it('should sign in successfully', async () => {
     const mockUser = { id: 'test-user', email: 'test@example.com' };
