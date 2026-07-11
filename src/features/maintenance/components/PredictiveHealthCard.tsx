@@ -46,8 +46,8 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
     recommendations: ['Manter plano de lubrificação atual', 'Verificar alinhamento no próximo setup']
   };
 
-  const riskColor = displayData.risk_score > 70 ? 'text-destructive' : displayData.risk_score > 40 ? 'text-amber-500' : 'text-emerald-500';
-  const riskBg = displayData.risk_score > 70 ? 'bg-destructive/10' : displayData.risk_score > 40 ? 'bg-amber-500/10' : 'bg-emerald-500/10';
+  const riskColor = displayData.risk_score > 70 ? 'text-destructive' : displayData.risk_score > 40 ? 'text-warning' : 'text-success';
+  const riskBg = displayData.risk_score > 70 ? 'bg-destructive/10' : displayData.risk_score > 40 ? 'bg-warning/10' : 'bg-success/10';
 
   return (
     <Card className="glass-card overflow-hidden hover:shadow-glow-primary transition-all duration-500">
@@ -74,7 +74,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
               {100 - displayData.risk_score}%
             </span>
             <div className="absolute -bottom-1 -right-1 bg-background p-1 rounded-full shadow-sm border border-border">
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
+              <TrendingUp className="h-4 w-4 text-success" />
             </div>
           </div>
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Índice de Saúde</span>
@@ -100,7 +100,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
           <div className="p-2 rounded-lg bg-secondary/30 border border-border/50">
             <p className="text-[10px] text-muted-foreground uppercase">Recomendação</p>
             <div className="flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3 text-amber-500" />
+              <AlertTriangle className="h-3 w-3 text-warning" />
               <p className="text-[10px] font-medium truncate">Monitorar Vibração</p>
             </div>
           </div>

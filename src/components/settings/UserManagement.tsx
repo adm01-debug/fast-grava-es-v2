@@ -39,7 +39,7 @@ const roleLabels: Record<AppRole, string> = {
 const roleColors: Record<AppRole, string> = {
   operator: 'bg-blue-500/10 text-blue-500',
   coordinator: 'bg-purple-500/10 text-purple-500',
-  manager: 'bg-amber-500/10 text-amber-500',
+  manager: 'bg-warning/10 text-warning',
 };
 
 export function UserManagement() {

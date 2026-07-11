@@ -26,6 +26,19 @@ onLCP(sendToSentry);
 onTTFB(sendToSentry);
 onINP(sendToSentry);
 
+// Register Service Worker for PWA / push notifications.
+// The hooks in features/notifications/* aguardam `navigator.serviceWorker.ready`,
+// portanto sem registro elas ficariam esperando indefinidamente.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .catch((err) => {
+        console.warn('[SW] Registration failed:', err);
+      });
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <AccessibilityProvider>
     <OfflineProvider>

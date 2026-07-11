@@ -95,7 +95,7 @@ export default function InventoryPage() {
         </Helmet>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl text-title font-bold flex items-center gap-3">
               <Package className="h-8 w-8 text-primary" />
               Gestão de Materiais
             </h1>
@@ -385,7 +385,7 @@ function InventoryCard({
         <div className="flex gap-2">
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-success/10 hover:text-success hover:border-emerald-500/50" onClick={() => setMovementType('IN')}>
+              <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-success/10 hover:text-success hover:border-success/50" onClick={() => setMovementType('IN')}>
                 <ArrowUpRight className="h-3 w-3" /> Entrada
               </Button>
             </DialogTrigger>
@@ -512,7 +512,7 @@ function InventoryHistoryTable() {
             </SelectContent>
           </Select>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 h-10 px-4 font-bold border-emerald-500/20 text-success hover:bg-emerald-50" onClick={handleExportCSV}>
+        <Button variant="outline" size="sm" className="gap-2 h-10 px-4 font-bold border-success/20 text-success hover:bg-success" onClick={handleExportCSV}>
           <FileDown className="h-4 w-4" /> Exportar CSV
         </Button>
       </div>
@@ -542,10 +542,10 @@ function InventoryHistoryTable() {
                 <td className="p-4">
                   <Badge variant="outline" className={cn(
                     "text-[9px] font-black uppercase tracking-tighter",
-                    m.type === 'IN' ? "text-success border-emerald-500/20 bg-success/5" :
+                    m.type === 'IN' ? "text-success border-success/20 bg-success/5" :
                     m.type === 'OUT' ? "text-red-500 border-red-500/20 bg-red-500/5" :
                     m.type === 'TRANSFER' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" :
-                    "text-warning border-amber-500/20 bg-warning/5"
+                    "text-warning border-warning/20 bg-warning/5"
                   )}>
                     {m.type}
                   </Badge>
@@ -757,11 +757,11 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                  <div className="p-3 rounded-lg bg-success/5 border border-emerald-500/20">
+                  <div className="p-3 rounded-lg bg-success/5 border border-success/20">
                     <p className="text-[10px] font-bold text-success uppercase">Validação de Consumo</p>
                     <p className="text-[11px] text-muted-foreground mt-1">O desvio padrão entre consumo real e previsto é de 2.4% para Tintas.</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-warning/5 border border-amber-500/20">
+                  <div className="p-3 rounded-lg bg-warning/5 border border-warning/20">
                     <p className="text-[10px] font-bold text-warning uppercase">Risco de Ruptura</p>
                     <p className="text-[11px] text-muted-foreground mt-1">Nenhum item com risco de ruptura não sinalizado detectado.</p>
                   </div>

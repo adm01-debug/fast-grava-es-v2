@@ -77,7 +77,7 @@ export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: Machine
                         <span>OEE Histórico</span>
                         <span>{machineOEE(bestMachine.machineId)}%</span>
                       </div>
-                      <Progress value={machineOEE(bestMachine.machineId)} className="h-1 bg-emerald-500/20" />
+                      <Progress value={machineOEE(bestMachine.machineId)} className="h-1 bg-success/20" />
                     </div>
                   </div>
 

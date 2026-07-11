@@ -193,7 +193,7 @@ export function KanbanAIAdvisor() {
                       </h4>
                       <p className="text-[10px] text-muted-foreground">OS Sugeridas: {s.optimizedSequence.length} jobs</p>
                     </div>
-                    <Badge variant="secondary" className="bg-warning/10 text-warning border-amber-400/20 gap-1 text-[10px]">
+                    <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20 gap-1 text-[10px]">
                       <Clock className="h-3 w-3" /> -{s.estimatedSavings}min setup
                     </Badge>
                   </div>

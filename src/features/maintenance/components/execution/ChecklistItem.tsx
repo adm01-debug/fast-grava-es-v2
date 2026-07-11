@@ -55,7 +55,7 @@ export function ChecklistItem({ item, response, onUpdate, onFileUpload, isUpload
         {item.requires_photo && (
           <div className="flex items-center gap-2">
             {response?.photo_url ? (
-              <Badge variant="outline" className="text-emerald-500 gap-1 h-8">
+              <Badge variant="outline" className="text-success gap-1 h-8">
                 <CheckCircle2 className="h-3 w-3" /> Foto OK
               </Badge>
             ) : (

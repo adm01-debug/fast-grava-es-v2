@@ -120,7 +120,7 @@ export function BatchApprovalPreviewModal({
                   </TableCell>
                   <TableCell>
                     {v.isValid ? (
-                      <Badge className="bg-emerald-500 gap-1">
+                      <Badge className="bg-success gap-1">
                         <CheckCircle2 className="h-3 w-3" /> Pronto
                       </Badge>
                     ) : (

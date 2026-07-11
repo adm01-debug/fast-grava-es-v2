@@ -164,7 +164,7 @@ export default function ShiftHandoverPage() {
         </div>
         <CardContent className="py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <div className="w-2 h-2 rounded-full bg-success animate-ping" />
             <span className="text-xs font-black uppercase tracking-tighter">Sincronização em tempo real ativa</span>
           </div>
           <p className="text-[10px] text-muted-foreground font-medium italic">

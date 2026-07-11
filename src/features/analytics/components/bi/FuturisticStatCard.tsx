@@ -113,7 +113,7 @@ export function FuturisticStatCard({
             {trend ? (
               <div className={cn(
                 "flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest",
-                trend === 'up' ? 'text-emerald-400' : 'text-rose-400'
+                trend === 'up' ? 'text-success' : 'text-rose-400'
               )}>
                 {trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
                 {trendValue} vs LAST PD

@@ -22,7 +22,7 @@ const actionConfig: Record<string, { icon: any; label: string; variant: any; col
   INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default', color: 'text-primary' },
   UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary', color: 'text-secondary-foreground' },
   DELETE: { icon: Trash2Icon, label: 'Excluído', variant: 'destructive', color: 'text-destructive' },
-  status_change: { icon: ShieldCheckIcon, label: 'Status Alterado', variant: 'outline', color: 'text-amber-500' },
+  status_change: { icon: ShieldCheckIcon, label: 'Status Alterado', variant: 'outline', color: 'text-warning' },
 };
 
 const defaultAction = { icon: ShieldCheckIcon, label: 'Ação', variant: 'outline' as const, color: 'text-muted-foreground' };
@@ -41,9 +41,9 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'finished': return 'text-success border-success/30 bg-success/10';
-      case 'production': return 'text-amber-500 border-amber-500/30 bg-amber-500/10';
+      case 'production': return 'text-warning border-warning/30 bg-warning/10';
       case 'scheduled': return 'text-blue-500 border-blue-500/30 bg-blue-500/10';
-      default: return 'text-zinc-500 border-zinc-500/30 bg-zinc-500/10';
+      default: return 'text-muted-foreground border-zinc-500/30 bg-zinc-500/10';
     }
   };
 
@@ -56,7 +56,7 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant={cfg.variant}>{cfg.label}</Badge>
               <span className="text-sm font-mono text-muted-foreground">{entry.entity_type}</span>
-              <span className="text-xs font-mono text-muted-foreground/70">
+              <span className="text-xs font-mono text-muted-foreground">
                 #{entry.entity_id.slice(0, 8)}
               </span>
             </div>

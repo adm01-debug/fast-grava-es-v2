@@ -213,7 +213,7 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
       </Dialog>
 
       <Dialog open={isConfirming} onOpenChange={setIsConfirming}>
-        <DialogContent className="sm:max-w-[350px] border-amber-500/50 bg-warning/5">
+        <DialogContent className="sm:max-w-[350px] border-warning/50 bg-warning/5">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-warning">
               <AlertCircle className="h-5 w-5" />
@@ -227,7 +227,7 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
             <Button variant="outline" className="flex-1" onClick={() => setIsConfirming(false)} disabled={isApiProcessing}>
               Cancelar
             </Button>
-            <Button className="flex-1 bg-amber-500 hover:bg-amber-600 text-white" onClick={confirmTransfer} disabled={isApiProcessing}>
+            <Button className="flex-1 bg-warning hover:bg-warning text-white" onClick={confirmTransfer} disabled={isApiProcessing}>
               {isApiProcessing ? "Transferindo..." : "Confirmar"}
             </Button>
           </DialogFooter>

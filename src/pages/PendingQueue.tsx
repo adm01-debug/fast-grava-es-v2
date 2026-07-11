@@ -564,7 +564,7 @@ export default function PendingQueue() {
             <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleBulkAction('production')}>
               <Play className="h-3 w-3" /> Iniciar Produção
             </Button>
-            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-amber-500/30 text-warning hover:bg-warning/10" onClick={() => handleBulkAction('ready')}>
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-warning/30 text-warning hover:bg-warning/10" onClick={() => handleBulkAction('ready')}>
               <Package className="h-3 w-3" /> Marcar No Jeito
             </Button>
             <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => {
@@ -681,7 +681,7 @@ export default function PendingQueue() {
                                 <TableCell><StatusBadge status={job.status} /></TableCell>
                                 <TableCell className="hidden lg:table-cell">
                                   <div className="flex flex-wrap gap-1">
-                                    {jobsInOptimizedSequence.has(job.id) && <Badge variant="outline" className="bg-warning/10 text-warning border-amber-500/20 text-[10px] gap-1 px-1.5 h-5"><Zap className="h-2.5 w-2.5" /> Setup</Badge>}
+                                    {jobsInOptimizedSequence.has(job.id) && <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-[10px] gap-1 px-1.5 h-5"><Zap className="h-2.5 w-2.5" /> Setup</Badge>}
                                     {jobsWithBalancingSuggestion.has(job.id) && <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[10px] gap-1 px-1.5 h-5"><BrainCircuit className="h-2.5 w-2.5" /> Equilíbrio</Badge>}
                                   </div>
                                 </TableCell>
@@ -709,8 +709,8 @@ export default function PendingQueue() {
                       const isSelected = selectedJobs.has(job.id);
                       return (
                         <motion.div key={job.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2, delay: index * 0.02 }}>
-                          <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${isSelected ? 'ring-2 ring-primary border-primary' : 'bg-card/40 border-border/50 hover:border-primary/50'} ${isStuck ? 'border-amber-500/50 shadow-amber-500/5' : ''}`} onClick={() => handleJobClick(job)}>
-                            {isStuck && <div className="absolute top-0 right-0 p-1 bg-amber-500 text-white rounded-bl-lg shadow-sm z-10"><AlertTriangle className="h-3 w-3 animate-pulse" /></div>}
+                          <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${isSelected ? 'ring-2 ring-primary border-primary' : 'bg-card/40 border-border/50 hover:border-primary/50'} ${isStuck ? 'border-warning/50 shadow-amber-500/5' : ''}`} onClick={() => handleJobClick(job)}>
+                            {isStuck && <div className="absolute top-0 right-0 p-1 bg-warning text-white rounded-bl-lg shadow-sm z-10"><AlertTriangle className="h-3 w-3 animate-pulse" /></div>}
                             <CardHeader className="p-4 pb-2">
                               <div className="flex justify-between items-start gap-2">
                                 <div className="flex flex-col"><span className="text-xs text-muted-foreground font-mono">OS {job.order_number}</span><CardTitle className="text-sm font-bold line-clamp-1 mt-0.5">{job.client}</CardTitle></div>

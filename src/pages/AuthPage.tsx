@@ -128,7 +128,7 @@ export default function AuthPage() {
                 { label: 'Velocidade', value: '<3', suffix: 's', highlight: true },
               ].map((k) => (
                 <div key={k.label} className={`p-5 rounded-xl backdrop-blur-sm border ${k.highlight ? 'bg-[#FF5A1F]/10 border-[#FF5A1F]/20' : 'bg-white/5 border-white/10'}`}>
-                  <p className={`text-[10px] font-mono uppercase tracking-widest mb-2 ${k.highlight ? 'text-[#FF5A1F]' : 'text-zinc-500'}`}>{k.label}</p>
+                  <p className={`text-[10px] font-mono uppercase tracking-widest mb-2 ${k.highlight ? 'text-[#FF5A1F]' : 'text-muted-foreground'}`}>{k.label}</p>
                   <p className="text-3xl font-bold leading-none">{k.value}<span className="text-[#FF5A1F]">{k.suffix}</span></p>
                 </div>
               ))}
@@ -163,7 +163,7 @@ export default function AuthPage() {
                 <motion.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                   <div className="mb-8">
                     <h3 className="text-3xl font-bold mb-2 tracking-tight">Bem-vindo</h3>
-                    <p className="text-zinc-500 text-sm">Acesse sua conta para gerenciar as máquinas.</p>
+                    <p className="text-muted-foreground text-sm">Acesse sua conta para gerenciar as máquinas.</p>
                   </div>
 
                   <div className="w-full">

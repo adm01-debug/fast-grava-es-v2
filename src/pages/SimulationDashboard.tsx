@@ -58,7 +58,7 @@ export default function SimulationDashboard() {
       <div className="p-8 space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-display font-bold">Simulador de Stress & Webhooks</h1>
+            <h1 className="text-3xl text-title font-bold">Simulador de Stress & Webhooks</h1>
             <p className="text-muted-foreground">Validação massiva de cenários de Edge Functions e Webhooks</p>
           </div>
           <div className="flex items-center gap-4">

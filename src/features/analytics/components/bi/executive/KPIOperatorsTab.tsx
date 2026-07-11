@@ -21,7 +21,7 @@ const KPIOperatorsTabComponent = ({
           <Card className="glass-card h-full">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Users className="h-5 w-5 text-amber-400" />
+                <Users className="h-5 w-5 text-warning" />
                 Ranking de Produtividade (Operadores)
               </CardTitle>
               <CardDescription>Top performers por score de eficiência e qualidade</CardDescription>

@@ -78,9 +78,9 @@ export function TPMNotificationQueue() {
             <div className="text-2xl font-bold">{stats.pending}</div>
           </CardContent>
         </Card>
-        <Card className="bg-amber-500/5 border-amber-500/20">
+        <Card className="bg-warning/5 border-warning/20">
           <CardHeader className="p-4 pb-0">
-            <CardTitle className="text-xs font-semibold uppercase text-amber-500 flex items-center gap-2">
+            <CardTitle className="text-xs font-semibold uppercase text-warning flex items-center gap-2">
               <RefreshCw className="h-4 w-4" /> Processando
             </CardTitle>
           </CardHeader>
@@ -98,9 +98,9 @@ export function TPMNotificationQueue() {
             <div className="text-2xl font-bold">{stats.failed}</div>
           </CardContent>
         </Card>
-        <Card className="bg-emerald-500/5 border-emerald-500/20">
+        <Card className="bg-success/5 border-success/20">
           <CardHeader className="p-4 pb-0">
-            <CardTitle className="text-xs font-semibold uppercase text-emerald-500 flex items-center gap-2">
+            <CardTitle className="text-xs font-semibold uppercase text-success flex items-center gap-2">
               <BarChart3 className="h-4 w-4" /> Total (Hoje)
             </CardTitle>
           </CardHeader>
@@ -158,8 +158,8 @@ export function TPMNotificationQueue() {
                   </TableCell>
                   <TableCell>
                     {item.status === 'pending' && <Badge variant="secondary" className="animate-pulse">Aguardando</Badge>}
-                    {item.status === 'processing' && <Badge variant="outline" className="border-amber-500 text-amber-500">Enviando...</Badge>}
-                    {item.status === 'sent' && <Badge variant="outline" className="border-emerald-500 text-emerald-500">Concluído</Badge>}
+                    {item.status === 'processing' && <Badge variant="outline" className="border-warning text-warning">Enviando...</Badge>}
+                    {item.status === 'sent' && <Badge variant="outline" className="border-success text-success">Concluído</Badge>}
                     {item.status === 'failed' && <Badge variant="destructive">Falhou</Badge>}
                   </TableCell>
                   <TableCell>

@@ -122,7 +122,7 @@ export function AISuggestionDetails({ isOpen, onOpenChange, suggestion }: AISugg
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase font-bold">Impacto no OEE</p>
-                  <p className="text-lg font-bold text-emerald-500">+{suggestion.type === 'setup' ? '8.5' : '12'}%</p>
+                  <p className="text-lg font-bold text-success">+{suggestion.type === 'setup' ? '8.5' : '12'}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase font-bold">ROI Estimado</p>

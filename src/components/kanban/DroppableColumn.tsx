@@ -247,7 +247,7 @@ export function DroppableColumn({
                       "ml-auto text-[8px] h-4 px-1.5 leading-none font-bold border-2",
                       totalEstimatedTime > columnLimit ? "border-red-500 text-red-500 bg-red-500/10 animate-pulse" :
                       totalEstimatedTime > columnLimit * 0.7 ? "border-orange-500 text-orange-500 bg-orange-500/10" :
-                      "border-emerald-500 text-success bg-success/10"
+                      "border-success text-success bg-success/10"
                     )}
                   >
                     {totalEstimatedTime > columnLimit ? "GARGALO" : totalEstimatedTime > columnLimit * 0.7 ? "ATENÇÃO" : "ESTÁVEL"}
@@ -283,7 +283,7 @@ export function DroppableColumn({
                       className={cn(
                         "h-full rounded-full transition-all duration-500",
                         totalEstimatedTime > columnLimit ? "bg-red-500" :
-                        totalEstimatedTime > columnLimit * 0.7 ? "bg-orange-500" : "bg-emerald-500"
+                        totalEstimatedTime > columnLimit * 0.7 ? "bg-orange-500" : "bg-success"
                       )}
                       style={{ width: `${Math.min(100, (totalEstimatedTime / columnLimit) * 100)}%` }}
                     />

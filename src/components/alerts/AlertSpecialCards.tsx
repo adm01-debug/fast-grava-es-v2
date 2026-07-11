@@ -44,7 +44,7 @@ export function StuckJobsCard({ stuckJobs, stuckCritical, onJobClick, onViewAll,
                   className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                     stuck.severity === 'critical'
                       ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20'
-                      : 'bg-warning/10 border-amber-500/30 hover:bg-warning/20'
+                      : 'bg-warning/10 border-warning/30 hover:bg-warning/20'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -100,7 +100,7 @@ export function DataIntegrityCard({ dataIssues, orphanedTechniques }: DataIntegr
             </div>
             Integridade de Dados
           </div>
-          <Badge variant="outline" className={`${dataIssues.length > 0 ? 'bg-warning/20 text-warning border-amber-500/30' : 'bg-muted/50 text-foreground border-border'}`}>
+          <Badge variant="outline" className={`${dataIssues.length > 0 ? 'bg-warning/20 text-warning border-warning/30' : 'bg-muted/50 text-foreground border-border'}`}>
             {dataIssues.length + orphanedTechniques.length}
           </Badge>
         </CardTitle>
@@ -111,7 +111,7 @@ export function DataIntegrityCard({ dataIssues, orphanedTechniques }: DataIntegr
         ) : (
           <>
             {orphanedTechniques.map((item) => (
-              <div key={item.technique.id} className="p-3 rounded-lg bg-warning/10 border border-amber-500/30">
+              <div key={item.technique.id} className="p-3 rounded-lg bg-warning/10 border border-warning/30">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.technique.color }} />
                   <span className="font-medium text-warning">{item.technique.name}</span>
@@ -121,7 +121,7 @@ export function DataIntegrityCard({ dataIssues, orphanedTechniques }: DataIntegr
               </div>
             ))}
             {dataIssues.map((issue, index) => (
-              <div key={index} className={`p-3 rounded-lg border ${issue.severity === 'error' ? 'bg-red-500/10 border-red-500/30' : 'bg-warning/10 border-amber-500/30'}`}>
+              <div key={index} className={`p-3 rounded-lg border ${issue.severity === 'error' ? 'bg-red-500/10 border-red-500/30' : 'bg-warning/10 border-warning/30'}`}>
                 <p className={`text-sm ${issue.severity === 'error' ? 'text-red-400' : 'text-warning'}`}>{issue.message}</p>
               </div>
             ))}

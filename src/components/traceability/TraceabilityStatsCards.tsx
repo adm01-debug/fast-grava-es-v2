@@ -55,8 +55,8 @@ export function TraceabilityStatsCards({ lots }: TraceabilityStatsCardsProps) {
       />
       <StatCard
         icon={CheckCircle}
-        iconClass="text-emerald-500"
-        bgClass="bg-emerald-500/10"
+        iconClass="text-success"
+        bgClass="bg-success/10"
         label="Lotes Ativos"
         value={stats.active}
       />
@@ -134,7 +134,7 @@ function StatCard({ icon: Icon, iconClass, bgClass, label, value, trend, trendLa
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant="outline" className={`text-[10px] gap-0.5 ${trend > 0 ? 'text-emerald-500' : 'text-destructive'}`}>
+                      <Badge variant="outline" className={`text-[10px] gap-0.5 ${trend > 0 ? 'text-success' : 'text-destructive'}`}>
                         {trend > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {Math.abs(trend).toFixed(0)}%
                       </Badge>

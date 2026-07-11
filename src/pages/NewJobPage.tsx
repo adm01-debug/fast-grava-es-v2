@@ -116,7 +116,7 @@ export default function NewJobPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">Novo Agendamento</h1>
+            <h1 className="text-2xl text-title font-bold gradient-text">Novo Agendamento</h1>
             <p className="text-muted-foreground">Cadastre um novo job de produção</p>
           </div>
         </div>

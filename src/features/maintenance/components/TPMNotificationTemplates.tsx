@@ -88,15 +88,15 @@ export function TPMNotificationTemplates() {
     return (
       <div className={cn(
         "space-y-4 p-4 border rounded-lg mb-4 transition-colors",
-        template.status === 'draft' ? "bg-amber-500/5 border-amber-500/20" : "bg-emerald-500/5 border-emerald-500/20"
+        template.status === 'draft' ? "bg-warning/5 border-warning/20" : "bg-success/5 border-success/20"
       )}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="capitalize">{severity}</Badge>
             {template.status === 'draft' ? (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200">Rascunho</Badge>
+              <Badge variant="secondary" className="bg-warning text-warning border-warning">Rascunho</Badge>
             ) : (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-emerald-200">Publicado</Badge>
+              <Badge variant="secondary" className="bg-success text-success border-success">Publicado</Badge>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ export function TPMNotificationTemplates() {
             <Button
               size="sm"
               variant="default"
-              className="h-8 bg-emerald-600 hover:bg-emerald-700"
+              className="h-8 bg-success hover:bg-success"
               disabled={template.status === 'published' && !updateTemplate.isPending}
               onClick={() => publishTemplate.mutate(template)}
             >

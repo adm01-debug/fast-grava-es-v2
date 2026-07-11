@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { EfficiencyAlertTrendChart } from "./EfficiencyAlertTrendChart";
 import { EfficiencyAlertStatsPanel } from "./EfficiencyAlertStatsPanel";
 
-const severityColors = { error: 'bg-primary/20 text-primary border-primary/30', warning: 'bg-warning/20 text-warning border-amber-500/30', info: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+const severityColors = { error: 'bg-primary/20 text-primary border-primary/30', warning: 'bg-warning/20 text-warning border-warning/30', info: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
 const typeIcons = { bottleneck: Zap, load_balancing: Scale };
 const typeLabels = { bottleneck: 'Gargalo', load_balancing: 'Balanceamento' };
 type AlertType = 'all' | 'bottleneck' | 'load_balancing';

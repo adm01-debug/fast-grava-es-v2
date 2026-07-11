@@ -91,7 +91,7 @@ export default function LogisticsPage() {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl text-title font-bold flex items-center gap-2">
               <Truck className="h-8 w-8 text-primary" />
               <span className="gradient-text">Logística Inteligente 10/10</span>
             </h1>

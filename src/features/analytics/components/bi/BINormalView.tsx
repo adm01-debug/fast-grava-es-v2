@@ -60,7 +60,7 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendValue, varia
         <div className="flex items-start justify-between">
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground font-medium">{title}</p>
-            <p className="text-3xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">{value}</p>
+            <p className="text-3xl font-bold text-display bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">{value}</p>
             {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
             {trend && trendValue && (
               <div className={cn("flex items-center gap-1 text-sm font-medium", trendColor)}>
@@ -382,7 +382,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <Clock className="h-8 w-8 text-primary" />
               </div>
               <p className="text-sm text-muted-foreground font-medium">Disponibilidade</p>
-              <p className="text-4xl font-bold font-display gradient-text mt-1">{oeeData.overallAvailability.toFixed(1)}%</p>
+              <p className="text-4xl font-bold text-display-lg gradient-text mt-1">{oeeData.overallAvailability.toFixed(1)}%</p>
               <p className="text-xs text-muted-foreground mt-2">Perda: {oeeData.availabilityLosses.toFixed(1)}%</p>
             </div>
           </CardContent>
@@ -394,7 +394,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <TrendingUp className="h-8 w-8 text-xp" />
               </div>
               <p className="text-sm text-muted-foreground font-medium">Performance</p>
-              <p className="text-4xl font-bold font-display text-xp mt-1">{oeeData.overallPerformance.toFixed(1)}%</p>
+              <p className="text-4xl font-bold text-display-lg text-xp mt-1">{oeeData.overallPerformance.toFixed(1)}%</p>
               <p className="text-xs text-muted-foreground mt-2">Perda: {oeeData.performanceLosses.toFixed(1)}%</p>
             </div>
           </CardContent>
@@ -406,7 +406,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <Target className="h-8 w-8 text-success" />
               </div>
               <p className="text-sm text-muted-foreground font-medium">Qualidade</p>
-              <p className="text-4xl font-bold font-display text-success mt-1">{oeeData.overallQuality.toFixed(1)}%</p>
+              <p className="text-4xl font-bold text-display-lg text-success mt-1">{oeeData.overallQuality.toFixed(1)}%</p>
               <p className="text-xs text-muted-foreground mt-2">Perda: {oeeData.qualityLosses.toFixed(1)}%</p>
             </div>
           </CardContent>

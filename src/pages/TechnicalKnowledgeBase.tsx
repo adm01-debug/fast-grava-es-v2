@@ -137,7 +137,7 @@ const TechnicalKnowledgeBase = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-display font-black text-foreground flex items-center gap-2 sm:gap-3 tracking-tighter uppercase">
+            <h1 className="text-xl sm:text-2xl text-title font-black text-foreground flex items-center gap-2 sm:gap-3 tracking-tighter uppercase">
               <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 text-primary" />
               <span className="text-base sm:text-2xl">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
             </h1>
@@ -228,7 +228,7 @@ const TechnicalKnowledgeBase = () => {
                   <h3 className="text-base sm:text-lg font-medium text-muted-foreground">
                     Selecione uma ficha técnica
                   </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground/70 mt-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                     Escolha uma ficha na lista para visualizar
                   </p>
                 </div>

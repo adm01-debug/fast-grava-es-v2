@@ -54,7 +54,7 @@ export function SupplyChainPanel() {
             </div>
           ) : providers.map((provider) => (
             <div key={provider.itemName} className="p-3 flex items-start gap-3 hover:bg-primary/5 transition-colors">
-              <div className={`mt-1 p-1.5 rounded-lg border text-primary ${provider.alert ? 'bg-amber-500/10 border-amber-500/30' : 'bg-background border-primary/10'}`}>
+              <div className={`mt-1 p-1.5 rounded-lg border text-primary ${provider.alert ? 'bg-warning/10 border-warning/30' : 'bg-background border-primary/10'}`}>
                 <Truck className={`h-3 w-3 ${provider.alert ? 'animate-bounce' : ''}`} />
               </div>
               <div className="flex-1 min-w-0">
@@ -69,7 +69,7 @@ export function SupplyChainPanel() {
                     <Package className="h-2.5 w-2.5" /> {provider.stock} {provider.unit}
                   </span>
                   {provider.alert && (
-                    <span className="flex items-center gap-1 text-amber-500 font-black animate-pulse">
+                    <span className="flex items-center gap-1 text-warning font-black animate-pulse">
                       <Clock className="h-2.5 w-2.5" /> EM TRÂNSITO
                     </span>
                   )}
@@ -78,11 +78,11 @@ export function SupplyChainPanel() {
             </div>
           ))}
         </div>
-        <div className="p-3 bg-emerald-500/10 border-t border-primary/10">
+        <div className="p-3 bg-success/10 border-t border-primary/10">
            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                 <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                 <span className="text-[9px] font-black text-emerald-600 uppercase">Resiliência Operacional: 98%</span>
+                 <div className="h-2 w-2 rounded-full bg-success animate-ping" />
+                 <span className="text-[9px] font-black text-success uppercase">Resiliência Operacional: 98%</span>
               </div>
               <span className="text-[9px] font-bold text-muted-foreground">
                 <TrendingDown className="h-3 w-3 inline mr-1" />

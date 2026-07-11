@@ -54,7 +54,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 
       {/* Tagline */}
       {!collapsed && showSubtitle && (
-        <p className={cn("font-bold tracking-[0.15em] text-zinc-500 uppercase truncate leading-none mt-1.5", currentSize.fontSub)}>
+        <p className={cn("font-bold tracking-[0.15em] text-muted-foreground uppercase truncate leading-none mt-1.5", currentSize.fontSub)}>
           QUALIDADE + VELOCIDADE
         </p>
       )}

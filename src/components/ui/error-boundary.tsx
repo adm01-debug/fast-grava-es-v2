@@ -79,7 +79,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-display font-bold text-foreground">
+              <h1 className="text-2xl text-title font-bold text-foreground">
                 Algo deu errado
               </h1>
               <p className="text-muted-foreground">
@@ -98,7 +98,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   </pre>
                 )}
                 {this.state.errorInfo?.componentStack && (
-                  <pre className="text-[10px] font-mono text-muted-foreground/70 whitespace-pre-wrap break-all">
+                  <pre className="text-[10px] font-mono text-muted-foreground whitespace-pre-wrap break-all">
                     {this.state.errorInfo.componentStack.split('\n').slice(0, 6).join('\n')}
                   </pre>
                 )}
