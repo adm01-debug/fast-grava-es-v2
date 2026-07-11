@@ -16,14 +16,36 @@ interface MachineTPMPanelProps {
   onOpenCreateSchedule?: () => void;
 }
 
+interface TPMSchedule {
+  id: string;
+  machine_id: string;
+  name: string;
+  next_due_at: string;
+}
+
+interface TPMRecord {
+  id: string;
+  machine_id: string;
+  started_at: string;
+  status: string;
+  performed_by_name?: string | null;
+}
+
+interface TPMAlert {
+  id: string;
+  machine_id: string;
+  message: string;
+  is_resolved: boolean;
+}
+
 export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSchedule }: MachineTPMPanelProps) {
   const { schedules, records, alerts } = useTPM();
 
-  const machineSchedules = schedules.filter((s: any) => s.machine_id === machineId);
-  const machineRecords = records.filter((r: any) => r.machine_id === machineId).slice(0, 10);
-  const machineAlerts = alerts.filter((a: any) => a.machine_id === machineId && !a.is_resolved);
+  const machineSchedules = (schedules as TPMSchedule[]).filter((s) => s.machine_id === machineId);
+  const machineRecords = (records as TPMRecord[]).filter((r) => r.machine_id === machineId).slice(0, 10);
+  const machineAlerts = (alerts as TPMAlert[]).filter((a) => a.machine_id === machineId && !a.is_resolved);
 
-  const getStatusBadge = (schedule: any) => {
+  const getStatusBadge = (schedule: TPMSchedule) => {
     const dueDate = new Date(schedule.next_due_at);
     const daysUntil = differenceInDays(dueDate, new Date());
 
