@@ -90,6 +90,41 @@ export async function emitTelemetry(
   }
 }
 
+/**
+ * Defense-in-depth allowlist. Even admins must not use this bridge to
+ * hit auth/storage internals or arbitrary security-definer functions.
+ * Extend cautiously — every entry bypasses RLS.
+ */
+export const ALLOWED_TABLES = new Set<string>([
+  "jobs",
+  "job_status_audit",
+  "machines",
+  "operators",
+  "profiles",
+  "user_roles",
+  "inventory_items",
+  "inventory_movements",
+  "technical_sheets",
+  "maintenance_records",
+  "maintenance_schedules",
+  "audit_log",
+  "security_events",
+  "push_subscriptions",
+  "query_telemetry",
+  "webhook_logs",
+  "bitrix24_sync_history",
+]);
+
+export const ALLOWED_RPCS = new Set<string>([
+  "get_user_role",
+  "has_role",
+  "has_any_active_role",
+  "verify_audit_chain",
+  "increment_sheet_view_count",
+  "check_and_notify_kpi_alert",
+  "refresh_operator_rankings",
+]);
+
 /** Validate incoming bridge request */
 export function validateBridgeRequest(body: any): {
   valid: boolean;
@@ -111,11 +146,20 @@ export function validateBridgeRequest(body: any): {
   if (!validActions.includes(body.action)) {
     return { valid: false, error: `Invalid action: ${body.action}. Allowed: ${validActions.join(", ")}` };
   }
-  if (body.action === "rpc" && (!body.rpc || typeof body.rpc !== "string")) {
-    return { valid: false, error: "RPC action requires a 'rpc' field" };
-  }
-  if (body.action !== "rpc" && (!body.table || typeof body.table !== "string")) {
-    return { valid: false, error: "Non-RPC actions require a 'table' field" };
+  if (body.action === "rpc") {
+    if (!body.rpc || typeof body.rpc !== "string") {
+      return { valid: false, error: "RPC action requires a 'rpc' field" };
+    }
+    if (!ALLOWED_RPCS.has(body.rpc)) {
+      return { valid: false, error: `RPC '${body.rpc}' is not in the allowlist` };
+    }
+  } else {
+    if (!body.table || typeof body.table !== "string") {
+      return { valid: false, error: "Non-RPC actions require a 'table' field" };
+    }
+    if (!ALLOWED_TABLES.has(body.table)) {
+      return { valid: false, error: `Table '${body.table}' is not in the allowlist` };
+    }
   }
   return {
     valid: true,
