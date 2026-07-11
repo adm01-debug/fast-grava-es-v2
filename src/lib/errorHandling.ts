@@ -67,7 +67,7 @@ const ErrorMessages: Record<ErrorCode, string> = {
 /**
  * Parses an error and returns a categorized ErrorCode
  */
-export function categorizeError(error: any): ErrorCode {
+export function categorizeError(error: unknown): ErrorCode {
   if (!error) return ErrorCodes.UNKNOWN_ERROR;
 
   const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
