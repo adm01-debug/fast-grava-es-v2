@@ -25,10 +25,22 @@ interface ExecutionDetailsModalProps {
   recordId: string | null;
 }
 
+// Permissive shape — the execution record aggregates joins from many tables.
+// Fields are typed as `unknown` where safe, or narrowed inline at use sites.
+type ExecutionRow = Record<string, unknown> & { id: string };
+type ExecutionRecord = Record<string, unknown> & {
+  id: string;
+  status: string;
+  responses?: ExecutionRow[];
+  parts?: ExecutionRow[];
+  execution_alerts?: ExecutionRow[];
+  quality_responses?: ExecutionRow[];
+};
+
 export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDetailsModalProps) {
   const { fetchRecordDetails, approveMaintenance, requestCorrection } = useTPM();
   const { user } = useAuth();
-  const [record, setRecord] = useState<any>(null);
+  const [record, setRecord] = useState<ExecutionRecord | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRequestingCorrection, setIsRequestingCorrection] = useState(false);
   const [correctionNotes, setCorrectionNotes] = useState('');
