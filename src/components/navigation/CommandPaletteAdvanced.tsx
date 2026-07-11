@@ -188,11 +188,12 @@ export function CommandPaletteTriggerAdvanced({ className }: { className?: strin
   return (
     <button
       onClick={() => { document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })); }}
-      className={cn("flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground border rounded-lg hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-ring", className)}
+      aria-label="Abrir paleta de comandos"
+      className={cn("flex items-center gap-2 px-3 min-h-11 text-sm text-muted-foreground hover:text-foreground border rounded-lg hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-ring", className)}
     >
-      <Search className="h-4 w-4" />
+      <Search className="h-4 w-4" aria-hidden="true" />
       <span className="hidden sm:inline">Buscar...</span>
-      <Badge variant="outline" className="hidden md:flex text-xs gap-1"><Command className="h-3 w-3" />K</Badge>
+      <Badge variant="outline" className="hidden md:flex text-xs gap-1"><Command className="h-3 w-3" aria-hidden="true" />K</Badge>
     </button>
   );
 }
