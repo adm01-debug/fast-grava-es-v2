@@ -96,7 +96,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     styles: { fontSize: 10 },
   });
 
-  yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
+  yPosition = (doc as unknown as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
 
   // Section: Machine KPIs
   yPosition = addSection(doc, 'Indicadores de Máquinas', yPosition, margin);
@@ -117,7 +117,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     styles: { fontSize: 10 },
   });
 
-  yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
+  yPosition = (doc as unknown as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
 
   // Section: Quality KPIs
   yPosition = addSection(doc, 'Indicadores de Qualidade', yPosition, margin);
@@ -137,7 +137,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     styles: { fontSize: 10 },
   });
 
-  yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
+  yPosition = (doc as unknown as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
 
   // Check if we need a new page
   if (yPosition > pageHeight - 80) {
@@ -164,7 +164,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
     styles: { fontSize: 10 },
   });
 
-  yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
+  yPosition = (doc as unknown as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
 
   // Section: Top Operators
   if (kpis.topOperators.length > 0) {
@@ -192,7 +192,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
       styles: { fontSize: 10 },
     });
 
-    yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
+    yPosition = (doc as unknown as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
   }
 
   // Section: Technique Distribution
@@ -219,7 +219,7 @@ export async function exportExecutiveDashboardPDF(options: PDFExportOptions): Pr
       styles: { fontSize: 10 },
     });
 
-    yPosition = (doc as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
+    yPosition = (doc as unknown as jsPDFWithAutoTable).lastAutoTable.finalY + 10;
   }
 
   // Section: Machine Performance
