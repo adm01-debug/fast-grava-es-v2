@@ -4,15 +4,15 @@ import { subDays, format } from 'date-fns';
 import { exportProductionReport, exportLossesReport, exportDelaysReport } from '@/lib/pdfExport';
 
 type JobRow = {
-  id?: string;
-  order_number?: string;
-  client_name?: string;
-  product_name?: string;
-  status?: string;
-  quantity?: number;
-  produced_quantity?: number;
-  lost_pieces?: number;
-  scheduled_date?: string;
+  id?: string | null;
+  order_number?: string | null;
+  client_name?: string | null;
+  product_name?: string | null;
+  status?: string | null;
+  quantity?: number | null;
+  produced_quantity?: number | null;
+  lost_pieces?: number | null;
+  scheduled_date?: string | null;
   [key: string]: unknown;
 };
 
@@ -22,10 +22,11 @@ interface ExportData {
   statusDistribution?: Array<Record<string, unknown>>;
 }
 
-interface ExtraExportData {
+type ExtraExportData = {
   jobsWithLosses?: JobRow[];
   delayedJobsList?: JobRow[];
-}
+  [key: string]: unknown;
+};
 
 export function useBIExport(biMetrics: ExportData) {
   const [isExporting, setIsExporting] = useState(false);
