@@ -126,7 +126,7 @@ export default function AdminTelemetriaPage() {
     queryFn: async () => {
       const { from, to } = getTimeThreshold();
       let query = supabase
-        supabase.from("query_telemetry")
+        .from("query_telemetry")
         .select("*")
         .gte("created_at", from)
         .lte("created_at", to)
