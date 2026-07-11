@@ -566,25 +566,26 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     }) => {
       const results = [];
       for (const id of data.record_ids) {
-        const { data: record } = await (supabase
+        const { data: recordRaw } = await supabase
           .from('maintenance_records')
-          .select('*, schedule:maintenance_schedules(*)') as any)
+          .select('*, schedule:maintenance_schedules(*)')
           .eq('id', id)
           .single();
 
+        const record = recordRaw as (typeof recordRaw & { schedule?: { id: string; interval_days?: number } | null }) | null;
         if (!record) continue;
 
         const nextDue = addDays(new Date(), record.schedule?.interval_days || 30).toISOString();
 
-        await (supabase
+        await supabase
           .from('maintenance_records')
           .update({
             status: 'approved',
             approver_id: data.approver_id,
             approved_at: new Date().toISOString(),
             next_scheduled_date_after_approval: nextDue,
-          } as any)
-          .eq('id', id));
+          } as never)
+          .eq('id', id);
 
         if (record.schedule) {
           await supabase
