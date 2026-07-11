@@ -207,7 +207,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           // NOTE: `quality_checklist_results` and `failure_risk_detected` are columns
           // on `tpm_executions`, not `maintenance_records`. Writing them here made the
           // whole update fail at runtime ("column does not exist"), so they are omitted.
-        } as any)
+        } as never)
         .eq('id', data.record_id));
 
       if (recordError) throw recordError;
