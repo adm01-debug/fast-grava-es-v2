@@ -59,9 +59,7 @@ interface ErrorLog {
 type SeverityFilter = "all" | "slow" | "very_slow" | "error";
 type TimeFilter = "1h" | "6h" | "24h" | "7d" | "custom";
 
-// Escape hatch tipado para tabelas de telemetria ausentes nos types gerados
-type UntypedFrom = (table: string) => ReturnType<typeof supabase.from>;
-const untypedDb = supabase as unknown as { from: UntypedFrom };
+// Tabelas query_telemetry e telemetry_traces são acessadas diretamente via supabase tipado
 
 const attrStr = (attrs: Record<string, unknown> | null | undefined, key: string, fallback = ''): string => {
   const v = attrs?.[key];
@@ -128,7 +126,7 @@ export default function AdminTelemetriaPage() {
     queryFn: async () => {
       const { from, to } = getTimeThreshold();
       let query = supabase
-        untypedDb.from("query_telemetry")
+        .from("query_telemetry")
         .select("*")
         .gte("created_at", from)
         .lte("created_at", to)
@@ -154,7 +152,7 @@ export default function AdminTelemetriaPage() {
     queryFn: async () => {
       const { from, to } = getTimeThreshold();
       const { data, error } = await supabase
-        untypedDb.from("telemetry_traces")
+        .from("telemetry_traces")
         .select("*")
         .gte("created_at", from)
         .lte("created_at", to)
@@ -195,7 +193,7 @@ export default function AdminTelemetriaPage() {
   const handleCleanup = async () => {
     const threshold = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase
-      untypedDb.from("query_telemetry")
+      .from("query_telemetry")
       .delete()
       .lt("created_at", threshold);
     
