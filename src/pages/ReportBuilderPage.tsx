@@ -519,13 +519,13 @@ export default function ReportBuilderPage() {
                 </CardContent>
              </Card>
 
-             <Card className="glass-card border-amber-500/20 bg-amber-500/5">
+             <Card className="glass-card border-amber-500/20 bg-warning/5">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-[10px] font-black uppercase tracking-widest text-amber-600">Formato de Saída</CardTitle>
+                  <CardTitle className="text-[10px] font-black uppercase tracking-widest text-warning">Formato de Saída</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Select value={formatType} onValueChange={(v: 'csv' | 'pdf' | 'excel') => setFormatType(v)}>
-                    <SelectTrigger className="bg-background/50 border-amber-500/20 text-amber-900 font-bold h-9">
+                    <SelectTrigger className="bg-background/50 border-amber-500/20 text-warning font-bold h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

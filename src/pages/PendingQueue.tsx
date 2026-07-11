@@ -564,7 +564,7 @@ export default function PendingQueue() {
             <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleBulkAction('production')}>
               <Play className="h-3 w-3" /> Iniciar Produção
             </Button>
-            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-amber-500/30 text-amber-400 hover:bg-amber-500/10" onClick={() => handleBulkAction('ready')}>
+            <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-amber-500/30 text-warning hover:bg-warning/10" onClick={() => handleBulkAction('ready')}>
               <Package className="h-3 w-3" /> Marcar No Jeito
             </Button>
             <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold tracking-wider gap-1 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => {
@@ -648,7 +648,7 @@ export default function PendingQueue() {
                                 key={job.id}
                                 data-index={virtualRow.index}
                                 ref={rowVirtualizer.measureElement}
-                                className={`border-border/50 hover:bg-muted/30 transition-colors cursor-pointer ${isStuck ? 'bg-amber-500/5' : ''}`}
+                                className={`border-border/50 hover:bg-muted/30 transition-colors cursor-pointer ${isStuck ? 'bg-warning/5' : ''}`}
                                 onClick={() => handleJobClick(job)}
                                 style={{ position: "absolute", top: 0, left: 0, width: "100%", height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}
                               >
@@ -657,7 +657,7 @@ export default function PendingQueue() {
                                 </TableCell>
                                 <TableCell className="font-medium text-foreground text-xs sm:text-sm w-[100px] flex items-center gap-1.5">
                                   {job.order_number}
-                                  {isStuck && <AlertTriangle className="h-3 w-3 text-amber-500 animate-pulse" />}
+                                  {isStuck && <AlertTriangle className="h-3 w-3 text-warning animate-pulse" />}
                                 </TableCell>
                                 <TableCell className="text-foreground text-xs sm:text-sm max-w-[120px] truncate">{job.client}</TableCell>
                                 <TableCell className="text-muted-foreground max-w-[150px] truncate hidden md:table-cell text-xs sm:text-sm">{job.product}</TableCell>
@@ -681,7 +681,7 @@ export default function PendingQueue() {
                                 <TableCell><StatusBadge status={job.status} /></TableCell>
                                 <TableCell className="hidden lg:table-cell">
                                   <div className="flex flex-wrap gap-1">
-                                    {jobsInOptimizedSequence.has(job.id) && <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] gap-1 px-1.5 h-5"><Zap className="h-2.5 w-2.5" /> Setup</Badge>}
+                                    {jobsInOptimizedSequence.has(job.id) && <Badge variant="outline" className="bg-warning/10 text-warning border-amber-500/20 text-[10px] gap-1 px-1.5 h-5"><Zap className="h-2.5 w-2.5" /> Setup</Badge>}
                                     {jobsWithBalancingSuggestion.has(job.id) && <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[10px] gap-1 px-1.5 h-5"><BrainCircuit className="h-2.5 w-2.5" /> Equilíbrio</Badge>}
                                   </div>
                                 </TableCell>
@@ -730,7 +730,7 @@ export default function PendingQueue() {
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex justify-between items-center gap-2">
                               <StatusBadge status={job.status} />
-                              {isStuck && <span className="text-[10px] text-amber-500 font-medium">Estagnado</span>}
+                              {isStuck && <span className="text-[10px] text-warning font-medium">Estagnado</span>}
                             </CardFooter>
                           </Card>
                         </motion.div>

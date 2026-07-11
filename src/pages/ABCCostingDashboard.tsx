@@ -98,12 +98,12 @@ export default function ABCCostingDashboard() {
           <Card className="card-glass hover-lift">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/10">
-                  <Calculator className="h-6 w-6 text-emerald-500" />
+                <div className="p-3 rounded-xl bg-success/10">
+                  <Calculator className="h-6 w-6 text-success" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Custo Alocado</p>
-                  <p className="text-2xl font-bold font-display text-emerald-500">
+                  <p className="text-2xl font-bold font-display text-success">
                     {totalAllocatedCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                 </div>
@@ -114,12 +114,12 @@ export default function ABCCostingDashboard() {
           <Card className="card-glass hover-lift">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-amber-500/10">
-                  <TrendingUp className="h-6 w-6 text-amber-500" />
+                <div className="p-3 rounded-xl bg-warning/10">
+                  <TrendingUp className="h-6 w-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Custo Unitário Médio</p>
-                  <p className="text-2xl font-bold font-display text-amber-500">
+                  <p className="text-2xl font-bold font-display text-warning">
                     {averageUnitCost.toLocaleString('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',

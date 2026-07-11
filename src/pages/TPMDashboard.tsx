@@ -197,12 +197,12 @@ export default function TPMDashboard() {
           <Card className="glass-card hover-lift stagger-3 hover:shadow-[0_0_20px_hsl(38_92%_50%/0.3)] hover:border-amber-500/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-amber-500/10 group-hover:bg-amber-500/20 group-hover:shadow-[0_0_15px_hsl(38_92%_50%/0.4)] transition-all duration-300">
-                  <Clock className="h-6 w-6 text-amber-500" />
+                <div className="p-3 rounded-xl bg-warning/10 group-hover:bg-warning/20 group-hover:shadow-[0_0_15px_hsl(38_92%_50%/0.4)] transition-all duration-300">
+                  <Clock className="h-6 w-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Próximos 7 dias</p>
-                  <p className="text-2xl font-bold font-display text-amber-500">{stats.upcoming7Days}</p>
+                  <p className="text-2xl font-bold font-display text-warning">{stats.upcoming7Days}</p>
                 </div>
               </div>
             </CardContent>
@@ -225,12 +225,12 @@ export default function TPMDashboard() {
           <Card className="glass-card hover-lift stagger-5 hover:shadow-glow-success hover:border-emerald-500/30 transition-all duration-300 group">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 group-hover:shadow-glow-success transition-all duration-300">
-                  <CheckCircle className="h-6 w-6 text-emerald-500" />
+                <div className="p-3 rounded-xl bg-success/10 group-hover:bg-success/20 group-hover:shadow-glow-success transition-all duration-300">
+                  <CheckCircle className="h-6 w-6 text-success" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Concluídas/Mês</p>
-                  <p className="text-2xl font-bold font-display text-emerald-500">{stats.completedThisMonth}</p>
+                  <p className="text-2xl font-bold font-display text-success">{stats.completedThisMonth}</p>
                 </div>
               </div>
             </CardContent>
@@ -312,15 +312,15 @@ export default function TPMDashboard() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-xs">
                         <span>Análise Vibracional</span>
-                        <span className="text-emerald-500">OK</span>
+                        <span className="text-success">OK</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span>Perfil Térmico</span>
-                        <span className="text-emerald-500">OK</span>
+                        <span className="text-success">OK</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span>Consumo Energético</span>
-                        <span className="text-amber-500">Nominal</span>
+                        <span className="text-warning">Nominal</span>
                       </div>
                     </div>
                   </CardContent>

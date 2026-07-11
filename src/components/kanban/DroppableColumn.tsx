@@ -233,11 +233,11 @@ export function DroppableColumn({
                   <Activity className={cn(
                     "h-3 w-3",
                     totalEstimatedTime > columnLimit ? "text-red-500 animate-pulse" :
-                    totalEstimatedTime > columnLimit * 0.7 ? "text-orange-500" : "text-emerald-500"
+                    totalEstimatedTime > columnLimit * 0.7 ? "text-orange-500" : "text-success"
                   )} />
                   <span className={cn(
                     totalEstimatedTime > columnLimit ? "text-red-500" :
-                    totalEstimatedTime > columnLimit * 0.7 ? "text-orange-500" : "text-emerald-500"
+                    totalEstimatedTime > columnLimit * 0.7 ? "text-orange-500" : "text-success"
                   )}>
                     Risco de Gargalo: {totalEstimatedTime > columnLimit ? "Crítico" : totalEstimatedTime > columnLimit * 0.7 ? "Moderado" : "Baixo"}
                   </span>
@@ -247,7 +247,7 @@ export function DroppableColumn({
                       "ml-auto text-[8px] h-4 px-1.5 leading-none font-bold border-2",
                       totalEstimatedTime > columnLimit ? "border-red-500 text-red-500 bg-red-500/10 animate-pulse" :
                       totalEstimatedTime > columnLimit * 0.7 ? "border-orange-500 text-orange-500 bg-orange-500/10" :
-                      "border-emerald-500 text-emerald-500 bg-emerald-500/10"
+                      "border-emerald-500 text-success bg-success/10"
                     )}
                   >
                     {totalEstimatedTime > columnLimit ? "GARGALO" : totalEstimatedTime > columnLimit * 0.7 ? "ATENÇÃO" : "ESTÁVEL"}

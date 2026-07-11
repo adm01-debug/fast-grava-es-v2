@@ -133,7 +133,7 @@ export default function SimulationDashboard() {
                   {stats.p95Latency.toFixed(0)}ms
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <Zap className="h-4 w-4 text-amber-400" />
+                  <Zap className="h-4 w-4 text-warning" />
                   <span className="text-xs">Velocidade de resposta</span>
                 </div>
               </CardContent>

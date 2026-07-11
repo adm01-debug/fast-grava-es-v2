@@ -211,8 +211,8 @@ export default function ExecutiveDashboard() {
       icon: Factory,
       trend: kpis.trends.utilization >= 0 ? 'up' : 'down',
       trendValue: kpis.trends.utilization,
-      color: 'text-amber-500',
-      bgColor: 'bg-amber-500/10',
+      color: 'text-warning',
+      bgColor: 'bg-warning/10',
     },
     {
       title: 'Ciber-Resiliência',
@@ -253,7 +253,7 @@ export default function ExecutiveDashboard() {
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
                     QUALIDADE + VELOCIDADE
                   </Badge>
-                  <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20">
+                  <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success dark:text-success border-emerald-500/20">
                     Governança Total Ativa
                   </Badge>
                 </div>
@@ -396,19 +396,19 @@ export default function ExecutiveDashboard() {
 
           <Card className="glass-card lg:col-span-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent relative overflow-hidden group h-full flex flex-col">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Zap className="h-32 w-32 text-amber-500" />
+              <Zap className="h-32 w-32 text-warning" />
             </div>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-amber-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-warning flex items-center gap-2">
                 <Lightbulb className="h-4 w-4" />
                 AI Operational Insights
               </CardTitle>
               <CardDescription>Análise inteligente de performance do período</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-4 hover:bg-amber-500/15 transition-all duration-300">
-                <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="h-5 w-5 text-amber-600" />
+              <div className="p-4 rounded-xl bg-warning/10 border border-amber-500/20 flex items-start gap-4 hover:bg-warning/15 transition-all duration-300">
+                <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="h-5 w-5 text-warning" />
                 </div>
                 <div>
                   <h4 className="font-bold text-sm">Oportunidade de Ganho de Eficiência</h4>
@@ -652,7 +652,7 @@ export default function ExecutiveDashboard() {
           <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Factory className="h-5 w-5 text-amber-500" />
+                <Factory className="h-5 w-5 text-warning" />
                 Performance Máquinas
               </CardTitle>
             </CardHeader>

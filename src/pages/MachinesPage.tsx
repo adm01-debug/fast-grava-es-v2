@@ -595,7 +595,7 @@ function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques:
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg flex items-center gap-2">
-                <MapIcon className="h-5 w-5 text-amber-600" />
+                <MapIcon className="h-5 w-5 text-warning" />
                 Layout Térmico da Fábrica
               </CardTitle>
               <CardDescription>Visualização em tempo real de pontos de calor e ociosidade</CardDescription>
@@ -643,7 +643,7 @@ function FactoryHeatmap({ machines, techniques }: { machines: any[]; techniques:
                             </p>
                             <p className="text-[10px] uppercase font-bold flex justify-between gap-4">
                                <span>Ocupação:</span>
-                               <span className="text-amber-500">{Math.round(getMachineStats(machine).occupancy)}%</span>
+                               <span className="text-warning">{Math.round(getMachineStats(machine).occupancy)}%</span>
                             </p>
                          </div>
                       </TooltipContent>
