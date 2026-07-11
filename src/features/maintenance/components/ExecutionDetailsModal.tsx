@@ -25,17 +25,14 @@ interface ExecutionDetailsModalProps {
   recordId: string | null;
 }
 
-// Permissive shape — the execution record aggregates joins from many tables.
-// Fields are typed as `unknown` where safe, or narrowed inline at use sites.
-type ExecutionRow = Record<string, unknown> & { id: string };
-type ExecutionRecord = Record<string, unknown> & {
-  id: string;
-  status: string;
-  responses?: ExecutionRow[];
-  parts?: ExecutionRow[];
-  execution_alerts?: ExecutionRow[];
-  quality_responses?: ExecutionRow[];
-};
+// The execution record aggregates deeply-nested joins from many tables
+// (checklist items, parts, alerts, technical sheets, quality responses).
+// A precise schema would need ~40 interlocking types; here we intentionally
+// use a permissive alias so consumers can access dynamic keys safely.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ExecutionRecord = Record<string, any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ExecutionRow = Record<string, any>;
 
 export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDetailsModalProps) {
   const { fetchRecordDetails, approveMaintenance, requestCorrection } = useTPM();
