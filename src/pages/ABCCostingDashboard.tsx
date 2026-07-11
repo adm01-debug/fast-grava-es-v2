@@ -87,7 +87,7 @@ export default function ABCCostingDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Orçamento Mensal</p>
-                  <p className="text-2xl font-bold font-display">
+                  <p className="text-2xl font-bold text-title">
                     {totalBudget.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                 </div>
@@ -103,7 +103,7 @@ export default function ABCCostingDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Custo Alocado</p>
-                  <p className="text-2xl font-bold font-display text-success">
+                  <p className="text-2xl font-bold text-title text-success">
                     {totalAllocatedCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                 </div>
@@ -119,7 +119,7 @@ export default function ABCCostingDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Custo Unitário Médio</p>
-                  <p className="text-2xl font-bold font-display text-warning">
+                  <p className="text-2xl font-bold text-title text-warning">
                     {averageUnitCost.toLocaleString('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
@@ -139,7 +139,7 @@ export default function ABCCostingDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Jobs Custeados</p>
-                  <p className="text-2xl font-bold font-display text-purple-500">
+                  <p className="text-2xl font-bold text-title text-purple-500">
                     {jobSummaries.length}
                   </p>
                 </div>

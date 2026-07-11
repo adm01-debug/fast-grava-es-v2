@@ -58,7 +58,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
               <Brain className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-base font-display">Saúde Preditiva IA</CardTitle>
+              <CardTitle className="text-base text-title">Saúde Preditiva IA</CardTitle>
               <CardDescription className="text-xs">Motor de inferência TPM 4.0</CardDescription>
             </div>
           </div>
@@ -70,7 +70,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
       <CardContent className="space-y-4">
         <div className="flex flex-col items-center justify-center py-2">
           <div className={`relative w-24 h-24 flex items-center justify-center rounded-full ${riskBg} border-2 border-dashed border-primary/20 mb-2`}>
-            <span className={`text-3xl font-bold font-display ${riskColor}`}>
+            <span className={`text-3xl font-bold text-title ${riskColor}`}>
               {100 - displayData.risk_score}%
             </span>
             <div className="absolute -bottom-1 -right-1 bg-background p-1 rounded-full shadow-sm border border-border">

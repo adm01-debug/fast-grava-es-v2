@@ -95,7 +95,7 @@ export default function MLPredictionsDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Previsões</p>
-                  <p className="text-2xl font-bold font-display">{stats.totalPredictions}</p>
+                  <p className="text-2xl font-bold text-title">{stats.totalPredictions}</p>
                 </div>
               </div>
             </CardContent>
@@ -109,7 +109,7 @@ export default function MLPredictionsDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Alto Risco</p>
-                  <p className="text-2xl font-bold font-display text-red-500">{stats.highRisk}</p>
+                  <p className="text-2xl font-bold text-title text-red-500">{stats.highRisk}</p>
                 </div>
               </div>
             </CardContent>
@@ -123,7 +123,7 @@ export default function MLPredictionsDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Risco Médio</p>
-                  <p className="text-2xl font-bold font-display text-warning">{stats.mediumRisk}</p>
+                  <p className="text-2xl font-bold text-title text-warning">{stats.mediumRisk}</p>
                 </div>
               </div>
             </CardContent>
@@ -137,7 +137,7 @@ export default function MLPredictionsDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Risco Baixo</p>
-                  <p className="text-2xl font-bold font-display text-success">{stats.lowRisk}</p>
+                  <p className="text-2xl font-bold text-title text-success">{stats.lowRisk}</p>
                 </div>
               </div>
             </CardContent>
@@ -151,7 +151,7 @@ export default function MLPredictionsDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Confiança Média</p>
-                  <p className="text-2xl font-bold font-display text-purple-500">{stats.avgConfidence}%</p>
+                  <p className="text-2xl font-bold text-title text-purple-500">{stats.avgConfidence}%</p>
                 </div>
               </div>
             </CardContent>

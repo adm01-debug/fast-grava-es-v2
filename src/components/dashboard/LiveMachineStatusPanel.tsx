@@ -114,7 +114,7 @@ export const LiveMachineStatusPanel = memo(function LiveMachineStatusPanel() {
     <Card className="glass-card">
       <CardHeader className="pb-2 pt-3 px-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-display flex items-center gap-2">
+          <CardTitle className="text-sm text-title flex items-center gap-2">
             <Cpu className="h-4 w-4 text-primary animate-float" />
             <span className="gradient-text font-black uppercase tracking-tighter">Status das Máquinas 12/10</span>
           </CardTitle>

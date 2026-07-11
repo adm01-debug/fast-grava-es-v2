@@ -26,7 +26,7 @@ export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: Machine
   return (
     <Card className="glass-card border-violet-500/20 bg-violet-500/5">
       <CardHeader className="pb-3 pt-4 px-4">
-        <CardTitle className="text-sm font-display flex items-center gap-2">
+        <CardTitle className="text-sm text-title flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-violet-500/20">
             <Sparkles className="h-4 w-4 text-violet-400" />
           </div>

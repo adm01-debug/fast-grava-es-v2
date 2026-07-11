@@ -58,7 +58,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
         {/* Next Schedules */}
         <Card className="glass-card border-primary/20">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-display flex items-center justify-between">
+            <CardTitle className="text-sm text-title flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" />
                 Próximas Manutenções
@@ -101,7 +101,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
         {/* Active Alerts */}
         <Card className={`glass-card ${machineAlerts.length > 0 ? 'border-destructive/30 bg-destructive/5' : ''}`}>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-display flex items-center gap-2">
+            <CardTitle className="text-sm text-title flex items-center gap-2">
               <AlertTriangle className={`h-4 w-4 ${machineAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
               Alertas Ativos
             </CardTitle>
@@ -129,7 +129,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
       {/* History */}
       <Card className="glass-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-display flex items-center gap-2">
+          <CardTitle className="text-sm text-title flex items-center gap-2">
             <History className="h-4 w-4 text-primary" />
             Histórico Recente
           </CardTitle>

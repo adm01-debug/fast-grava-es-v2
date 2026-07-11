@@ -38,7 +38,7 @@ export function QualityHistogram({ parameter, measurements }: QualityHistogramPr
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-display uppercase tracking-wider text-muted-foreground">Distribuição de Frequência (Histograma)</CardTitle>
+        <CardTitle className="text-sm text-title uppercase tracking-wider text-muted-foreground">Distribuição de Frequência (Histograma)</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-48 w-full">

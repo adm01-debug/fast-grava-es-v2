@@ -211,7 +211,7 @@ export default function InventoryPage() {
                <div className="space-y-6">
                   <Card className="glass-card">
                     <CardHeader>
-                      <CardTitle className="text-sm font-display flex items-center gap-2">
+                      <CardTitle className="text-sm text-title flex items-center gap-2">
                         <Boxes className="h-4 w-4 text-primary" />
                         Sugestões de Re-alocação
                       </CardTitle>

@@ -135,7 +135,7 @@ export default function MonthlyCalendar() {
         <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
           <CardHeader className="border-b border-border/40 pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+              <CardTitle className="text-sm sm:text-lg text-title gradient-text flex items-center gap-2">
                 <CalendarRange className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 {format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR })}
               </CardTitle>
@@ -202,7 +202,7 @@ export default function MonthlyCalendar() {
                             </div>
                             {dayJobs.length > 0 && (
                               <div className="flex items-baseline gap-1">
-                                <span className="text-lg sm:text-2xl font-display font-bold text-primary leading-none">
+                                <span className="text-lg sm:text-2xl text-title font-bold text-primary leading-none">
                                   {dayJobs.length}
                                 </span>
                                 <span className="text-[10px] text-muted-foreground hidden sm:inline">

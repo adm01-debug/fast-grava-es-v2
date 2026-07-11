@@ -61,7 +61,7 @@ export function DrillDownDialog({ open, onOpenChange, title, jobs, onExport }: D
           <div className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <div className="flex items-center gap-3">
-                <DialogTitle className="text-2xl font-display tracking-widest text-primary uppercase">
+                <DialogTitle className="text-2xl text-title tracking-widest text-primary uppercase">
                   {title}
                 </DialogTitle>
                 <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 h-6">

@@ -93,7 +93,7 @@ export default function AuthPage() {
         <meta name="description" content="Acesse o sistema FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO para gerenciar sua produção industrial." />
       </Helmet>
 
-      <div className="min-h-screen w-full flex bg-[#050505] text-white font-display selection:bg-[#FF5A1F]/30">
+      <div className="min-h-screen w-full flex bg-[#050505] text-white text-title selection:bg-[#FF5A1F]/30">
         {/* LEFT — Industrial Showcase */}
         <div className="hidden lg:flex flex-1 relative overflow-hidden bg-[#0a0a0a] border-r border-white/5">
           <div className="absolute inset-0 opacity-[0.07] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />

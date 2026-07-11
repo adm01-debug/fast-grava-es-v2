@@ -270,7 +270,7 @@ export default function DailyCalendar() {
           <Card className="bg-card border border-border/40 rounded-xl">
             <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+                <CardTitle className="text-sm sm:text-lg text-title gradient-text flex items-center gap-2">
                   <Clock className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                   <span>{format(selectedDate, 'EEEE, dd MMM', { locale: ptBR })}</span>
                 </CardTitle>
@@ -294,7 +294,7 @@ export default function DailyCalendar() {
         ) : (
           <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
             <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
-              <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+              <CardTitle className="text-sm sm:text-lg text-title gradient-text flex items-center gap-2">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span className="hidden sm:inline">
                   {format(selectedDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}

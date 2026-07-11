@@ -244,7 +244,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
         <DialogHeader className="p-6 pb-0">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
-              <DialogTitle className="flex items-center gap-2 text-2xl font-display">
+              <DialogTitle className="flex items-center gap-2 text-2xl text-title">
                 <Wrench className="h-6 w-6 text-primary" />
                 Detalhes da Execução
               </DialogTitle>

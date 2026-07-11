@@ -232,7 +232,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Activity className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider uppercase">Fluxo de Produção</span>
+              <span className="text-title tracking-wider uppercase">Fluxo de Produção</span>
             </CardTitle>
             <div className="flex items-center gap-4 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
               <TooltipProvider>
@@ -332,7 +332,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <PieChart className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider uppercase">Distribuição de Status</span>
+              <span className="text-title tracking-wider uppercase">Distribuição de Status</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -368,7 +368,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <Gauge className="h-5 w-5 text-primary" />
-              <span className="font-display tracking-wider uppercase">Eficiência Geral</span>
+              <span className="text-title tracking-wider uppercase">Eficiência Geral</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">

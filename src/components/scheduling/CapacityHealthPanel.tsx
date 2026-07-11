@@ -14,7 +14,7 @@ export function CapacityHealthPanel() {
   return (
     <Card className="glass-card border-warning/20">
       <CardHeader className="pb-3 pt-4 px-4">
-        <CardTitle className="text-sm font-display flex items-center justify-between">
+        <CardTitle className="text-sm text-title flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-warning/20">
               <Zap className="h-4 w-4 text-warning" />

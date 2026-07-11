@@ -55,9 +55,9 @@ export function FuturisticStatCard({
         <CardContent className="pt-6 relative z-10">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-muted-foreground font-display tracking-widest uppercase mb-1">{title}</p>
+              <p className="text-xs text-muted-foreground text-title tracking-widest uppercase mb-1">{title}</p>
               <h3 className={cn(
-                "text-3xl font-bold font-display tracking-tight",
+                "text-3xl font-bold text-title tracking-tight",
                 variant === 'danger' ? 'text-rose-500' : 'text-white'
               )}>{value}</h3>
               <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">{subtitle}</p>
@@ -120,7 +120,7 @@ export function FuturisticStatCard({
               </div>
             ) : <div />}
             {onClick && (
-              <div className="flex items-center gap-1 text-[8px] text-primary/40 uppercase font-display tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1 text-[8px] text-primary/40 uppercase text-title tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">
                 Drill-down <motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}><TrendingUp className="h-2 w-2 rotate-90" /></motion.div>
               </div>
             )}
