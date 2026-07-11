@@ -211,7 +211,7 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 px-1 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-8 rounded-full gradient-primary animate-pulse-glow" />
-            <h1 className="text-3xl font-display font-black tracking-tighter">
+            <h1 className="text-display-lg tracking-tighter">
               <span className="gradient-text">FAST GRAVAÇÕES - GESTÃO DE GRAVAÇÃO</span>
             </h1>
             <Badge variant="outline" className="hidden sm:flex gap-1.5 px-2.5 border-primary/30 bg-primary/5 text-primary text-[10px] font-black uppercase shadow-[0_0_15px_rgba(255,90,31,0.1)]">
