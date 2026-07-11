@@ -193,7 +193,7 @@ export default function AdminTelemetriaPage() {
   const handleCleanup = async () => {
     const threshold = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase
-      supabase.from("query_telemetry")
+      .from("query_telemetry")
       .delete()
       .lt("created_at", threshold);
     
