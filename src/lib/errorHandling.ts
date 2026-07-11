@@ -10,11 +10,12 @@ export interface AppError {
   message: string;
   code?: string;
   severity: ErrorSeverity;
-  originalError?: any;
+  originalError?: unknown;
   context?: Record<string, unknown>;
   timestamp: Date;
   retryable: boolean;
 }
+
 
 /**
  * Error codes for categorization
