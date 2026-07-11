@@ -549,7 +549,7 @@ export default function AdminTelemetriaPage() {
                               </div>
                             </div>
                             <Badge variant="outline" className="text-[9px] bg-background">
-                              {err.metadata?.level || 'error'}
+                              {attrStr(err.metadata, 'level', 'error')}
                             </Badge>
                           </div>
                           <div className="p-4 space-y-3">
