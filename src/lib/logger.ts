@@ -125,7 +125,7 @@ function formatEntry(entry: LogEntry): string {
   return entry.context ? `${prefix} [${entry.context}] ${entry.message}` : `${prefix} ${entry.message}`;
 }
 
-function createEntry(level: LogLevel, message: string, context?: string, data?: any): LogEntry {
+function createEntry(level: LogLevel, message: string, context?: string, data?: unknown): LogEntry {
   const entry = {
     level,
     message,
@@ -148,26 +148,26 @@ function createEntry(level: LogLevel, message: string, context?: string, data?: 
 }
 
 export const logger = {
-  debug(message: string, data?: any, context?: string) {
+  debug(message: string, data?: unknown, context?: string) {
     if (!isDev) return;
     const entry = createEntry('debug', message, context, data);
     console.debug(formatEntry(entry), data ?? '');
   },
 
-  info(message: string, data?: any, context?: string) {
+  info(message: string, data?: unknown, context?: string) {
     if (!isDev) return;
     const entry = createEntry('info', message, context, data);
     console.info(formatEntry(entry), data ?? '');
   },
 
-  warn(message: string, data?: any, context?: string) {
+  warn(message: string, data?: unknown, context?: string) {
     const entry = createEntry('warn', message, context, data);
     if (isDev) {
       console.warn(formatEntry(entry), data ?? '');
     }
   },
 
-  error(message: string, error?: any, context?: string) {
+  error(message: string, error?: unknown, context?: string) {
     const entry = createEntry('error', message, context, error);
     if (isDev) {
       console.error(formatEntry(entry), error ?? '');
@@ -176,9 +176,10 @@ export const logger = {
     }
   },
 
-  critical(message: string, error?: any, context?: string) {
+  critical(message: string, error?: unknown, context?: string) {
     const entry = createEntry('critical', message, context, error);
     console.error(`[CRITICAL] ${formatEntry(entry)}`, error ?? '');
+
     
     const WEBHOOK_URL = import.meta.env.VITE_ALERT_WEBHOOK_URL;
     if (!isDev && WEBHOOK_URL) {
