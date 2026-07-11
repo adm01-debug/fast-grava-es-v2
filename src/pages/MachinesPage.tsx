@@ -559,7 +559,7 @@ function MachineHistoryTab({ machineId }: { machineId: string }) {
   );
 }
 
-function FactoryHeatmap({ machines, techniques }: { machines: DbMachine[]; techniques: Technique[] }) {
+function FactoryHeatmap({ machines, techniques }: { machines: DbMachine[]; techniques: DbTechnique[] }) {
   const { jobs } = useSchedulingData();
 
   const getHeatColor = (machine: DbMachine) => {
