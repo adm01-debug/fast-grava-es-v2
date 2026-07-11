@@ -263,7 +263,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
             </div>
             <div className="flex flex-col items-end gap-2">
               {record && getStatusBadge(record.status)}
-              {record.status === 'correction_requested' && (
+              {record?.status === 'correction_requested' && (
                 <Badge variant="destructive" className="animate-pulse">Aguardando Correção</Badge>
               )}
               {record && (
