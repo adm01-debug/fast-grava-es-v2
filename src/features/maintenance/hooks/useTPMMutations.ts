@@ -207,7 +207,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           // NOTE: `quality_checklist_results` and `failure_risk_detected` are columns
           // on `tpm_executions`, not `maintenance_records`. Writing them here made the
           // whole update fail at runtime ("column does not exist"), so they are omitted.
-        } as any)
+        } as never)
         .eq('id', data.record_id));
 
       if (recordError) throw recordError;
@@ -340,15 +340,17 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
       // Requisito: pelo menos uma foto se algum item de checklist exigir foto
-      const hasPhotoRequired = (record.responses || []).some((r: any) => r.requires_photo);
-      const hasPhoto = (record.responses || []).some((r: any) => r.photo_url);
+      type ResponseRow = { requires_photo?: boolean | null; photo_url?: string | null };
+      const responses = (record.responses || []) as ResponseRow[];
+      const hasPhotoRequired = responses.some((r) => r.requires_photo);
+      const hasPhoto = responses.some((r) => r.photo_url);
       if (hasPhotoRequired && !hasPhoto) {
         throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
       }
 
-      const { data: recordData, error: recordFetchError } = await (supabase
+      const { data: recordData, error: recordFetchError } = await supabase
         .from('maintenance_records')
-        .select('*, schedule:maintenance_schedules(*)') as any)
+        .select('*, schedule:maintenance_schedules(*)')
         .eq('id', data.record_id)
         .maybeSingle();
 
@@ -356,7 +358,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Registro não encontrado');
       }
 
-      const scheduleData = recordData.schedule as any;
+      const scheduleData = (recordData as { schedule?: { id: string; interval_days?: number } | null }).schedule ?? null;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
 
 
@@ -369,7 +371,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           approver_id: data.approver_id,
           approved_at: new Date().toISOString(),
           next_scheduled_date_after_approval: nextDue,
-        } as any)
+        } as never)
         .eq('id', data.record_id);
 
       if (recordError) throw recordError;
@@ -400,7 +402,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
       toast.success('Manutenção aprovada e próximo agendamento atualizado', {
         description: `Próxima revisão agendada.`,
-        icon: React.createElement(CheckCircle2, { className: "h-4 w-4 text-success" } as any)
+        icon: React.createElement(CheckCircle2, { className: "h-4 w-4 text-success" })
       });
     },
     onError: (error) => {
@@ -421,7 +423,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           status: 'correction_requested',
           correction_notes: data.notes,
           correction_deadline: data.deadline,
-        } as any)
+        } as never)
         .eq('id', data.record_id));
 
       if (error) throw error;
@@ -496,7 +498,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         });
 
         if (!mlError && mlResult?.predictions) {
-          mlResult.predictions.forEach((p: { machine: { id: string }, prediction: { risk_score: number, recommendations?: any[] } }) => {
+          mlResult.predictions.forEach((p: { machine: { id: string }, prediction: { risk_score: number, recommendations?: string[] } }) => {
             if (p.prediction?.risk_score > 75) {
               // High risk detected by AI, find the primary schedule for this machine
               const machineSchedule = schedules.find(s => s.machine_id === p.machine.id && s.is_active);
@@ -564,25 +566,26 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     }) => {
       const results = [];
       for (const id of data.record_ids) {
-        const { data: record } = await (supabase
+        const { data: recordRaw } = await supabase
           .from('maintenance_records')
-          .select('*, schedule:maintenance_schedules(*)') as any)
+          .select('*, schedule:maintenance_schedules(*)')
           .eq('id', id)
           .single();
 
+        const record = recordRaw as (typeof recordRaw & { schedule?: { id: string; interval_days?: number } | null }) | null;
         if (!record) continue;
 
         const nextDue = addDays(new Date(), record.schedule?.interval_days || 30).toISOString();
 
-        await (supabase
+        await supabase
           .from('maintenance_records')
           .update({
             status: 'approved',
             approver_id: data.approver_id,
             approved_at: new Date().toISOString(),
             next_scheduled_date_after_approval: nextDue,
-          } as any)
-          .eq('id', id));
+          } as never)
+          .eq('id', id);
 
         if (record.schedule) {
           await supabase
