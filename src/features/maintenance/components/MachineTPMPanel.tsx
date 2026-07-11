@@ -95,7 +95,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           <CardContent>
             {machineSchedules.length > 0 ? (
               <div className="space-y-3">
-                {machineSchedules.slice(0, 3).map((schedule: any) => (
+                {machineSchedules.slice(0, 3).map((schedule: TPMSchedule) => (
                   <div key={schedule.id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/20 border border-border/50">
                     <div className="flex-1 min-w-0 mr-2">
                       <p className="text-xs font-medium truncate">{schedule.name}</p>
@@ -131,7 +131,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           <CardContent>
             {machineAlerts.length > 0 ? (
               <div className="space-y-2">
-                {machineAlerts.map((alert: any) => (
+                {machineAlerts.map((alert: TPMAlert) => (
                   <div key={alert.id} className="flex items-start gap-2 p-2 rounded-lg bg-destructive/10 border border-destructive/20">
                     <AlertTriangle className="h-3 w-3 text-destructive mt-0.5" />
                     <p className="text-[10px] leading-tight font-medium text-destructive">{alert.message}</p>
@@ -160,7 +160,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
           <ScrollArea className="h-[150px]">
             <div className="space-y-2 pr-4">
               {machineRecords.length > 0 ? (
-                machineRecords.map((record: any) => (
+                machineRecords.map((record: TPMRecord) => (
                   <div key={record.id} className="flex items-center justify-between p-2 rounded border border-border/30 text-[11px]">
                     <div className="flex items-center gap-2">
                       <Clock className="h-3 w-3 text-muted-foreground" />
