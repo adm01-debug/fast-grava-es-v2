@@ -423,7 +423,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           status: 'correction_requested',
           correction_notes: data.notes,
           correction_deadline: data.deadline,
-        } as any)
+        } as never)
         .eq('id', data.record_id));
 
       if (error) throw error;
