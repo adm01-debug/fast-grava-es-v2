@@ -23,10 +23,13 @@ interface ExtraExportData {
 const asNumber = (v: unknown): number => (typeof v === 'number' ? v : Number(v) || 0);
 const asString = (v: unknown, fallback = ''): string => (v == null ? fallback : String(v));
 
+const asExtra = (v: unknown): ExtraExportData => (v && typeof v === 'object' ? (v as ExtraExportData) : {});
+
 export function useBIExport(biMetrics: ExportData) {
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraData?: ExtraExportData) => {
+  const handleExport = async (formatType: 'csv' | 'pdf', type: string, extraDataRaw?: unknown) => {
+    const extraData = asExtra(extraDataRaw);
     setIsExporting(true);
     const dateRange = { start: subDays(new Date(), 30), end: new Date(), label: 'Últimos 30 dias' };
 
