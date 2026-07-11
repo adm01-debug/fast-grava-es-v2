@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
-import { DbMachine, Technique } from '@/features/jobs';
-import type { MaintenanceSchedule, MaintenanceRecord } from '@/features/maintenance/hooks/types';
+import { DbMachine, DbTechnique } from '@/features/jobs';
+import type { MaintenanceSchedule } from '@/features/maintenance/hooks/types';
+
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
