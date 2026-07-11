@@ -66,7 +66,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
     if (!record) return [];
     const errors: string[] = [];
 
-    record.responses?.forEach((r: any) => {
+    record.responses?.forEach((r: ExecutionRow) => {
       if (!r.is_checked && r.item?.is_critical) {
         errors.push(`Item Crítico Incompleto: ${r.item.description}`);
       }
@@ -133,7 +133,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
 
       // Photos
       const photosFolder = folder?.folder("fotos");
-      const photoResponses = record.responses.filter((r: any) => r.photo_url);
+      const photoResponses = record.responses.filter((r: ExecutionRow) => r.photo_url);
 
       for (let i = 0; i < photoResponses.length; i++) {
         const resp = photoResponses[i];
@@ -208,7 +208,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
       ['Observações', record.notes || ''],
       ['', ''],
       ['CHECKLIST', 'Conforme', 'Observação', 'Foto'],
-      ...(record.responses || []).map((r: any) => [
+      ...(record.responses || []).map((r: ExecutionRow) => [
         r.item?.description || 'Item',
         r.is_checked ? 'Sim' : 'Não',
         r.notes || '',
@@ -216,7 +216,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
       ]),
       ['', ''],
       ['PEÇAS', 'Código', 'Quantidade', 'Custo'],
-      ...(record.parts || []).map((p: any) => [
+      ...(record.parts || []).map((p: ExecutionRow) => [
         p.part_name,
         p.part_code || '',
         p.quantity,
@@ -448,7 +448,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     Alertas de Risco e Falha
                   </h3>
                   <div className="space-y-3">
-                    {record.execution_alerts.map((alert: any, idx: number) => (
+                    {record.execution_alerts.map((alert: ExecutionRow, idx: number) => (
                       <div key={idx} className="p-4 rounded-xl bg-destructive/5 border border-destructive/20 space-y-3">
                         <div className="flex justify-between items-start">
                           <div className="space-y-1">
@@ -483,10 +483,10 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                     Conformidade de Qualidade
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {record.quality_responses.map((resp: any) => {
+                    {record.quality_responses.map((resp: ExecutionRow) => {
                       const sheet = record.technical_sheet_id ? record.technical_sheet : null;
-                      const crit = record.adjustment_parameters?.quality_checklist?.find((c: any) => c.id === resp.id) ||
-                                   (record.technical_sheet?.quality_checklist?.find((c: any) => c.id === resp.id));
+                      const crit = record.adjustment_parameters?.quality_checklist?.find((c: ExecutionRow) => c.id === resp.id) ||
+                                   (record.technical_sheet?.quality_checklist?.find((c: ExecutionRow) => c.id === resp.id));
 
                       return (
                         <div key={resp.id} className={`p-3 rounded-lg border ${resp.confirmed ? 'bg-success/5 border-success/10' : 'bg-rose-500/5 border-rose-500/10'}`}>
@@ -530,7 +530,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/50">
-                      {record.responses?.map((r: any) => (
+                      {record.responses?.map((r: ExecutionRow) => (
                         <tr key={r.id} className="hover:bg-muted/30">
                           <td className="px-4 py-3">{r.item?.description || 'Item de Manutenção'}</td>
                           <td className="px-4 py-3 text-center">
@@ -608,7 +608,7 @@ export function ExecutionDetailsModal({ isOpen, onClose, recordId }: ExecutionDe
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border/50">
-                        {record.parts.map((p: any) => (
+                        {record.parts.map((p: ExecutionRow) => (
                           <tr key={p.id} className="hover:bg-muted/30">
                             <td className="px-4 py-3 font-medium">{p.part_name}</td>
                             <td className="px-4 py-3 text-muted-foreground font-mono">{p.part_code || '-'}</td>
