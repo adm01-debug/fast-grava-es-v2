@@ -17,7 +17,7 @@ export function LeaderboardWidget() {
     switch (position) {
       case 1: return <Crown className="h-4 w-4 text-yellow-500" />;
       case 2: return <Medal className="h-4 w-4 text-slate-300" />;
-      case 3: return <Medal className="h-4 w-4 text-amber-600" />;
+      case 3: return <Medal className="h-4 w-4 text-warning" />;
       default: return <Star className="h-4 w-4 text-muted-foreground/30" />;
     }
   };

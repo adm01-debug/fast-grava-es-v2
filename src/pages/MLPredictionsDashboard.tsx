@@ -118,12 +118,12 @@ export default function MLPredictionsDashboard() {
           <Card className="card-glass hover-lift">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-amber-500/10">
-                  <TrendingUp className="h-6 w-6 text-amber-500" />
+                <div className="p-3 rounded-xl bg-warning/10">
+                  <TrendingUp className="h-6 w-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Risco Médio</p>
-                  <p className="text-2xl font-bold font-display text-amber-500">{stats.mediumRisk}</p>
+                  <p className="text-2xl font-bold font-display text-warning">{stats.mediumRisk}</p>
                 </div>
               </div>
             </CardContent>
@@ -132,12 +132,12 @@ export default function MLPredictionsDashboard() {
           <Card className="card-glass hover-lift">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/10">
-                  <Shield className="h-6 w-6 text-emerald-500" />
+                <div className="p-3 rounded-xl bg-success/10">
+                  <Shield className="h-6 w-6 text-success" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Risco Baixo</p>
-                  <p className="text-2xl font-bold font-display text-emerald-500">{stats.lowRisk}</p>
+                  <p className="text-2xl font-bold font-display text-success">{stats.lowRisk}</p>
                 </div>
               </div>
             </CardContent>

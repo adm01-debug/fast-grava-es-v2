@@ -62,7 +62,7 @@ export function OEELoadTrendWidget() {
           {comparisonData && (
             <Badge variant="outline" className={cn(
               "text-[10px] py-0 px-2 h-5 flex items-center gap-1",
-              comparisonData.isPositive ? "text-emerald-500 border-emerald-500/30" :
+              comparisonData.isPositive ? "text-success border-emerald-500/30" :
               comparisonData.isNegative ? "text-red-500 border-red-500/30" :
               "text-muted-foreground"
             )}>

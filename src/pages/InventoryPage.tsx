@@ -354,7 +354,7 @@ function InventoryCard({
                   <TooltipTrigger asChild>
                     <div className={cn(
                       "flex items-center gap-1 text-xs font-bold",
-                      item.days_of_supply < 7 ? "text-primary" : "text-emerald-500"
+                      item.days_of_supply < 7 ? "text-primary" : "text-success"
                     )}>
                       <Timer className="h-3 w-3" />
                       {item.days_of_supply} dias
@@ -385,7 +385,7 @@ function InventoryCard({
         <div className="flex gap-2">
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/50" onClick={() => setMovementType('IN')}>
+              <Button variant="outline" size="sm" className="flex-1 text-xs gap-1.5 hover:bg-success/10 hover:text-success hover:border-emerald-500/50" onClick={() => setMovementType('IN')}>
                 <ArrowUpRight className="h-3 w-3" /> Entrada
               </Button>
             </DialogTrigger>
@@ -512,7 +512,7 @@ function InventoryHistoryTable() {
             </SelectContent>
           </Select>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 h-10 px-4 font-bold border-emerald-500/20 text-emerald-600 hover:bg-emerald-50" onClick={handleExportCSV}>
+        <Button variant="outline" size="sm" className="gap-2 h-10 px-4 font-bold border-emerald-500/20 text-success hover:bg-emerald-50" onClick={handleExportCSV}>
           <FileDown className="h-4 w-4" /> Exportar CSV
         </Button>
       </div>
@@ -542,10 +542,10 @@ function InventoryHistoryTable() {
                 <td className="p-4">
                   <Badge variant="outline" className={cn(
                     "text-[9px] font-black uppercase tracking-tighter",
-                    m.type === 'IN' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" :
+                    m.type === 'IN' ? "text-success border-emerald-500/20 bg-success/5" :
                     m.type === 'OUT' ? "text-red-500 border-red-500/20 bg-red-500/5" :
                     m.type === 'TRANSFER' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" :
-                    "text-amber-500 border-amber-500/20 bg-amber-500/5"
+                    "text-warning border-amber-500/20 bg-warning/5"
                   )}>
                     {m.type}
                   </Badge>
@@ -709,7 +709,7 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
               <CardContent className="pt-4">
                 <p className="text-[10px] uppercase font-bold text-muted-foreground">Acurácia Recente</p>
                 <p className="text-3xl font-black text-primary">{accuracy}%</p>
-                <div className="flex items-center gap-1 text-[10px] text-emerald-500 mt-1">
+                <div className="flex items-center gap-1 text-[10px] text-success mt-1">
                   <TrendingUp className="h-3 w-3" /> +1.2% vs mês anterior
                 </div>
               </CardContent>
@@ -757,12 +757,12 @@ function AIPredictionValidationModal({ open, onOpenChange, items, movements }: {
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                  <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-                    <p className="text-[10px] font-bold text-emerald-600 uppercase">Validação de Consumo</p>
+                  <div className="p-3 rounded-lg bg-success/5 border border-emerald-500/20">
+                    <p className="text-[10px] font-bold text-success uppercase">Validação de Consumo</p>
                     <p className="text-[11px] text-muted-foreground mt-1">O desvio padrão entre consumo real e previsto é de 2.4% para Tintas.</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
-                    <p className="text-[10px] font-bold text-amber-600 uppercase">Risco de Ruptura</p>
+                  <div className="p-3 rounded-lg bg-warning/5 border border-amber-500/20">
+                    <p className="text-[10px] font-bold text-warning uppercase">Risco de Ruptura</p>
                     <p className="text-[11px] text-muted-foreground mt-1">Nenhum item com risco de ruptura não sinalizado detectado.</p>
                   </div>
                </div>

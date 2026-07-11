@@ -83,14 +83,14 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
         icon={Activity}
         label="Gargalos Ativos"
         value={metrics.bottlenecks}
-        color={metrics.bottlenecks > 0 ? "text-red-500" : "text-emerald-500"}
+        color={metrics.bottlenecks > 0 ? "text-red-500" : "text-success"}
         alert={metrics.bottlenecks > 0}
       />
       <MetricChip
         icon={Zap}
         label="Setup Otimizável"
         value={`${totalSavings}min`}
-        color="text-amber-400"
+        color="text-warning"
         alert={totalSavings > 30}
       />
       <MetricChip

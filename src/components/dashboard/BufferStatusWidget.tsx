@@ -36,7 +36,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
       className={cn(
         "p-2 rounded-lg border transition-all duration-200",
         isCritical && "bg-primary/10 border-primary/30",
-        !isCritical && !isHealthy && "bg-amber-500/10 border-amber-500/30",
+        !isCritical && !isHealthy && "bg-warning/10 border-amber-500/30",
         isHealthy && "bg-green-500/10 border-green-500/30"
       )}
     >
@@ -53,7 +53,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
           <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
           <span className={cn(
             isCritical && "text-primary",
-            !isCritical && !isHealthy && "text-amber-400",
+            !isCritical && !isHealthy && "text-warning",
             isHealthy && "text-green-400"
           )}>
             Prontos: <span className="font-bold">{readyCount}/{BUFFER_TARGET}</span>
@@ -80,7 +80,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
             </p>
           )}
           {!isCritical && !isHealthy && (
-            <p className="text-[10px] text-amber-400 flex items-center gap-1">
+            <p className="text-[10px] text-warning flex items-center gap-1">
               <AlertTriangle className="h-2.5 w-2.5" />
               +{BUFFER_TARGET - readyCount} job(s)
             </p>
@@ -93,7 +93,7 @@ const BufferRow = memo(function BufferRow({ data, onPromote, isPromoting }: Buff
             className={cn(
               "h-5 text-[10px] px-1.5",
               isCritical && "text-primary hover:text-primary/80 hover:bg-primary/10",
-              !isCritical && "text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+              !isCritical && "text-warning hover:text-warning hover:bg-warning/10"
             )}
             onClick={onPromote}
             disabled={isPromoting}
@@ -130,7 +130,7 @@ function BufferStatusWidgetComponent() {
       <Card className="glass-card">
         <CardHeader className="pb-2 pt-3 px-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Package className="h-4 w-4 text-amber-400" />
+            <Package className="h-4 w-4 text-warning" />
             Buffer
           </CardTitle>
         </CardHeader>
@@ -158,7 +158,7 @@ function BufferStatusWidgetComponent() {
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-6 w-6 p-0 text-amber-400 hover:bg-amber-500/10"
+                className="h-6 w-6 p-0 text-warning hover:bg-warning/10"
                 onClick={() => triggerPromotion()}
                 disabled={isPromoting}
                 title="Promover Todos"
@@ -177,7 +177,7 @@ function BufferStatusWidgetComponent() {
               </Badge>
             )}
             {warningCount > 0 && (
-              <Badge variant="outline" className="border-amber-500 text-amber-500 gap-0.5 text-[10px] h-5 px-1.5">
+              <Badge variant="outline" className="border-amber-500 text-warning gap-0.5 text-[10px] h-5 px-1.5">
                 <AlertTriangle className="h-2.5 w-2.5" />
                 {warningCount}
               </Badge>

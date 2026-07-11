@@ -191,8 +191,8 @@ export default function ShiftHandoverPage() {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/10">
-                <ListTodo className="h-5 w-5 text-amber-500" />
+              <div className="p-2 rounded-lg bg-warning/10">
+                <ListTodo className="h-5 w-5 text-warning" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.pendingTasks}</p>
@@ -320,12 +320,12 @@ export default function ShiftHandoverPage() {
                       <div className="flex items-start gap-4">
                         <div className={`p-3 rounded-lg ${
                           handover.status === 'open' ? 'bg-primary/10' :
-                          handover.status === 'pending_acceptance' ? 'bg-amber-500/10' :
+                          handover.status === 'pending_acceptance' ? 'bg-warning/10' :
                           'bg-muted'
                         }`}>
                           <ArrowRightLeft className={`h-5 w-5 ${
                             handover.status === 'open' ? 'text-primary' :
-                            handover.status === 'pending_acceptance' ? 'text-amber-500' :
+                            handover.status === 'pending_acceptance' ? 'text-warning' :
                             'text-muted-foreground'
                           }`} />
                         </div>

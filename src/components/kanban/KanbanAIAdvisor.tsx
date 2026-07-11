@@ -96,11 +96,11 @@ export function KanbanAIAdvisor() {
           <div className="flex items-center gap-2">
             <TrendingUp className={cn(
               "h-3.5 w-3.5",
-              healthScore > 80 ? "text-emerald-400" : healthScore > 50 ? "text-amber-400" : "text-red-400"
+              healthScore > 80 ? "text-success" : healthScore > 50 ? "text-warning" : "text-red-400"
             )} />
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               Planejamento: <span className={cn(
-                healthScore > 80 ? "text-emerald-400" : healthScore > 50 ? "text-amber-400" : "text-red-400"
+                healthScore > 80 ? "text-success" : healthScore > 50 ? "text-warning" : "text-red-400"
               )}>{healthScore}/100</span>
             </span>
           </div>
@@ -131,7 +131,7 @@ export function KanbanAIAdvisor() {
             title="Otimização de Setup"
             description={`Economize até ${totalSavings}min agrupando por cor.`}
             actionLabel="Otimizar Sequência"
-            color="text-amber-400"
+            color="text-warning"
             badge={`${sequenceSuggestions.length} Máquinas`}
             onClick={() => setSelectedAdviceType('setup')}
           />
@@ -168,7 +168,7 @@ export function KanbanAIAdvisor() {
         <SheetContent className="sm:max-w-md md:max-w-lg bg-card/95 backdrop-blur-md border-primary/20 p-0 flex flex-col">
           <SheetHeader className="p-6 pb-2">
             <SheetTitle className="flex items-center gap-2 text-xl">
-              {selectedAdviceType === 'setup' && <><Zap className="h-5 w-5 text-amber-400" /> Detalhes de Sequenciamento</>}
+              {selectedAdviceType === 'setup' && <><Zap className="h-5 w-5 text-warning" /> Detalhes de Sequenciamento</>}
               {selectedAdviceType === 'load' && <><ArrowRight className="h-5 w-5 text-blue-400" /> Detalhes de Balanceamento</>}
               {selectedAdviceType === 'bottleneck' && <><AlertTriangle className="h-5 w-5 text-red-400" /> Alertas de Gargalo</>}
             </SheetTitle>
@@ -193,7 +193,7 @@ export function KanbanAIAdvisor() {
                       </h4>
                       <p className="text-[10px] text-muted-foreground">OS Sugeridas: {s.optimizedSequence.length} jobs</p>
                     </div>
-                    <Badge variant="secondary" className="bg-amber-400/10 text-amber-400 border-amber-400/20 gap-1 text-[10px]">
+                    <Badge variant="secondary" className="bg-warning/10 text-warning border-amber-400/20 gap-1 text-[10px]">
                       <Clock className="h-3 w-3" /> -{s.estimatedSavings}min setup
                     </Badge>
                   </div>

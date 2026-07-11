@@ -361,7 +361,7 @@ export default function TraceabilityPage() {
                   <span className="font-bold text-sm">{selectedIds.size} selecionados</span>
                </div>
                <div className="flex items-center gap-2">
-                 <Button size="sm" variant="outline" className="border-emerald-500/20 text-emerald-600 hover:bg-emerald-50" onClick={() => handleBulkStatusChange('active')}>Liberar</Button>
+                 <Button size="sm" variant="outline" className="border-emerald-500/20 text-success hover:bg-emerald-50" onClick={() => handleBulkStatusChange('active')}>Liberar</Button>
                  <Button size="sm" variant="outline" className="border-warning/20 text-warning hover:bg-warning/10" onClick={() => handleBulkStatusChange('quarantine')}>Quarentena</Button>
                  <Button size="sm" variant="outline" className="border-destructive/20 text-destructive hover:bg-destructive/10" onClick={() => handleBulkStatusChange('blocked')}>Bloquear</Button>
                  <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}><X className="h-4 w-4" /></Button>

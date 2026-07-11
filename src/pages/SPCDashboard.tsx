@@ -174,13 +174,13 @@ export default function SPCDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card border-amber-500/20 bg-amber-500/5">
+          <Card className="glass-card border-amber-500/20 bg-warning/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
-                 <TrendingUp className="h-5 w-5 text-amber-500" />
-                 <Badge variant="outline" className="text-[10px] font-black uppercase text-amber-600 border-amber-500/30">Capacidade</Badge>
+                 <TrendingUp className="h-5 w-5 text-warning" />
+                 <Badge variant="outline" className="text-[10px] font-black uppercase text-warning border-amber-500/30">Capacidade</Badge>
               </div>
-              <p className="text-3xl font-black text-amber-600">{capability?.cpk?.toFixed(2) || '-'}</p>
+              <p className="text-3xl font-black text-warning">{capability?.cpk?.toFixed(2) || '-'}</p>
               <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Cpk (Índice Médio)</p>
             </CardContent>
           </Card>
@@ -215,9 +215,9 @@ export default function SPCDashboard() {
             />
 
             {selectedParameter && runRuleViolations.length > 0 && (
-              <Card className="border-amber-500/20 bg-amber-500/5 overflow-hidden">
-                <CardHeader className="py-3 bg-amber-500/10">
-                   <CardTitle className="text-sm font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
+              <Card className="border-amber-500/20 bg-warning/5 overflow-hidden">
+                <CardHeader className="py-3 bg-warning/10">
+                   <CardTitle className="text-sm font-black uppercase tracking-widest text-warning flex items-center gap-2">
                      <BrainCircuit className="h-4 w-4" />
                      Análise Automática de Tendências (Western Electric)
                    </CardTitle>
@@ -226,11 +226,11 @@ export default function SPCDashboard() {
                   <div className="grid gap-3 md:grid-cols-2">
                     {runRuleViolations.map((violation, idx) => (
                       <div key={idx} className="p-3 rounded-lg bg-background border border-amber-500/30 flex items-start gap-3 shadow-sm">
-                         <div className="p-2 rounded-full bg-amber-500/10 text-amber-600">
+                         <div className="p-2 rounded-full bg-warning/10 text-warning">
                            <AlertTriangle className="h-4 w-4" />
                          </div>
                          <div>
-                            <p className="text-xs font-black uppercase text-amber-600 tracking-tighter">{violation.rule}</p>
+                            <p className="text-xs font-black uppercase text-warning tracking-tighter">{violation.rule}</p>
                             <p className="text-[11px] text-muted-foreground font-medium leading-tight mt-0.5">{violation.description}</p>
                          </div>
                       </div>
@@ -268,11 +268,11 @@ export default function SPCDashboard() {
                       </div>
 
                       <div className="flex items-start gap-3">
-                        <div className="mt-1 p-1.5 rounded-md bg-emerald-500/10 text-emerald-600">
+                        <div className="mt-1 p-1.5 rounded-md bg-success/10 text-success">
                           <FileSpreadsheet className="h-3.5 w-3.5" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold uppercase text-emerald-600">Traceabilidade de Lote</p>
+                          <p className="text-xs font-bold uppercase text-success">Traceabilidade de Lote</p>
                           <p className="text-[11px] text-muted-foreground leading-tight">
                             Correlação detectada: Variação de {selectedParameter.name} aumenta 5% no final de turnos noturnos.
                           </p>

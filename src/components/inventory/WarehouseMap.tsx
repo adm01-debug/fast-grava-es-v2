@@ -132,7 +132,7 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
                               locationItems.map(item => (
                                 <div key={item.id} className="flex items-center justify-between gap-4 text-[10px]">
                                   <span>{item.name}</span>
-                                  <span className={cn("font-bold", item.current_stock <= item.min_stock_level ? "text-destructive" : "text-emerald-500")}>
+                                  <span className={cn("font-bold", item.current_stock <= item.min_stock_level ? "text-destructive" : "text-success")}>
                                     {item.current_stock} {item.unit}
                                   </span>
                                 </div>
@@ -213,9 +213,9 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
       </Dialog>
 
       <Dialog open={isConfirming} onOpenChange={setIsConfirming}>
-        <DialogContent className="sm:max-w-[350px] border-amber-500/50 bg-amber-500/5">
+        <DialogContent className="sm:max-w-[350px] border-amber-500/50 bg-warning/5">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-500">
+            <DialogTitle className="flex items-center gap-2 text-warning">
               <AlertCircle className="h-5 w-5" />
               Confirmar Operação
             </DialogTitle>
