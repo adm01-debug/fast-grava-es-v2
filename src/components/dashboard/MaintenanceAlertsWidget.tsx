@@ -43,7 +43,7 @@ export function MaintenanceAlertsWidget() {
   return (
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.2s]">
       <CardHeader className="pb-2 pt-3 px-3">
-        <CardTitle className="text-sm font-display flex items-center gap-2">
+        <CardTitle className="text-sm text-title flex items-center gap-2">
           <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center">
             <Wrench className="w-3 h-3 text-primary" />
           </div>

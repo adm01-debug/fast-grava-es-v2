@@ -31,7 +31,7 @@ const KPIOperatorsTabComponent = ({
                 {operators.slice(0, 5).map((op, idx) => (
                   <div key={op.operatorId} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 hover:bg-muted/20 transition-all group">
                     <div className="flex items-center gap-4">
-                      <div className="font-display font-bold text-muted-foreground w-4 text-center">
+                      <div className="text-title font-bold text-muted-foreground w-4 text-center">
                         {idx + 1}
                       </div>
                       <Avatar className="h-10 w-10 border-2 border-primary/20">

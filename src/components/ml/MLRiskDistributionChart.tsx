@@ -40,7 +40,7 @@ export function MLRiskDistributionChart({ predictions }: MLRiskDistributionChart
   return (
     <Card className="card-glass">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center justify-between text-lg font-display">
+        <CardTitle className="flex items-center justify-between text-lg text-title">
           <span className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-primary" />
             Distribuição de Risco

@@ -392,7 +392,7 @@ export function EmptyState({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className={cn("font-display font-semibold text-foreground mb-1.5", sizes.title)}
+        className={cn("text-title font-semibold text-foreground mb-1.5", sizes.title)}
       >
         {displayTitle}
       </motion.h3>

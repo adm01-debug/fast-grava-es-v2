@@ -174,7 +174,7 @@ export default function TPMDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Agendadas</p>
-                  <p className="text-2xl font-bold font-display gradient-text">{stats.totalScheduled}</p>
+                  <p className="text-2xl font-bold text-title gradient-text">{stats.totalScheduled}</p>
                 </div>
               </div>
             </CardContent>
@@ -188,7 +188,7 @@ export default function TPMDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Vence Hoje</p>
-                  <p className="text-2xl font-bold font-display text-blue-500">{stats.dueToday}</p>
+                  <p className="text-2xl font-bold text-title text-blue-500">{stats.dueToday}</p>
                 </div>
               </div>
             </CardContent>
@@ -202,7 +202,7 @@ export default function TPMDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Próximos 7 dias</p>
-                  <p className="text-2xl font-bold font-display text-warning">{stats.upcoming7Days}</p>
+                  <p className="text-2xl font-bold text-title text-warning">{stats.upcoming7Days}</p>
                 </div>
               </div>
             </CardContent>
@@ -216,7 +216,7 @@ export default function TPMDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Atrasadas</p>
-                  <p className="text-2xl font-bold font-display text-primary">{stats.overdue}</p>
+                  <p className="text-2xl font-bold text-title text-primary">{stats.overdue}</p>
                 </div>
               </div>
             </CardContent>
@@ -230,7 +230,7 @@ export default function TPMDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Concluídas/Mês</p>
-                  <p className="text-2xl font-bold font-display text-success">{stats.completedThisMonth}</p>
+                  <p className="text-2xl font-bold text-title text-success">{stats.completedThisMonth}</p>
                 </div>
               </div>
             </CardContent>

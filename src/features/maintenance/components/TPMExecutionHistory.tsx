@@ -124,7 +124,7 @@ export function TPMExecutionHistory() {
               <History className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-display">Histórico de Execuções</CardTitle>
+              <CardTitle className="text-2xl text-title">Histórico de Execuções</CardTitle>
               <p className="text-sm text-muted-foreground">Consulte e aprove intervenções realizadas nas máquinas</p>
             </div>
           </div>

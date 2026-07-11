@@ -35,7 +35,7 @@ export function TPMScheduleList({ schedules, onStartMaintenance }: TPMScheduleLi
   return (
     <Card className="card-glass">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-display">
+        <CardTitle className="flex items-center gap-2 text-lg text-title">
           <Wrench className="h-5 w-5 text-primary" />
           Manutenções Programadas
         </CardTitle>

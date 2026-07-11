@@ -508,7 +508,7 @@ export default function OperatorsPage() {
         <Dialog open={!!operatorForQR} onOpenChange={() => setOperatorForQR(null)}>
           <DialogContent className="sm:max-w-xs text-center p-6">
             <DialogHeader>
-              <DialogTitle className="text-center font-display font-black uppercase tracking-tighter">Crachá Digital</DialogTitle>
+              <DialogTitle className="text-center text-title font-black uppercase tracking-tighter">Crachá Digital</DialogTitle>
               <DialogDescription className="text-center">FAST GRAVAÇÕES - Identificação Industrial</DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-6 py-6 bg-gradient-to-b from-primary/5 to-transparent rounded-2xl border border-primary/10">

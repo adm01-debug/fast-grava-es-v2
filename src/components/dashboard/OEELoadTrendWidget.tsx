@@ -54,7 +54,7 @@ export function OEELoadTrendWidget() {
   return (
     <Card className="glass-card col-span-1 xl:col-span-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-display flex items-center justify-between gap-2">
+        <CardTitle className="text-sm text-title flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-primary" />
             Tendência de Carga e OEE

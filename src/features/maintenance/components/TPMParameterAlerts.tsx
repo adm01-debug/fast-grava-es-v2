@@ -67,7 +67,7 @@ export function TPMParameterAlerts() {
   return (
     <Card className="card-glass border-warning/30">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-display text-warning">
+        <CardTitle className="flex items-center gap-2 text-lg text-title text-warning">
           <Zap className="h-5 w-5" />
           Desvios de Regulagem Técnica
           <Badge variant="outline" className="ml-2 bg-warning/10 border-warning/30 text-warning">

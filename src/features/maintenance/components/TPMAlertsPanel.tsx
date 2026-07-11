@@ -25,7 +25,7 @@ export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAle
     return (
       <Card className="card-glass">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg font-display">
+          <CardTitle className="flex items-center gap-2 text-lg text-title">
             <AlertTriangle className="h-5 w-5 text-primary" />
             Alertas de Manutenção
           </CardTitle>
@@ -44,7 +44,7 @@ export function TPMAlertsPanel({ alerts, onResolve, onStartMaintenance }: TPMAle
   return (
     <Card className="card-glass">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-display">
+        <CardTitle className="flex items-center gap-2 text-lg text-title">
           <AlertTriangle className="h-5 w-5 text-primary" />
           Alertas de Manutenção
           <Badge variant="destructive" className="ml-2">{alerts.length}</Badge>

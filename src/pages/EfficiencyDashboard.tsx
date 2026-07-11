@@ -116,7 +116,7 @@ export default function EfficiencyDashboard() {
               <div className="lg:col-span-2">
                 <Card className="glass-card border-border/50">
                   <CardHeader>
-                    <CardTitle className="text-sm font-display flex items-center gap-2">
+                    <CardTitle className="text-sm text-title flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-primary" />
                       Tendência de Alertas
                     </CardTitle>

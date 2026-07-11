@@ -85,7 +85,7 @@ export function CreateScheduleModal({
       )}
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-display">Nova Manutenção Programada</DialogTitle>
+          <DialogTitle className="text-title">Nova Manutenção Programada</DialogTitle>
           <DialogDescription>
             Configure os detalhes para o agendamento de uma nova manutenção preventiva.
           </DialogDescription>

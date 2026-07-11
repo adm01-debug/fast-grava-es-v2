@@ -55,7 +55,7 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
     <Card className="glass-card overflow-hidden hover:shadow-glow-primary transition-all duration-500">
       <CardHeader className="pb-2 border-b border-border/50 bg-secondary/10">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-display flex items-center gap-2">
+          <CardTitle className="text-sm text-title flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary animate-pulse" />
             Telemetria em Tempo Real (IIoT)
           </CardTitle>
@@ -70,22 +70,22 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
           <div className="p-4 border-r border-border/50 flex flex-col items-center">
             <Activity className="h-4 w-4 text-blue-500 mb-1" />
             <span className="text-[10px] text-muted-foreground uppercase">Vibração</span>
-            <span className="text-xl font-bold font-display">{currentValues.vibration} mm/s</span>
+            <span className="text-xl font-bold text-title">{currentValues.vibration} mm/s</span>
           </div>
           <div className="p-4 border-r border-border/50 flex flex-col items-center">
             <Thermometer className="h-4 w-4 text-warning mb-1" />
             <span className="text-[10px] text-muted-foreground uppercase">Temp</span>
-            <span className="text-xl font-bold font-display">{currentValues.temperature}°C</span>
+            <span className="text-xl font-bold text-title">{currentValues.temperature}°C</span>
           </div>
           <div className="p-4 border-r border-border/50 flex flex-col items-center">
             <Zap className="h-4 w-4 text-yellow-500 mb-1" />
             <span className="text-[10px] text-muted-foreground uppercase">Potência</span>
-            <span className="text-xl font-bold font-display">{currentValues.power} W</span>
+            <span className="text-xl font-bold text-title">{currentValues.power} W</span>
           </div>
           <div className="p-4 flex flex-col items-center">
             <Gauge className="h-4 w-4 text-primary mb-1" />
             <span className="text-[10px] text-muted-foreground uppercase">Velocidade</span>
-            <span className="text-xl font-bold font-display">{currentValues.speed}%</span>
+            <span className="text-xl font-bold text-title">{currentValues.speed}%</span>
           </div>
         </div>
 

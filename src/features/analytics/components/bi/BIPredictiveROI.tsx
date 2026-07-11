@@ -41,7 +41,7 @@ export function BIPredictiveROI({ biMetrics }: BIPredictiveROIProps) {
             <BrainCircuit className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display tracking-wider uppercase text-lg">Projeção ROI IA</span>
+            <span className="text-title tracking-wider uppercase text-lg">Projeção ROI IA</span>
             <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-widest">Simulação de Ganhos Preditivos</span>
           </div>
         </CardTitle>

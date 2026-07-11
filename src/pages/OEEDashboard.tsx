@@ -1141,7 +1141,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                     <p className="text-sm text-muted-foreground max-w-[200px]">
                        A excelência operacional da FAST GRAVAÇÕES é monitorada em tempo real com inteligência Studio.
                     </p>
-                    <div className="mt-6 font-display font-black text-6xl opacity-10 select-none">FAST</div>
+                    <div className="mt-6 text-title font-black text-6xl opacity-10 select-none">FAST</div>
                  </Card>
               </div>
             </div>

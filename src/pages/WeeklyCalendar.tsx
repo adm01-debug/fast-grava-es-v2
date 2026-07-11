@@ -351,7 +351,7 @@ export default function WeeklyCalendar() {
           <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
           <CardHeader className="border-b border-border/40 pb-3 px-3 sm:px-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <CardTitle className="text-sm sm:text-lg font-display gradient-text flex items-center gap-2">
+              <CardTitle className="text-sm sm:text-lg text-title gradient-text flex items-center gap-2">
                 <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span className="hidden sm:inline">
                   Semana {format(weekStart, 'ww', { locale: ptBR })} de {format(weekStart, 'yyyy')}

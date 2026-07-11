@@ -147,7 +147,7 @@ function BufferStatusWidgetComponent() {
     <Card className="glass-card card-interactive animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:0.1s]">
       <CardHeader className="pb-2 pt-3 px-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-display flex items-center gap-2">
+          <CardTitle className="text-sm text-title flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-warning/20 flex items-center justify-center">
               <Package className="h-3 w-3 text-warning" />
             </div>

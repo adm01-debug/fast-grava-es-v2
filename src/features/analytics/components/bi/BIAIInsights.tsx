@@ -123,7 +123,7 @@ export function BIAIInsights({ biMetrics, oeeData }: BIAIInsightsProps) {
               <Sparkles className="h-5 w-5 text-primary animate-pulse" />
             </div>
             <div>
-              <span className="font-display tracking-[0.2em] uppercase text-sm block">Core Inteligência</span>
+              <span className="text-title tracking-[0.2em] uppercase text-sm block">Core Inteligência</span>
               <span className="text-[10px] text-primary/60 font-mono tracking-widest uppercase">Neural Analytics 4.0</span>
             </div>
           </div>

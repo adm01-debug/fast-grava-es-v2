@@ -126,7 +126,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <Printer className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
               </div>
               <div>
-                <p className="text-2xl font-bold font-display">{biMetrics.activeMachines}</p>
+                <p className="text-2xl font-bold text-title">{biMetrics.activeMachines}</p>
                 <p className="text-xs text-muted-foreground">Máquinas Ativas</p>
               </div>
             </div>
@@ -139,7 +139,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <Activity className="h-5 w-5 text-xp group-hover:scale-110 transition-transform" />
               </div>
               <div>
-                <p className="text-2xl font-bold font-display">{biMetrics.activeTechniques}</p>
+                <p className="text-2xl font-bold text-title">{biMetrics.activeTechniques}</p>
                 <p className="text-xs text-muted-foreground">Técnicas</p>
               </div>
             </div>
@@ -155,7 +155,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <TrendingUp className="h-5 w-5 text-success group-hover:scale-110 transition-transform" />
               </div>
               <div>
-                <p className="text-2xl font-bold font-display">{kpis.inProgressJobs}</p>
+                <p className="text-2xl font-bold text-title">{kpis.inProgressJobs}</p>
                 <p className="text-xs text-muted-foreground">Em Produção</p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 <AlertTriangle className="h-5 w-5 text-warning group-hover:scale-110 transition-transform" />
               </div>
               <div>
-                <p className="text-2xl font-bold font-display">{kpis.delayedJobs}</p>
+                <p className="text-2xl font-bold text-title">{kpis.delayedJobs}</p>
                 <p className="text-xs text-muted-foreground">Atrasados</p>
               </div>
             </div>
