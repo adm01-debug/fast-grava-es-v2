@@ -402,7 +402,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
       toast.success('Manutenção aprovada e próximo agendamento atualizado', {
         description: `Próxima revisão agendada.`,
-        icon: React.createElement(CheckCircle2, { className: "h-4 w-4 text-success" } as any)
+        icon: React.createElement(CheckCircle2, { className: "h-4 w-4 text-success" })
       });
     },
     onError: (error) => {
