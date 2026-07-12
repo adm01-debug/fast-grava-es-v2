@@ -19,7 +19,7 @@ export function useThrottle<T extends (...args: unknown[]) => void>(
   }, []);
 
   return useCallback(
-    ((...args: any[]) => {
+    ((...args: unknown[]) => {
       const now = Date.now();
       const remaining = delay - (now - lastCall.current);
 
