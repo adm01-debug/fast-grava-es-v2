@@ -678,7 +678,9 @@ function BatchQRLabelModal({ open, onOpenChange, items }: { open: boolean, onOpe
   );
 }
 
-function AIPredictionValidationModal({ open, onOpenChange, items, movements }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[], movements: any[] }) {
+type InventoryMovementRow = NonNullable<ReturnType<typeof useInventoryMovements>['data']>[number];
+
+function AIPredictionValidationModal({ open, onOpenChange, items, movements }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[], movements: InventoryMovementRow[] }) {
   const { calculateAI, isCalculatingAI } = useInventory();
   const [calibratedAccuracy, setCalibratedAccuracy] = useState<number | null>(null);
 
