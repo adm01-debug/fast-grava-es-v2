@@ -12,11 +12,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "quality:any": "node scripts/check-any-baseline.mjs",
+    "quality:any:update": "node scripts/check-any-baseline.mjs --update",
+    "quality:gate": "npm run lint && npm run quality:any && npm run test",
     "audit:pdf": "echo 'AUDITORIA_ENTERPRISE_2026.md not found' && exit 0",
     "test:e2e": "playwright test",
     "bundle:report": "node scripts/bundle-report.mjs",
     "bundle:diff": "node scripts/bundle-diff.mjs",
-    "ci": "npm run build && npm run test:e2e"
+    "ci": "npm run quality:any && npm run build && npm run test:e2e"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

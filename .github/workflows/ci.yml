@@ -33,6 +33,9 @@ jobs:
       - name: TypeScript type check
         run: npx tsc --noEmit
 
+      - name: Any Ratchet — impedir regressão de 'any'
+        run: npm run quality:any
+
 # ──────────────────────────────────────────────────────────────────────────
 # Gate 2: Security scan (runs in parallel with lint)
 # ──────────────────────────────────────────────────────────────────────────
