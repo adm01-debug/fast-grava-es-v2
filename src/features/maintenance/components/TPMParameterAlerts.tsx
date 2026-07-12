@@ -106,7 +106,7 @@ export function TPMParameterAlerts() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-bold text-warning uppercase">{alert.parameter_name}</span>
                     <span className="text-[10px] text-muted-foreground">
-                      {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR })}
+                      {alert.created_at ? formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR }) : '—'}
                     </span>
                   </div>
                   <p className="text-sm">
