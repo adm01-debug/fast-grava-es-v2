@@ -267,7 +267,7 @@ function InventoryCard({
   onSelect
 }: {
   item: InventoryItem,
-  onMovement: (data: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => Promise<any>,
+  onMovement: (data: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => Promise<unknown>,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
 }) {
