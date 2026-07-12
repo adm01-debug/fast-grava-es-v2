@@ -1,5 +1,21 @@
 import { useCallback, useRef } from 'react';
 
+type BrowserAudioWindow = Window & {
+  AudioContext?: typeof AudioContext;
+  webkitAudioContext?: typeof AudioContext;
+};
+
+const createBrowserAudioContext = (): AudioContext => {
+  const audioWindow = window as BrowserAudioWindow;
+  const AudioContextConstructor = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
+
+  if (!AudioContextConstructor) {
+    throw new Error('AudioContext não suportado neste navegador.');
+  }
+
+  return new AudioContextConstructor();
+};
+
 type SoundType = 'delayed' | 'buffer' | 'bottleneck' | 'statusChange' | 'complete' | 'scan' | 'alert';
 
 interface SoundConfig {
@@ -67,7 +83,7 @@ export const useNotificationSounds = () => {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new ((window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ?? window.AudioContext)();
+      audioContextRef.current = createBrowserAudioContext();
     }
     return audioContextRef.current;
   }, []);

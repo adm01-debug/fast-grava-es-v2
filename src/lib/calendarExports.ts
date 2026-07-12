@@ -70,10 +70,22 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
   const events = jobs
     .filter((j) => j.scheduled_date && j.start_time && j.end_time)
     .flatMap((job) => {
-      const date = parseDateOnly(job.scheduled_date as string);
-      if (!date) return [];
-      const start = toICalDateTime(date, job.start_time as string);
-      const end = toICalDateTime(date, job.end_time as string);
+      const scheduledDate = job.scheduled_date;
+      const startTime = job.start_time;
+      const endTime = job.end_time;
+
+      if (!scheduledDate || !startTime || !endTime) {
+        return [];
+      }
+
+      const date = parseDateOnly(scheduledDate);
+
+      if (!date) {
+        return [];
+      }
+
+      const start = toICalDateTime(date, startTime);
+      const end = toICalDateTime(date, endTime);
       const machine = job.machine_id ? machineMap.get(job.machine_id) : null;
       const summary = escapeICal(`${job.order_number} — ${job.client}`);
       const description = escapeICal(
