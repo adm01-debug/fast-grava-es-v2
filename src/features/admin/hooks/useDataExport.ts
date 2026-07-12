@@ -17,6 +17,23 @@ export interface ExportOptions {
   fileName?: string;
 }
 
+export interface AuditExportFilters {
+  entityType?: string;
+  entityId?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
+interface AuditLogEntry {
+  created_at: string;
+  action: string;
+  actor_email?: string | null;
+  actor_id?: string | null;
+  entity_type: string;
+  entity_id: string;
+  changed_fields?: string[] | null;
+}
+
 function convertToCSV(data: Record<string, unknown>[], columns?: string[]): string {
   if (data.length === 0) return '';
 
@@ -110,7 +127,7 @@ export function useDataExport(tableName: TableName) {
     }
   }, [tableName]);
 
-  const exportAuditTrail = useCallback(async (filters: any, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
+  const exportAuditTrail = useCallback(async (filters: AuditExportFilters, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
     setIsExporting(true);
     try {
       let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false });
@@ -140,7 +157,7 @@ export function useDataExport(tableName: TableName) {
         doc.text(`Data: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, 22);
 
         const tableHeaders = ['Data', 'Ação', 'Usuário', 'Entidade', 'Campos Alterados'];
-        const tableBody = data.map((entry: any) => [
+        const tableBody = (data as AuditLogEntry[]).map((entry) => [
           format(new Date(entry.created_at), 'dd/MM/yy HH:mm'),
           entry.action,
           entry.actor_email || entry.actor_id || 'Sistema',
