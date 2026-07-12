@@ -4,9 +4,11 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '@/features/auth';
 
+export type BusinessConfigValue = string | number | boolean | null | BusinessConfigValue[] | { [key: string]: BusinessConfigValue };
+
 export interface BusinessConfig {
   key: string;
-  value: any;
+  value: BusinessConfigValue;
   description: string | null;
   updated_at: string | null;
   updated_by: string | null;
