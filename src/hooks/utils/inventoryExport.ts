@@ -28,9 +28,9 @@ export function exportInventoryMovementsToCSV(movements: InventoryMovementExport
   const csvContent = [
     headers.join(','),
     ...movements.map(m => {
-      const date = new Date(m.created_at).toLocaleString('pt-BR');
+      const date = m.created_at ? new Date(m.created_at).toLocaleString('pt-BR') : '';
       const itemName = m.inventory_items?.name || 'N/A';
-      const userName = m.profiles?.display_name || 'N/A';
+      const userName = m.profiles?.display_name || m.profiles?.full_name || 'N/A';
       const type = m.type === 'IN' ? 'Entrada' :
                    m.type === 'OUT' ? 'Saída' :
                    m.type === 'TRANSFER' ? 'Transferência' : 'Ajuste';
