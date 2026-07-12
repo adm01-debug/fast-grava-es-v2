@@ -34,6 +34,9 @@ import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 import { BIJob, BIMetrics, BIProps } from './types';
 import { Job } from '@/types/job';
 
+type MachineUtil = NonNullable<BIMetrics['machineUtilization']>[number];
+type StatusSlice = BIMetrics['statusDistribution'][number];
+
 export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const navigate = useNavigate();
   const { operators } = useOperatorProductivity(30);
@@ -119,17 +122,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
-    const machineGroups: Record<string, BIMetrics['machineUtilization']> = {};
-    (biMetrics.machineUtilization || []).forEach((m: any) => {
+    const machineGroups: Record<string, MachineUtil[]> = {};
+    (biMetrics.machineUtilization || []).forEach((m: MachineUtil) => {
       const studioName = m.technique.includes('Laser') ? 'Studio Alfa' :
                         m.technique.includes('UV') ? 'Studio Beta' :
                         'Studio Gamma';
       if (!machineGroups[studioName]) machineGroups[studioName] = [];
       machineGroups[studioName].push(m);
     });
-    return Object.entries(machineGroups).map(([name, machines]: [string, any]) => {
-      const totalJobs = (machines || []).reduce((sum: number, m: any) => sum + (m.totalJobs || 0), 0);
-      const avgUtilization = (machines || []).reduce((sum: number, m: any) => sum + (m.utilization || 0), 0) / (machines?.length || 1);
+    return Object.entries(machineGroups).map(([name, machines]: [string, MachineUtil[]]) => {
+      const totalJobs = (machines || []).reduce((sum: number, m: MachineUtil) => sum + (m.totalJobs || 0), 0);
+      const avgUtilization = (machines || []).reduce((sum: number, m: MachineUtil) => sum + (m.utilization || 0), 0) / (machines?.length || 1);
       return {
         name,
         jobs: totalJobs,
@@ -339,7 +342,7 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
             <ResponsiveContainer width="100%" height={300}>
               <RechartsPieChart>
                 <Pie data={biMetrics.statusDistribution} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {biMetrics.statusDistribution.map((entry: any, index: number) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                  {biMetrics.statusDistribution.map((entry: StatusSlice, index: number) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                 </Pie>
                 <RechartsTooltip content={<BITooltip />} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />
