@@ -17,6 +17,23 @@ export interface ExportOptions {
   fileName?: string;
 }
 
+export interface AuditExportFilters {
+  entityType?: string;
+  entityId?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
+interface AuditLogEntry {
+  created_at: string;
+  action: string;
+  actor_email?: string | null;
+  actor_id?: string | null;
+  entity_type: string;
+  entity_id: string;
+  changed_fields?: string[] | null;
+}
+
 function convertToCSV(data: Record<string, unknown>[], columns?: string[]): string {
   if (data.length === 0) return '';
 
