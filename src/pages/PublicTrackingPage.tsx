@@ -25,11 +25,28 @@ import { parseDateOnly } from '@/lib/dateUtils';
 import { ProductionPhotos } from '@/components/production/ProductionPhotos';
 import { Skeleton } from '@/components/ui/skeleton';
 
+interface TrackingJob {
+  id: string;
+  order_number: string;
+  status: string;
+  client: string | null;
+  product: string | null;
+  scheduled_date: string | null;
+  production_photos?: string[] | null;
+  shipment?: {
+    tracking_code?: string | null;
+    status?: string | null;
+    estimated_delivery?: string | null;
+    actual_delivery?: string | null;
+    provider?: { name?: string | null } | null;
+  } | null;
+}
+
 export default function PublicTrackingPage() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<TrackingJob | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
