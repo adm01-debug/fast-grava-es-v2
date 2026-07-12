@@ -21,6 +21,10 @@ function sanitizeNumber(value: unknown, fallback = 0): number {
   return Math.max(0, value);
 }
 
+/** Narrowing helper — invariante já garantida pelo filtro `isValidDate` acima. */
+const asStr = (v: string | null | undefined): string => (v ?? '') as string;
+
+
 export interface MachineOEE {
   machineId: string;
   machineName: string;
