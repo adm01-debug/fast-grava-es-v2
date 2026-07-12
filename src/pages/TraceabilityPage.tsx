@@ -191,8 +191,8 @@ export default function TraceabilityPage() {
     const rows = filteredAndSortedLots.map(l => [
       l.lot_number, l.product_name, l.quantity, l.produced_quantity,
       STATUS_CONFIG[l.status]?.label || l.status,
-      format(parseDateOnly(l.production_date)!, 'dd/MM/yyyy'),
-      l.expiration_date ? format(parseDateOnly(l.expiration_date)!, 'dd/MM/yyyy') : '',
+      format(parseDateOnly(l.production_date) ?? new Date(), 'dd/MM/yyyy'),
+      l.expiration_date ? format(parseDateOnly(l.expiration_date) ?? new Date(), 'dd/MM/yyyy') : '',
       l.job?.order_number || ''
     ]);
     const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
@@ -208,7 +208,7 @@ export default function TraceabilityPage() {
 
   const getExpirationBadge = (lot: ProductionLot) => {
     if (!lot.expiration_date || lot.status !== 'active') return null;
-    const daysLeft = differenceInDays(parseDateOnly(lot.expiration_date)!, new Date());
+    const daysLeft = differenceInDays(parseDateOnly(lot.expiration_date) ?? new Date(), new Date());
     if (daysLeft < 0) return <Badge variant="destructive" className="text-[11px]">Expirado</Badge>;
     if (daysLeft <= 3) return <Badge variant="destructive" className="text-[11px] motion-safe:animate-pulse">⚠ {daysLeft}d</Badge>;
     if (daysLeft <= 7) return <Badge variant="outline" className="text-[11px] text-warning border-warning/40 bg-warning/10">⏰ {daysLeft}d</Badge>;
