@@ -634,7 +634,13 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                     {isLoadingAudit ? (
                       <div className="text-center py-4 text-xs text-muted-foreground">Carregando histórico...</div>
                     ) : auditLogs.length > 0 ? (
-                      auditLogs.map((log: any) => (
+                      auditLogs.map((log: {
+                        id: string;
+                        action: string;
+                        created_at: string;
+                        change_summary?: string | null;
+                        profiles?: { avatar_url?: string | null; display_name?: string | null } | null;
+                      }) => (
                         <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
                           <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
                             log.action === 'CREATE' ? 'bg-success' :
