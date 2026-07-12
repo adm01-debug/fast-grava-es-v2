@@ -118,7 +118,7 @@ const KPIOperatorsTabComponent = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {kpis.productivityByProduct.slice(0, 3).map((prod: any) => (
+              {kpis.productivityByProduct.slice(0, 3).map((prod) => (
                 <div key={prod.productName} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium truncate max-w-[120px]">{prod.productName}</span>
