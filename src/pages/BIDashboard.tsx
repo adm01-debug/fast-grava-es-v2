@@ -301,14 +301,14 @@ export default function BIDashboard() {
 
         {viewMode === 'futuristic' ? (
           <FuturisticBI 
-            biMetrics={biMetrics as any} 
+            biMetrics={biMetrics} 
             kpis={kpis} 
             oeeData={oeeData} 
             isLoading={isLoading} 
           />
         ) : (
           <BINormalView 
-            biMetrics={biMetrics as any} 
+            biMetrics={biMetrics} 
             kpis={kpis} 
             oeeData={oeeData} 
             getPeriodLabel={getPeriodLabel}
@@ -320,7 +320,7 @@ export default function BIDashboard() {
           open={drillDownOpen}
           onOpenChange={setDrillDownOpen}
           title={drillDownTitle}
-          jobs={drillDownJobs as any}
+          jobs={drillDownJobs as unknown as Parameters<typeof DrillDownDialog>[0]['jobs']}
           onExport={handleExport}
         />
       </div>
