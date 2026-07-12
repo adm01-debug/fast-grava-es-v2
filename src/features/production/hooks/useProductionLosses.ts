@@ -95,10 +95,11 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       if (error) throw error;
 
       // Use atomic SQL increment to avoid lost-update race condition
-      const { error: rpcError } = await supabase.rpc('increment_job_lost_pieces' as any, {
+      // RPC não presente nos tipos gerados; cast controlado via `never` do postgrest-js.
+      const { error: rpcError } = await supabase.rpc('increment_job_lost_pieces' as never, {
         p_job_id: data.job_id,
         p_amount: data.quantity,
-      });
+      } as never);
 
       if (rpcError) {
         // Fallback: read-modify-write (less safe under concurrency)
