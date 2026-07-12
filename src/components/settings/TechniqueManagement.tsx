@@ -13,10 +13,21 @@ import { Edit2, Plus, Trash2, Hammer, Clock, Zap, Printer, Activity } from 'luci
 import { Badge } from '@/components/ui/badge';
 import { useSchedulingData } from '@/features/jobs';
 
+interface TechniqueRow {
+  id: string;
+  name: string;
+  short_name: string;
+  color: string;
+  setup_time: number;
+  low_threshold?: number | null;
+  medium_threshold?: number | null;
+  high_threshold?: number | null;
+}
+
 export function TechniqueManagement() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingTechnique, setEditingTechnique] = useState<any>(null);
+  const [editingTechnique, setEditingTechnique] = useState<TechniqueRow | null>(null);
   const { getMachinesByTechnique, getJobsByTechnique, isLoading: isLoadingData } = useSchedulingData();
 
   const { data: techniques, isLoading: isLoadingTech } = useQuery({
@@ -34,7 +45,7 @@ export function TechniqueManagement() {
   const isLoading = isLoadingTech || isLoadingData;
 
   const saveMutation = useMutation({
-    mutationFn: async (technique: any) => {
+    mutationFn: async (technique: TechniqueRow) => {
       const { data, error } = await supabase
         .from('techniques')
         .upsert(technique)
@@ -48,8 +59,9 @@ export function TechniqueManagement() {
       setEditingTechnique(null);
       toast.success('Técnica salva com sucesso');
     },
-    onError: (error: any) => {
-      toast.error(`Erro ao salvar técnica: ${error.message}`);
+    onError: (error: unknown) => {
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(`Erro ao salvar técnica: ${msg}`);
     }
   });
 
@@ -62,8 +74,9 @@ export function TechniqueManagement() {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES_ADMIN });
       toast.success('Técnica excluída');
     },
-    onError: (error: any) => {
-      toast.error(`Erro ao excluir técnica: ${error.message}`);
+    onError: (error: unknown) => {
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(`Erro ao excluir técnica: ${msg}`);
     }
   });
 
@@ -71,11 +84,11 @@ export function TechniqueManagement() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const nameValue = formData.get('name') as string;
-    const techniqueData = {
+    const techniqueData: TechniqueRow = {
       id: editingTechnique?.id || (nameValue ? nameValue.toLowerCase().replace(/\s+/g, '-') : crypto.randomUUID()),
-      name: formData.get('name'),
-      short_name: formData.get('short_name'),
-      color: formData.get('color'),
+      name: String(formData.get('name') ?? ''),
+      short_name: String(formData.get('short_name') ?? ''),
+      color: String(formData.get('color') ?? ''),
       setup_time: parseInt(formData.get('setup_time') as string, 10),
       low_threshold: parseInt(formData.get('low_threshold') as string, 10) || 30,
       medium_threshold: parseInt(formData.get('medium_threshold') as string, 10) || 70,
