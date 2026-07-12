@@ -103,10 +103,13 @@ export function useTPMData() {
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data.map((c: Record<string, any>) => ({
-        ...c,
-        items: c.maintenance_checklist_items || [],
-      })) as MaintenanceChecklist[];
+      return data.map((c) => {
+        const row = c as Record<string, unknown>;
+        return {
+          ...row,
+          items: (row.maintenance_checklist_items as unknown[]) || [],
+        };
+      }) as MaintenanceChecklist[];
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
