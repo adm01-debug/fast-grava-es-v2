@@ -19,6 +19,18 @@ function isAppRole(value: unknown): value is AppRole {
   return value === 'coordinator' || value === 'operator' || value === 'manager' || value === 'admin';
 }
 
+class LockoutError extends Error {
+  isLockout = true as const;
+  remainingMinutes?: number;
+  lockoutMinutes?: number;
+  constructor(message: string, opts?: { remainingMinutes?: number; lockoutMinutes?: number }) {
+    super(message);
+    this.name = 'LockoutError';
+    this.remainingMinutes = opts?.remainingMinutes;
+    this.lockoutMinutes = opts?.lockoutMinutes;
+  }
+}
+
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeoutId = window.setTimeout(() => {
@@ -200,9 +212,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const lockoutStatus = await AuthService.checkLockout(email, ipAddress);
     
     if (lockoutStatus.locked) {
-      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as any;
-      lockoutError.isLockout = true;
-      lockoutError.remainingMinutes = lockoutStatus.remaining_minutes || 0;
+      const lockoutError = new LockoutError(
+        lockoutStatus.message || 'Conta temporariamente bloqueada',
+        { remainingMinutes: lockoutStatus.remaining_minutes || 0 }
+      );
       return { error: lockoutError };
     }
 
@@ -247,9 +260,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await AuthService.recordLoginAttempt(email, false, ipAddress);
 
       if (result.locked) {
-        const lockoutError = new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`) as any;
-        lockoutError.isLockout = true;
-        lockoutError.lockoutMinutes = result.lockout_minutes || 0;
+        const lockoutError = new LockoutError(
+          result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`,
+          { lockoutMinutes: result.lockout_minutes || 0 }
+        );
         return { error: lockoutError };
       }
 
