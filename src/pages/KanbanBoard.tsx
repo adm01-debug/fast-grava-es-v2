@@ -209,7 +209,7 @@ export default function KanbanBoard() {
 
     if (action === 'move' && targetStatus) {
       // Validate all transitions before updating any
-      const invalid = selectedJobsList.filter(j => !(canTransition as any)(j.status as JobStatus, targetStatus));
+      const invalid = selectedJobsList.filter(j => !canTransition(j.status as JobStatus, targetStatus as JobStatus));
       if (invalid.length > 0) {
         toast.error(`${invalid.length} job(s) não podem ser movidos para "${targetStatus}" a partir do estado atual`);
         return;
