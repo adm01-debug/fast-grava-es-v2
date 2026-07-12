@@ -650,7 +650,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                                  log.action === 'VERSION_BUMP' ? 'Nova Versão' : log.action}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                {format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm")}
+                                {log.created_at ? format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm") : '-'}
                               </span>
                             </div>
                             <p className="text-sm">
