@@ -5,7 +5,7 @@ import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinI
 import { logger } from '@/lib/logger';
 
 // Data validation helpers
-function isValidDate(dateStr: string | null | undefined): boolean {
+function isValidDate(dateStr: string | null | undefined): dateStr is string {
   if (!dateStr) return false;
   try {
     const date = parseISO(dateStr);
@@ -14,6 +14,7 @@ function isValidDate(dateStr: string | null | undefined): boolean {
     return false;
   }
 }
+
 
 function sanitizeNumber(value: unknown, fallback = 0): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
