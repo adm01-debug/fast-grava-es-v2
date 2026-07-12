@@ -32,6 +32,7 @@ import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 import { BIJob, BIMetrics, BIProps } from './types';
+import { BIMetrics as BIPredictiveROIMetrics } from '@/features/analytics/types';
 import { Job } from '@/types/job';
 
 type MachineUtil = NonNullable<BIMetrics['machineUtilization']>[number];
