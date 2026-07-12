@@ -8,8 +8,8 @@ export interface VersionEntry<T = Record<string, unknown>> {
   action: 'create' | 'update' | 'delete';
   changes: Array<{
     field: string;
-    oldValue: any;
-    newValue: any;
+    oldValue: unknown;
+    newValue: unknown;
   }>;
   snapshot: T;
 }
