@@ -92,7 +92,7 @@ interface BINormalViewProps {
     qualityLosses: number;
     trendData: Array<{ date: string; oee: number; quality: number }>;
   };
-  getPeriodLabel: (filter?: any, range?: any) => string;
+  getPeriodLabel: (filter?: string, range?: { from: Date; to: Date }) => string;
   onDrillDown: (title: string, jobs: BIJob[]) => void;
 }
 
@@ -238,7 +238,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   dataKey="value"
                   label={({ name, percent }: { name: string; percent: number }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={false}
-                  onClick={(data: any) => {
+                  onClick={(data: { name?: string }) => {
                     if (data && data.name) {
                       onDrillDown(`PEDIDOS: ${data.name}`, biMetrics.periodJobsList.filter(j => j.status === (data.name === 'Finalizados' ? 'finished' : data.name === 'Em Produção' ? 'production' : data.name === 'Atrasados' ? 'delayed' : 'scheduled')));
                     }
@@ -278,7 +278,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.success}
                   name="Produzidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => {
+                  onClick={(data: { name?: string; id?: string }) => {
                     if (data && data.name) onDrillDown(`TÉCNICA: ${data.name}`, biMetrics.periodJobsList.filter(j => j.technique_id === data.id));
                   }}
                 />
@@ -287,7 +287,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.danger}
                   name="Perdidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => {
+                  onClick={(data: { name?: string; id?: string }) => {
                     if (data && data.name) onDrillDown(`PERDAS EM ${data.name}`, biMetrics.periodJobsList.filter(j => j.technique_id === data.id && (j.lost_pieces || 0) > 0));
                   }}
                 />
@@ -343,7 +343,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 </tr>
               </thead>
               <tbody>
-                {(biMetrics.machineUtilization || []).map((machine: any, index: number) => (
+                {(biMetrics.machineUtilization || []).map((machine: { machine?: string; name?: string; technique?: string; totalJobs?: number; completedJobs?: number; utilization?: number }, index: number) => (
                   <tr key={machine.machine || index} className="border-b border-border/50 hover:bg-primary/5 transition-all duration-200 group">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
@@ -358,11 +358,11 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-24 h-2.5 bg-muted rounded-full overflow-hidden">
                           <div className="h-full rounded-full transition-all duration-500" style={{
-                            width: `${machine.utilization}%`,
-                            background: machine.utilization >= 80 ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' : machine.utilization >= 50 ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))' : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))'
+                            width: `${machine.utilization ?? 0}%`,
+                            background: (machine.utilization ?? 0) >= 80 ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' : (machine.utilization ?? 0) >= 50 ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))' : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))'
                           }} />
                         </div>
-                        <span className="text-sm font-bold w-12 text-right">{machine.utilization.toFixed(0)}%</span>
+                        <span className="text-sm font-bold w-12 text-right">{(machine.utilization ?? 0).toFixed(0)}%</span>
                       </div>
                     </td>
                   </tr>
