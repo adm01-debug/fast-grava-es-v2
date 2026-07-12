@@ -1,6 +1,6 @@
 export interface InventoryMovementExportRow {
   id: string;
-  created_at: string;
+  created_at: string | null;
   type: 'IN' | 'OUT' | 'TRANSFER' | 'ADJUST' | string;
   quantity: number;
   from_location?: string | null;
