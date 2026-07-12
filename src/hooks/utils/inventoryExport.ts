@@ -7,7 +7,7 @@ export interface InventoryMovementExportRow {
   to_location?: string | null;
   reason?: string | null;
   inventory_items?: { name?: string | null } | null;
-  profiles?: { display_name?: string | null } | null;
+  profiles?: { display_name?: string | null; full_name?: string | null } | null;
 }
 
 export function exportInventoryMovementsToCSV(movements: InventoryMovementExportRow[]) {
