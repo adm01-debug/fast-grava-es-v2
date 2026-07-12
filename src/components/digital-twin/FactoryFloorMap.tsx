@@ -9,10 +9,30 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
+interface MachineLive {
+  load: number;
+  temp: number;
+  efficiency: number;
+  isWorking: boolean;
+}
+
+interface JobRow {
+  id: string;
+  machine_id: string | null;
+  [key: string]: unknown;
+}
+
+interface MachineRow {
+  id: string;
+  name: string;
+  code?: string;
+  [key: string]: unknown;
+}
+
 export function FactoryFloorMap() {
   const { machines } = useTPM();
-  const [liveData, setLiveData] = useState<Record<string, any>>({});
-  const [activeJobs, setActiveJobs] = useState<Record<string, any>>({});
+  const [liveData, setLiveData] = useState<Record<string, MachineLive>>({});
+  const [activeJobs, setActiveJobs] = useState<Record<string, JobRow>>({});
   const [heatmapType, setHeatmapType] = useState<'none' | 'load' | 'temp'>('none');
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
