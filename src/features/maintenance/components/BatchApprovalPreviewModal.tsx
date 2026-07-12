@@ -109,7 +109,7 @@ export function BatchApprovalPreviewModal({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {validationResults.map((v: any) => (
+              {validationResults.map((v) => (
                 <TableRow key={v.id}>
                   <TableCell className="font-medium">
                     {v.machine?.name}
