@@ -475,10 +475,11 @@ export default function ReportBuilderPage() {
                       <button
                         key={template.id}
                         onClick={() => {
-                          setSelectedTable(template.table_name);
-                          setSelectedColumns(template.columns);
+                          setSelectedTable(template.table_name as PublicTables);
+                          setSelectedColumns(template.columns as string[]);
                           setFormatType(template.format_type as 'csv' | 'pdf' | 'excel');
-                          if (template.filters?.status) setSelectedStatus(template.filters.status);
+                          const filters = template.filters as { status?: string } | null;
+                          if (filters?.status) setSelectedStatus(filters.status);
                           toast.success(`Template "${template.name}" aplicado`);
                         }}
                         className="w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors group flex items-center justify-between"
