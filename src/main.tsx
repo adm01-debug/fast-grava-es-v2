@@ -55,7 +55,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("root") as HTMLElement).render(
   <AccessibilityProvider>
     <OfflineProvider>
       <App />

@@ -446,7 +446,7 @@ export default function ShiftHandoverPage() {
                         </Badge>
                         <div>
                           <p className="font-medium">
-                            {format(parseDateOnly(handover.shift_date)!, 'dd/MM/yyyy')}
+                            {format(parseDateOnly(handover.shift_date) ?? new Date(), 'dd/MM/yyyy')}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {handover.machine?.name || 'Geral'}

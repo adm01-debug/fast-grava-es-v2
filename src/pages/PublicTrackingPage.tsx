@@ -254,7 +254,7 @@ export default function PublicTrackingPage() {
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.deliveryForecast')}</p>
                       <div className="flex items-center gap-2 text-lg font-bold">
                         <Calendar className="h-5 w-5 text-primary/70" />
-                        {job.scheduled_date ? format(parseDateOnly(job.scheduled_date)!, "dd 'de' MMMM", { locale: dateLocale }) : t('common.none')}
+                        {job.scheduled_date ? format(parseDateOnly(job.scheduled_date) ?? new Date(), "dd 'de' MMMM", { locale: dateLocale }) : t('common.none')}
                       </div>
                     </div>
                     {job.shipment && (

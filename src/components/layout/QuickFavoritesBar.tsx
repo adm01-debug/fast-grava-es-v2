@@ -192,7 +192,7 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
 
     try {
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext!)();
+        audioContextRef.current = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ?? AudioContext)();
       }
       const ctx = audioContextRef.current;
       const oscillator = ctx.createOscillator();

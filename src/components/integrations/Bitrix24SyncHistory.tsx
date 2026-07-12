@@ -110,7 +110,7 @@ export const Bitrix24SyncHistory = () => {
     let avgTimeSeconds = 0;
     if (completedSyncs.length > 0) {
       const totalSeconds = completedSyncs.reduce((acc, item) => {
-        const diff = differenceInSeconds(parseISO(item.completed_at!), parseISO(item.started_at));
+        const diff = differenceInSeconds(parseISO(item.completed_at ?? item.started_at), parseISO(item.started_at));
         return acc + Math.max(0, diff);
       }, 0);
       avgTimeSeconds = Math.round(totalSeconds / completedSyncs.length);
