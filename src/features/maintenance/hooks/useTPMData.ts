@@ -184,10 +184,10 @@ export function useTPMData() {
         machine: record.machines,
         maintenance_type: record.maintenance_types,
         technical_sheet: technicalSheet,
-        responses: responses.map((r: { maintenance_checklist_items: any }) => ({
-          ...r,
-          item: r.maintenance_checklist_items
-        })),
+        responses: responses.map((r) => {
+          const row = r as Record<string, unknown>;
+          return { ...row, item: row.maintenance_checklist_items };
+        }),
         parts,
         supplies_used: supplies,
         execution_alerts: executionAlerts
