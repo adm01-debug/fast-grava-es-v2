@@ -485,7 +485,7 @@ function InventoryHistoryTable() {
       <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end bg-muted/20">
         <div className="space-y-1 flex-1">
           <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Período</Label>
-          <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
+          <Select value={dateFilter} onValueChange={(v) => setDateFilter(v as typeof dateFilter)}>
             <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
