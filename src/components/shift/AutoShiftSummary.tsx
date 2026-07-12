@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useOperatorDashboardData } from '@/features/production';
 import { useSchedulingData } from '@/features/jobs';
-import { exportShiftReportPDF } from '@/lib/shiftReportPdf';
+import { exportShiftReportPDF, type ShiftReportData } from '@/lib/shiftReportPdf';
 import { toast } from 'sonner';
 import {
   FileText, CheckCircle2, AlertTriangle, Clock,
