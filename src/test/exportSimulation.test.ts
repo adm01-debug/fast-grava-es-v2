@@ -12,15 +12,15 @@ import { exportOEETabledData } from '@/lib/oeeExport';
 
 // ---------- Mocks ----------
 vi.mock('jspdf', () => {
-  const save = vi.fn();
-  const text = vi.fn();
-  const setFontSize = vi.fn();
-  const autoTable = vi.fn();
-  return {
-    jsPDF: vi.fn().mockImplementation(() => ({ save, text, setFontSize, autoTable })),
-  };
+  class MockJsPDF {
+    save = vi.fn();
+    text = vi.fn();
+    setFontSize = vi.fn();
+    autoTable = vi.fn();
+  }
+  return { jsPDF: MockJsPDF, default: MockJsPDF };
 });
-vi.mock('jspdf-autotable', () => ({}));
+vi.mock('jspdf-autotable', () => ({ default: vi.fn() }));
 
 // jsdom lacks URL.createObjectURL
 beforeEach(() => {
