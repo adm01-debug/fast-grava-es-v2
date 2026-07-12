@@ -17,8 +17,9 @@ export interface ChecklistItemData {
 
 export interface ChecklistItemResponse {
   is_checked?: boolean;
-  measurement_value?: number | null;
-  photo_url?: string | null;
+  measurement_value?: number;
+  notes?: string;
+  photo_url?: string;
 }
 
 export type ChecklistItemUpdate = Partial<ChecklistItemResponse>;
