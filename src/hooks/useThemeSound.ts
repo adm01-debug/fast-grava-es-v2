@@ -24,7 +24,7 @@ export function useThemeSound() {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ?? AudioContext)();
+      audioContextRef.current = new ((window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ?? window.AudioContext)();
     }
     return audioContextRef.current;
   }, []);
