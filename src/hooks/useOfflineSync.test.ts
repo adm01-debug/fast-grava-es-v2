@@ -69,8 +69,9 @@ describe('useOfflineSync', () => {
       result.current.updateJobOffline('job-1', { status: 'in_progress' });
     });
 
-    const mockTable = (supabase.from('jobs') as any);
-    mockTable.then.mockImplementationOnce((onFulfilled: any) => {
+    type MockTable = { then: { mockImplementationOnce: (fn: (onFulfilled: (v: unknown) => unknown) => Promise<unknown>) => void } };
+    const mockTable = supabase.from('jobs') as unknown as MockTable;
+    mockTable.then.mockImplementationOnce((onFulfilled) => {
       return Promise.resolve({ data: [], error: null }).then(onFulfilled);
     });
 
