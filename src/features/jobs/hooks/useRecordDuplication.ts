@@ -87,7 +87,7 @@ export function useRecordDuplication(tableName: TableName) {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data: any[]) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [tableName] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       toast.success(`${data?.length ?? 0} registros duplicados`);
