@@ -530,7 +530,7 @@ export default function PendingQueue() {
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <SmartSequencingPanel
-                onExplain={(suggestion: any) => {
+                onExplain={(suggestion) => {
                   setSelectedAISuggestion({ type: 'setup', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
