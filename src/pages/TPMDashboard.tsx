@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
+import type { MaintenanceSchedule, MaintenanceRecord } from '@/features/maintenance/hooks/types';
 import { useTPMNotifications } from '@/features/notifications';
 import { useAuth } from '@/features/auth';
 import { TPMAlertsPanel } from '@/features/maintenance/components/TPMAlertsPanel';
