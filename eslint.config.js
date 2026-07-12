@@ -50,6 +50,8 @@ export default tseslint.config(
       "@typescript-eslint/no-require-imports": "warn",
       // 🏆 Milestone 10/10: baseline `any` = 0 no src/. Travar regressões.
       "@typescript-eslint/no-explicit-any": "error",
+      // Reduzir uso de non-null assertion (`!`) — força narrowing explícito
+      "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-empty-object-type": "warn",
