@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -18,7 +19,10 @@ interface AuditEntryCardProps {
   entry: AuditLogEntry;
 }
 
-const actionConfig: Record<string, { icon: any; label: string; variant: any; color: string }> = {
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
+type ActionCfg = { icon: LucideIcon; label: string; variant: BadgeVariant; color: string };
+
+const actionConfig: Record<string, ActionCfg> = {
   INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default', color: 'text-primary' },
   UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary', color: 'text-secondary-foreground' },
   DELETE: { icon: Trash2Icon, label: 'Excluído', variant: 'destructive', color: 'text-destructive' },
@@ -64,8 +68,8 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
             {entry.action === 'status_change' && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-muted-foreground italic">Alterado para:</span>
-                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor(String((entry.new_values as any)?.status || '')))}>
-                  {String((entry.new_values as any)?.status || 'status')}
+                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor(String((entry.new_values as { status?: string } | null)?.status || '')))}>
+                  {String((entry.new_values as { status?: string } | null)?.status || 'status')}
                 </Badge>
               </div>
             )}
