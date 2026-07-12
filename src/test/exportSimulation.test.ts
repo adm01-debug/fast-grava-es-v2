@@ -24,9 +24,7 @@ vi.mock('jspdf-autotable', () => ({}));
 
 // jsdom lacks URL.createObjectURL
 beforeEach(() => {
-  // @ts-expect-error jsdom polyfill
   URL.createObjectURL = vi.fn(() => 'blob:mock');
-  // @ts-expect-error jsdom polyfill
   URL.revokeObjectURL = vi.fn();
 });
 
