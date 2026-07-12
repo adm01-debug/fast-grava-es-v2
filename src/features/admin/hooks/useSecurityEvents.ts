@@ -27,7 +27,7 @@ export function useRealtimeSecurityEvents() {
           // Show toast for critical events
           if (event.severity === 'critical' || event.severity === 'error') {
             toast.error(`Alerta de Segurança: ${event.event_type}`, {
-              description: event.details?.message || 'Verifique o painel de segurança',
+              description: (event.details?.message as string | undefined) || 'Verifique o painel de segurança',
               duration: 10000,
             });
           } else if (event.severity === 'warning') {
