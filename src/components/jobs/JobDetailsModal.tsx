@@ -472,7 +472,7 @@ function JobHistoryTab({ jobId }: { jobId: string }) {
     fromDate: period.fromDate,
     toDate: period.toDate,
   });
-  const { exportAuditTrail } = useDataExport('jobs' as any);
+  const { exportAuditTrail } = useDataExport('jobs');
 
   const handleExport = useCallback((format: 'csv' | 'pdf') => {
     exportAuditTrail({
