@@ -260,9 +260,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await AuthService.recordLoginAttempt(email, false, ipAddress);
 
       if (result.locked) {
-        const lockoutError = new Error(result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`) as any;
-        lockoutError.isLockout = true;
-        lockoutError.lockoutMinutes = result.lockout_minutes || 0;
+        const lockoutError = new LockoutError(
+          result.message || `Conta bloqueada por ${result.lockout_minutes} minuto(s)`,
+          { lockoutMinutes: result.lockout_minutes || 0 }
+        );
         return { error: lockoutError };
       }
 
