@@ -55,7 +55,11 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
 
   useEffect(() => {
     if (sheet) {
-      const ranges = (sheet.settings_ranges as any) || {};
+      type Range = { min?: string | number; max?: string | number };
+      type SettingsRanges = Partial<Record<'squeegee_passes' | 'pressure' | 'speed' | 'temperature', Range>>;
+      type MachineSettings = Partial<Record<'squeegee_passes' | 'pressure' | 'speed' | 'temperature', string | number>>;
+      const ranges = (sheet.settings_ranges as SettingsRanges | null) || {};
+      const ms = (sheet.machine_settings as MachineSettings | null) || {};
       setFormData({
         technique_id: sheet.technique_id,
         product_category_id: sheet.product_category_id || '',
@@ -66,18 +70,18 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
         recommended_machine_id: sheet.recommended_machine_id || '',
         ink_specifications: sheet.ink_specifications || '',
         tooling_specifications: sheet.tooling_specifications || '',
-        squeegee_passes: (sheet.machine_settings as any)?.squeegee_passes || '',
-        pressure: (sheet.machine_settings as any)?.pressure || '',
-        speed: (sheet.machine_settings as any)?.speed || '',
-        temperature: (sheet.machine_settings as any)?.temperature || '',
-        squeegee_passes_min: ranges.squeegee_passes?.min || '',
-        squeegee_passes_max: ranges.squeegee_passes?.max || '',
-        pressure_min: ranges.pressure?.min || '',
-        pressure_max: ranges.pressure?.max || '',
-        speed_min: ranges.speed?.min || '',
-        speed_max: ranges.speed?.max || '',
-        temperature_min: ranges.temperature?.min || '',
-        temperature_max: ranges.temperature?.max || '',
+        squeegee_passes: String(ms.squeegee_passes ?? ''),
+        pressure: String(ms.pressure ?? ''),
+        speed: String(ms.speed ?? ''),
+        temperature: String(ms.temperature ?? ''),
+        squeegee_passes_min: String(ranges.squeegee_passes?.min ?? ''),
+        squeegee_passes_max: String(ranges.squeegee_passes?.max ?? ''),
+        pressure_min: String(ranges.pressure?.min ?? ''),
+        pressure_max: String(ranges.pressure?.max ?? ''),
+        speed_min: String(ranges.speed?.min ?? ''),
+        speed_max: String(ranges.speed?.max ?? ''),
+        temperature_min: String(ranges.temperature?.min ?? ''),
+        temperature_max: String(ranges.temperature?.max ?? ''),
         gap_specifications: sheet.gap_specifications || '',
         challenges_notes: sheet.challenges_notes || '',
         failure_scenarios: sheet.failure_scenarios || '',
