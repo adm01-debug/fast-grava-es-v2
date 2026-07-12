@@ -204,7 +204,7 @@ export function ChecklistManager() {
                 <SelectValue placeholder="Selecione o tipo..." />
               </SelectTrigger>
               <SelectContent>
-                {maintenanceTypes.map((mType: any) => (
+                {maintenanceTypes.map((mType) => (
                   <SelectItem key={mType.id} value={mType.id}>
                     {mType.name}
                   </SelectItem>
