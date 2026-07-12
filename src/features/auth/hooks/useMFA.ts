@@ -4,20 +4,44 @@ import { useAuth } from '../index';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
+interface MFAFactor {
+  id: string;
+  friendly_name?: string;
+  factor_type: string;
+  status: 'verified' | 'unverified';
+  created_at: string;
+  updated_at: string;
+}
+
+interface MFAEnrollmentData {
+  id: string;
+  type: 'totp';
+  totp?: {
+    qr_code: string;
+    secret: string;
+    uri: string;
+  };
+  friendly_name?: string;
+}
+
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 export function useMFA() {
   const { user } = useAuth();
-  const [factors, setFactors] = useState<any[]>([]);
+  const [factors, setFactors] = useState<MFAFactor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnrolling, setIsEnrolling] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [enrollmentData, setEnrollmentData] = useState<any>(null);
+  const [enrollmentData, setEnrollmentData] = useState<MFAEnrollmentData | null>(null);
 
   const refreshFactors = useCallback(async () => {
     if (!user) return;
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) throw error;
-      setFactors(data.all || []);
+      setFactors((data.all as MFAFactor[]) || []);
     } catch (error) {
       logger.error('Falha ao listar fatores MFA', error, 'useMFA');
     } finally {
@@ -38,10 +62,10 @@ export function useMFA() {
         friendlyName: friendlyNameArg || 'Fast Gravações MFA'
       });
       if (error) throw error;
-      setEnrollmentData(data);
+      setEnrollmentData(data as MFAEnrollmentData);
       return data;
-    } catch (error: any) {
-      toast.error('Erro ao iniciar cadastro MFA', { description: error.message });
+    } catch (error: unknown) {
+      toast.error('Erro ao iniciar cadastro MFA', { description: toErrorMessage(error) });
     } finally {
       setIsEnrolling(false);
     }
@@ -60,8 +84,8 @@ export function useMFA() {
       setEnrollmentData(null);
       toast.success('MFA ativado com sucesso!');
       return data;
-    } catch (error: any) {
-      toast.error('Código inválido', { description: error.message });
+    } catch (error: unknown) {
+      toast.error('Código inválido', { description: toErrorMessage(error) });
     } finally {
       setIsVerifying(false);
     }
@@ -78,8 +102,8 @@ export function useMFA() {
       await refreshFactors();
       toast.success('MFA desativado');
       return true;
-    } catch (error: any) {
-      toast.error('Erro ao desativar MFA', { description: error.message });
+    } catch (error: unknown) {
+      toast.error('Erro ao desativar MFA', { description: toErrorMessage(error) });
       return false;
     }
   };
