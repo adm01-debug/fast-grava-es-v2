@@ -69,9 +69,9 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
 
   const events = jobs
     .filter((j) => j.scheduled_date && j.start_time && j.end_time)
-    .map((job) => {
+    .flatMap((job) => {
       const date = parseDateOnly(job.scheduled_date as string);
-      if (!date) continue;
+      if (!date) return [];
       const start = toICalDateTime(date, job.start_time as string);
       const end = toICalDateTime(date, job.end_time as string);
       const machine = job.machine_id ? machineMap.get(job.machine_id) : null;
@@ -79,7 +79,7 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
       const description = escapeICal(
         `${job.product}\nQtd: ${job.quantity}\nStatus: ${job.status}\nMáquina: ${machine?.code ?? '—'}`
       );
-      return [
+      return [[
         'BEGIN:VEVENT',
         `UID:${job.id}@fastgravacoes`,
         `DTSTAMP:${now}`,
@@ -89,9 +89,10 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
         `DESCRIPTION:${description}`,
         `LOCATION:${escapeICal(machine?.name ?? 'FAST GRAVAÇÕES')}`,
         'END:VEVENT',
-      ].join('\r\n');
+      ].join('\r\n')];
     })
     .join('\r\n');
+
 
   return [
     'BEGIN:VCALENDAR',
