@@ -233,7 +233,7 @@ export default function KanbanBoard() {
       setSelectedJobs(new Set());
       handleJobsUpdate();
     } else if (action === 'rework') {
-      const invalid = selectedJobsList.filter(j => !(canTransition as any)(j.status as JobStatus, 'rework'));
+      const invalid = selectedJobsList.filter(j => !canTransition(j.status as JobStatus, 'rework' as JobStatus));
       if (invalid.length > 0) {
         toast.error(`${invalid.length} job(s) não podem ser enviados para Retrabalho a partir do estado atual`);
         return;
