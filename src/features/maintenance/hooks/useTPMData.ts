@@ -80,11 +80,14 @@ export function useTPMData() {
         .eq('is_active', true)
         .order('next_due_at');
       if (error) throw error;
-      return data.map((s: Record<string, any>) => ({
-        ...s,
-        machine: s.machines,
-        maintenance_type: s.maintenance_types,
-      })) as MaintenanceSchedule[];
+      return data.map((s) => {
+        const row = s as Record<string, unknown>;
+        return {
+          ...row,
+          machine: row.machines,
+          maintenance_type: row.maintenance_types,
+        };
+      }) as MaintenanceSchedule[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
