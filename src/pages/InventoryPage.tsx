@@ -267,7 +267,7 @@ function InventoryCard({
   onSelect
 }: {
   item: InventoryItem,
-  onMovement: (data: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => Promise<any>,
+  onMovement: (data: Omit<InventoryMovement, 'id' | 'created_at' | 'user_id'>) => Promise<unknown>,
   isSelected: boolean,
   onSelect: (id: string, checked: boolean) => void
 }) {
@@ -485,7 +485,7 @@ function InventoryHistoryTable() {
       <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-end bg-muted/20">
         <div className="space-y-1 flex-1">
           <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Período</Label>
-          <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
+          <Select value={dateFilter} onValueChange={(v) => setDateFilter(v as typeof dateFilter)}>
             <SelectTrigger className="bg-background">
               <SelectValue />
             </SelectTrigger>
@@ -531,10 +531,10 @@ function InventoryHistoryTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border/30">
-            {filteredMovements.map((m: any) => (
+            {filteredMovements.map((m) => (
               <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
                 <td className="p-4 font-mono text-muted-foreground">
-                  {format(parseISO(m.created_at), 'dd/MM/yy HH:mm')}
+                  {m.created_at ? format(parseISO(m.created_at), 'dd/MM/yy HH:mm') : '-'}
                 </td>
                 <td className="p-4 font-bold text-foreground">
                   {m.inventory_items?.name}
@@ -557,7 +557,7 @@ function InventoryHistoryTable() {
                   {m.type === 'TRANSFER' ? `${m.from_location} → ${m.to_location}` : (m.reason || '-')}
                 </td>
                 <td className="p-4 font-medium italic">
-                  {m.profiles?.display_name || 'Sistema'}
+                  {m.profiles?.full_name || 'Sistema'}
                 </td>
                 <td className="p-4 text-right">
                   <Button
@@ -678,7 +678,9 @@ function BatchQRLabelModal({ open, onOpenChange, items }: { open: boolean, onOpe
   );
 }
 
-function AIPredictionValidationModal({ open, onOpenChange, items, movements }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[], movements: any[] }) {
+type InventoryMovementRow = NonNullable<ReturnType<typeof useInventoryMovements>['data']>[number];
+
+function AIPredictionValidationModal({ open, onOpenChange, items, movements }: { open: boolean, onOpenChange: (o: boolean) => void, items: InventoryItem[], movements: InventoryMovementRow[] }) {
   const { calculateAI, isCalculatingAI } = useInventory();
   const [calibratedAccuracy, setCalibratedAccuracy] = useState<number | null>(null);
 
