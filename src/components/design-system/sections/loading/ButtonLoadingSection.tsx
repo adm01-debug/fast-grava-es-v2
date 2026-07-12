@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button, type ButtonProps } from '@/components/ui/button';
 import { CodeBlock } from '@/components/ui/code-block';
 import { Loader2, Play, Save, Zap } from 'lucide-react';
+
+type ButtonVariant = NonNullable<ButtonProps['variant']>;
 
 export function ButtonLoadingSection() {
   const [isLoading, setIsLoading] = useState(false);
