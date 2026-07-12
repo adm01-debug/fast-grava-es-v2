@@ -31,9 +31,9 @@ export function AutoShiftSummary() {
         shiftName,
         shiftStart,
         shiftEnd,
-        jobs: jobs as any,
-        machines: machines as any,
-        techniques: techniques as any,
+        jobs: jobs as unknown as ShiftReportData['jobs'],
+        machines: machines as unknown as ShiftReportData['machines'],
+        techniques: techniques as unknown as ShiftReportData['techniques'],
       });
       toast.success('Relatório PDF gerado com sucesso!');
     } catch {
