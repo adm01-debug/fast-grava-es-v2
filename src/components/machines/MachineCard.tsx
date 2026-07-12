@@ -12,11 +12,11 @@ export interface MachineCardData {
   is_active: boolean;
 }
 
-interface MachineCardProps {
-  machine: MachineCardData;
+interface MachineCardProps<M extends MachineCardData = MachineCardData> {
+  machine: M;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  onOpenSettings: (machine: MachineCardData) => void;
+  onOpenSettings: (machine: M) => void;
   index: number;
   metrics?: {
     oee: number;
@@ -26,7 +26,7 @@ interface MachineCardProps {
   };
 }
 
-export function MachineCard({ machine, isSelected, onSelect, onOpenSettings, index, metrics }: MachineCardProps) {
+export function MachineCard<M extends MachineCardData>({ machine, isSelected, onSelect, onOpenSettings, index, metrics }: MachineCardProps<M>) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
