@@ -270,7 +270,7 @@ export default function BIDashboard() {
     );
   }
 
-  const getPeriodLabel = (filter: PeriodFilter = periodFilter, range: DateRange = customRange) => {
+  const getPeriodLabel = (filter: string = periodFilter, range: { from: Date; to: Date } = customRange) => {
     if (filter === 'custom') return `${format(range.from, 'dd/MM/yyyy')} - ${format(range.to, 'dd/MM/yyyy')}`;
     return filter === '7d' ? 'Últimos 7 dias' : filter === '90d' ? 'Últimos 90 dias' : 'Últimos 30 dias';
   };
