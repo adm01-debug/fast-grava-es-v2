@@ -77,9 +77,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ["src/test/**", "tests/**"],
+    files: ["src/test/**", "tests/**", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
     rules: {
       "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
   {
