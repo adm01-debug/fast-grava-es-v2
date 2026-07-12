@@ -4,9 +4,11 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '@/features/auth';
 
+export type BusinessConfigValue = string | number | boolean | null | BusinessConfigValue[] | { [key: string]: BusinessConfigValue };
+
 export interface BusinessConfig {
   key: string;
-  value: any;
+  value: BusinessConfigValue;
   description: string | null;
   updated_at: string | null;
   updated_by: string | null;
@@ -27,8 +29,8 @@ export function useBusinessConfig() {
       if (error) throw error;
       
       // Transform to Map for easier access
-      const configMap = new Map<string, any>();
-      data?.forEach(item => configMap.set(item.key, item.value));
+      const configMap = new Map<string, BusinessConfigValue>();
+      data?.forEach(item => configMap.set(item.key, item.value as BusinessConfigValue));
       return { raw: data as BusinessConfig[], map: configMap };
     },
     enabled: isAuthenticated,
@@ -36,7 +38,7 @@ export function useBusinessConfig() {
   });
 
   const updateConfigMutation = useMutation({
-    mutationFn: async ({ key, value }: { key: string, value: any }) => {
+    mutationFn: async ({ key, value }: { key: string, value: BusinessConfigValue }) => {
       if (!user?.id) throw new Error('Sessão expirada. Faça login novamente.');
       const { data, error } = await supabase
         .from('business_config')
@@ -52,14 +54,14 @@ export function useBusinessConfig() {
       queryClient.invalidateQueries({ queryKey: ['business-config'] });
       toast.success('Configuração atualizada com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao atualizar configuração: ' + (error.message || 'Erro desconhecido'));
     }
   });
 
-  const getConfig = useCallback((key: string, defaultValue: any) => {
+  const getConfig = useCallback(<T = BusinessConfigValue>(key: string, defaultValue: T): T => {
     if (!configQuery.data) return defaultValue;
-    return configQuery.data.map.get(key) ?? defaultValue;
+    return (configQuery.data.map.get(key) as T | undefined) ?? defaultValue;
   }, [configQuery.data]);
 
   return {
