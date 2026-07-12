@@ -11,15 +11,15 @@ import { toast } from 'sonner';
 
 interface TPMParameterAlert {
   id: string;
-  parameter_name: string;
-  recorded_value: string | number;
-  recommended_range: string;
-  created_at: string;
+  parameter_name: string | null;
+  recorded_value: string | number | null;
+  recommended_range: string | null;
+  created_at: string | null;
   execution?: {
     machine?: {
-      name?: string;
-      code?: string;
-    };
+      name?: string | null;
+      code?: string | null;
+    } | null;
   } | null;
 }
 
