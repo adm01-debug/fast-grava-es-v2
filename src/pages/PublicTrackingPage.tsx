@@ -262,7 +262,7 @@ export default function PublicTrackingPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('tracking.shippingStatus')} ({job.shipment.provider?.name})</p>
                         <div className="flex items-center gap-2 text-lg font-bold">
                           <Truck className="h-5 w-5 text-primary/70" />
-                          {shippingStatusMap[job.shipment.status] || t('logistics.status.pending')}
+                          {(job.shipment.status && shippingStatusMap[job.shipment.status]) || t('logistics.status.pending')}
                         </div>
                       </div>
                     )}
