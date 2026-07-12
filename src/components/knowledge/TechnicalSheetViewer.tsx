@@ -398,8 +398,10 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                               speed: 'Velocidade',
                               temperature: 'Temperatura'
                             };
-                            const value = (sheet.machine_settings as any)?.[param];
-                            const range = (sheet.settings_ranges as any)?.[param];
+                            const machineSettings = sheet.machine_settings as Record<string, unknown> | null;
+                            const settingsRanges = sheet.settings_ranges as Record<string, { min?: number; max?: number }> | null;
+                            const value = machineSettings?.[param];
+                            const range = settingsRanges?.[param];
 
                             if (!value && (!range || (!range.min && !range.max))) return null;
 
@@ -408,7 +410,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                                 <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                                   {param === 'temperature' ? <Thermometer className="h-3 w-3" /> : param === 'squeegee_passes' ? <MoveHorizontal className="h-3 w-3" /> : <Zap className="h-3 w-3" />} {labels[param]}
                                 </Label>
-                                <p className="text-sm font-bold">{value || '-'}</p>
+                                <p className="text-sm font-bold">{String(value ?? '-') || '-'}</p>
                                 {range && (range.min || range.max) && (
                                   <p className="text-[10px] text-muted-foreground mt-1 border-t border-warning/10 pt-1">
                                     Faixa: {range.min || '-'} a {range.max || '-'}
@@ -632,7 +634,9 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                     {isLoadingAudit ? (
                       <div className="text-center py-4 text-xs text-muted-foreground">Carregando histórico...</div>
                     ) : auditLogs.length > 0 ? (
-                      auditLogs.map((log: any) => (
+                      auditLogs.map((log) => {
+                        const profiles = (log.profiles ?? null) as { avatar_url?: string | null; display_name?: string | null } | null;
+                        return (
                         <div key={log.id} className="relative pl-8 pb-8 border-l last:border-l-0">
                           <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full ${
                             log.action === 'CREATE' ? 'bg-success' :
@@ -646,25 +650,26 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                                  log.action === 'VERSION_BUMP' ? 'Nova Versão' : log.action}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                {format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm")}
+                                {log.created_at ? format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm") : '-'}
                               </span>
                             </div>
                             <p className="text-sm">
                               {log.change_summary || (log.action === 'CREATE' ? 'Ficha técnica criada.' : 'Alterações realizadas nos parâmetros.')}
                             </p>
                             <div className="flex items-center gap-2 mt-3">
-                              {log.profiles?.avatar_url ? (
-                                <img src={log.profiles.avatar_url} alt={log.profiles.display_name} className="h-6 w-6 rounded-full" />
+                              {profiles?.avatar_url ? (
+                                <img src={profiles.avatar_url} alt={profiles.display_name ?? ''} className="h-6 w-6 rounded-full" />
                               ) : (
                                 <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">
-                                  {log.profiles?.display_name?.substring(0, 2).toUpperCase() || '??'}
+                                  {profiles?.display_name?.substring(0, 2).toUpperCase() || '??'}
                                 </div>
                               )}
-                              <span className="text-xs font-medium">{log.profiles?.display_name || 'Sistema'}</span>
+                              <span className="text-xs font-medium">{profiles?.display_name || 'Sistema'}</span>
                             </div>
                           </div>
                         </div>
-                      ))
+                        );
+                      })
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
                         <History className="h-8 w-8 mx-auto mb-2 opacity-20" />
