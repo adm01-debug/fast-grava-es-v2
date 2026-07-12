@@ -31,7 +31,7 @@ export function useDashboardPresets(dashboardId: string) {
   });
 
   const savePreset = useMutation({
-    mutationFn: async ({ name, filters, isDefault = false }: { name: string; filters: any; isDefault?: boolean }) => {
+    mutationFn: async ({ name, filters, isDefault = false }: { name: string; filters: Record<string, unknown>; isDefault?: boolean }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
