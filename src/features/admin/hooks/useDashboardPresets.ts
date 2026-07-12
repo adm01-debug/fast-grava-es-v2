@@ -40,7 +40,7 @@ export function useDashboardPresets(dashboardId: string) {
         .insert({
           name,
           dashboard_id: dashboardId,
-          filters,
+          filters: filters as never,
           user_id: user.id,
           is_default: isDefault
         })
