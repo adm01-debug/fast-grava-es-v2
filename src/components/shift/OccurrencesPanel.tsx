@@ -150,7 +150,7 @@ export default function OccurrencesPanel() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Tipo</Label>
-                      <Select value={newOccurrence.occurrence_type} onValueChange={(v) => setNewOccurrence(prev => ({ ...prev, occurrence_type: v as any }))}>
+                      <Select value={newOccurrence.occurrence_type} onValueChange={(v) => setNewOccurrence(prev => ({ ...prev, occurrence_type: v as ShiftOccurrence['occurrence_type'] }))}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{Object.entries(OCCURRENCE_TYPES).map(([key, config]) => (<SelectItem key={key} value={key}>{config.label}</SelectItem>))}</SelectContent>
                       </Select>
