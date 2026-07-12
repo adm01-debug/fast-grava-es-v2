@@ -5,7 +5,7 @@ import { Package } from 'lucide-react';
 
 interface SupplyItem {
   name: string;
-  quantity: string | number;
+  quantity: string;
   is_checked?: boolean;
   alternative_used?: boolean;
 }
