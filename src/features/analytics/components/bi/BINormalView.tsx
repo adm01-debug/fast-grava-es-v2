@@ -92,7 +92,7 @@ interface BINormalViewProps {
     qualityLosses: number;
     trendData: Array<{ date: string; oee: number; quality: number }>;
   };
-  getPeriodLabel: (filter?: any, range?: any) => string;
+  getPeriodLabel: (filter?: string, range?: { from: Date; to: Date }) => string;
   onDrillDown: (title: string, jobs: BIJob[]) => void;
 }
 
