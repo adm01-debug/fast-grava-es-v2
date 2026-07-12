@@ -226,3 +226,113 @@ describe('oeeExport — regressão de formato', () => {
     expect(() => exportOEETabledData(extreme, 'pdf')).not.toThrow();
   });
 });
+
+// ================================================================
+// ERROS & VALIDAÇÃO DE TIPO EM RUNTIME
+// ================================================================
+describe('exportRegression — casos de erro e validação de tipo', () => {
+  it('inventory: propaga erro quando URL.createObjectURL lança', () => {
+    const original = URL.createObjectURL;
+    URL.createObjectURL = vi.fn(() => {
+      throw new Error('quota exceeded');
+    });
+    try {
+      expect(() =>
+        exportInventoryMovementsToCSV([
+          {
+            id: 'x',
+            created_at: '2026-01-01T00:00:00Z',
+            type: 'IN',
+            quantity: 1,
+          },
+        ]),
+      ).toThrow(/quota exceeded/);
+    } finally {
+      URL.createObjectURL = original;
+    }
+  });
+
+  it('oee: propaga erro quando jsPDF.save falha (disco cheio, etc.)', () => {
+    jsPdfSave.mockImplementationOnce(() => {
+      throw new Error('disk full');
+    });
+    expect(() =>
+      exportOEETabledData(
+        { byMachine: [{ machineName: 'A', availability: 1, performance: 1, quality: 1, oee: 1 }] },
+        'pdf',
+      ),
+    ).toThrow(/disk full/);
+  });
+
+  it('inventory: tolera row com todos os campos opcionais ausentes', async () => {
+    exportInventoryMovementsToCSV([
+      { id: 'min', created_at: null, type: 'IN', quantity: 0 },
+    ]);
+    const csv = await readLastBlob();
+    // 1 header + 1 linha de dados
+    expect(csv.split('\n')).toHaveLength(2);
+    expect(csv).toContain('"N/A"');
+  });
+
+  it('inventory: tipo desconhecido cai no branch "Ajuste"', async () => {
+    exportInventoryMovementsToCSV([
+      {
+        id: 'x',
+        created_at: '2026-01-01T00:00:00Z',
+        type: 'UNKNOWN_TYPE_XYZ',
+        quantity: 1,
+      },
+    ]);
+    const csv = await readLastBlob();
+    expect(csv).toContain(',Ajuste,');
+  });
+
+  it('oee: valida invariante de contagem — body.length === input.length', () => {
+    const input = {
+      byMachine: Array.from({ length: 17 }, (_, i) => ({
+        machineName: `M${i}`,
+        availability: i,
+        performance: i,
+        quality: i,
+        oee: i,
+      })),
+    };
+    exportOEETabledData(input, 'pdf');
+    const opts = jsPdfAutoTable.mock.calls.at(-1)?.[0] as { body: string[][] };
+    expect(opts.body).toHaveLength(17);
+  });
+
+  it('oee: cada célula numérica é string com 1 casa decimal (contrato de formato)', () => {
+    exportOEETabledData(
+      {
+        byMachine: [{ machineName: 'A', availability: 12, performance: 34.5678, quality: 0, oee: 100 }],
+      },
+      'pdf',
+    );
+    const opts = jsPdfAutoTable.mock.calls.at(-1)?.[0] as { body: string[][] };
+    const row = opts.body[0];
+    // machineName + 4 números formatados
+    expect(row).toHaveLength(5);
+    for (let i = 1; i < 5; i++) {
+      expect(row[i]).toMatch(/^-?\d+\.\d$/);
+    }
+  });
+
+  it('inventory: entrada não-array (objeto) é tratada sem download', () => {
+    // @ts-expect-error validação runtime de tipo inválido
+    expect(() => exportInventoryMovementsToCSV({})).toThrow();
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it('inventory: quantidade zero e negativa são preservadas literalmente', async () => {
+    exportInventoryMovementsToCSV([
+      { id: '1', created_at: '2026-01-01T00:00:00Z', type: 'IN', quantity: 0 },
+      { id: '2', created_at: '2026-01-01T00:00:00Z', type: 'OUT', quantity: -5 },
+    ]);
+    const csv = await readLastBlob();
+    const lines = csv.split('\n');
+    expect(lines[1]).toContain(',0,');
+    expect(lines[2]).toContain(',-5,');
+  });
+});
+
