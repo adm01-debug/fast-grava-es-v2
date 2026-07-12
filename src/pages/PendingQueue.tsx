@@ -100,10 +100,11 @@ export default function PendingQueue() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>(() => {
     return window.innerWidth < 1024 ? 'grid' : 'table';
   });
-  const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
-    type: 'setup' | 'balancing';
-    data: any;
-  } | null>(null);
+  const [selectedAISuggestion, setSelectedAISuggestion] = useState<
+    | { type: 'setup'; data: SequencingSuggestion }
+    | { type: 'balancing'; data: LoadBalancingSuggestion }
+    | null
+  >(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
 
   const queryClient = useQueryClient();
