@@ -61,7 +61,7 @@ export function useBusinessConfig() {
 
   const getConfig = useCallback(<T = BusinessConfigValue>(key: string, defaultValue: T): T => {
     if (!configQuery.data) return defaultValue;
-    return configQuery.data.map.get(key) ?? defaultValue;
+    return (configQuery.data.map.get(key) as T | undefined) ?? defaultValue;
   }, [configQuery.data]);
 
   return {
