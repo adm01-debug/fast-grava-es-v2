@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import { DbJob } from '@/features/jobs';
+import { DbJob, type JobUpdate } from '@/features/jobs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { findNextAvailableSlot } from '@/features/jobs';
