@@ -531,7 +531,7 @@ function InventoryHistoryTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border/30">
-            {filteredMovements.map((m: any) => (
+            {filteredMovements.map((m) => (
               <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
                 <td className="p-4 font-mono text-muted-foreground">
                   {format(parseISO(m.created_at), 'dd/MM/yy HH:mm')}
