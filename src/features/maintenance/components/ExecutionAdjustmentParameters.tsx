@@ -44,7 +44,8 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {params.map(({ key, label, icon }) => {
-        const value = adjustmentParameters[key];
+        const rawValue = adjustmentParameters[key];
+        const value = typeof rawValue === 'string' ? rawValue : '';
         const range = adjustmentParameters.ranges?.[key];
         const recommended = adjustmentParameters.recommended?.[key];
 
