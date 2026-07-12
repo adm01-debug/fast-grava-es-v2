@@ -162,7 +162,7 @@ export const useTPMNotifications = () => {
   }, [sendNotification]);
 
   // Send test notification
-  const sendTestNotification = useCallback(async (machineId: string, channel: 'email' | 'whatsapp' | 'push', forceSend = false): Promise<any> => {
+  const sendTestNotification = useCallback(async (machineId: string, channel: 'email' | 'whatsapp' | 'push', forceSend = false): Promise<{ success: boolean; needsValidation?: boolean; recipients: unknown[]; machine?: { name: string; code: string } }> => {
     try {
       const { data: settings } = await supabase
         .from('user_notification_settings')
