@@ -74,7 +74,7 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
     let bestMachine: string | null = null, bestTime: string | null = null, lowestOccupancy = Infinity;
     for (const machine of availableMachines) {
       const machineJobs = jobs.filter(job => job.machine_id === machine.id && job.scheduled_date === scheduleDate && job.start_time && !['finished', 'cancelled'].includes(job.status))
-        .map(job => { const [h, m] = job.start_time!.split(':').map(Number); const start = h * 60 + m; return { start, end: start + job.estimated_duration }; }).sort((a, b) => a.start - b.start);
+        .map(job => { const [h, m] = (job.start_time ?? "00:00").split(':').map(Number); const start = h * 60 + m; return { start, end: start + job.estimated_duration }; }).sort((a, b) => a.start - b.start);
       let currentTime = WORK_START, foundSlot: number | null = null;
       for (const slot of machineJobs) { if (currentTime + duration <= slot.start) { foundSlot = currentTime; break; } currentTime = Math.max(currentTime, slot.end); }
       if (foundSlot === null && currentTime + duration <= WORK_END) foundSlot = currentTime;
@@ -220,7 +220,7 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
               {conflicts.length > 0 && (
                 <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
                   <div className="flex items-center gap-2 text-destructive mb-2"><AlertCircle className="w-4 h-4" /><span className="font-medium text-sm">{conflicts.length} conflito{conflicts.length > 1 ? 's' : ''}</span></div>
-                  <div className="space-y-2">{conflicts.map(c => (<div key={c.id} className="text-xs text-muted-foreground"><span className="font-medium text-foreground">{c.order_number}</span>{' - '}{c.client}{c.start_time && (<span className="text-destructive/80">{' '}({c.start_time} - {(() => { const [h, m] = c.start_time!.split(':').map(Number); const endMin = h * 60 + m + c.estimated_duration; return `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`; })()})</span>)}</div>))}</div>
+                  <div className="space-y-2">{conflicts.map(c => (<div key={c.id} className="text-xs text-muted-foreground"><span className="font-medium text-foreground">{c.order_number}</span>{' - '}{c.client}{c.start_time && (<span className="text-destructive/80">{' '}({c.start_time} - {(() => { const [h, m] = (c.start_time ?? "00:00").split(':').map(Number); const endMin = h * 60 + m + c.estimated_duration; return `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`; })()})</span>)}</div>))}</div>
                 </div>
               )}
             </div>
@@ -277,7 +277,7 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
                 </div>
                 <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/10 text-center">
                   <p className="text-[9px] text-blue-500/70 uppercase font-bold mb-1">Lead Time</p>
-                  <p className="text-xl font-bold text-blue-500">-{Math.round(selectedJob!.estimated_duration * 0.1)}m</p>
+                  <p className="text-xl font-bold text-blue-500">-{Math.round((selectedJob?.estimated_duration ?? 0) * 0.1)}m</p>
                 </div>
                 <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/10 text-center">
                   <p className="text-[9px] text-green-500/70 uppercase font-bold mb-1">Confiabilidade</p>

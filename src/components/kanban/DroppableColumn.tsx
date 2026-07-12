@@ -156,11 +156,11 @@ export function DroppableColumn({
   const columnLimit = useMemo(() => {
     // Check if any machine in this column has a specific threshold
     const machineWithThreshold = jobs.map(j => j.machine_id).find(id => id && entityThresholds[id]);
-    if (machineWithThreshold) return entityThresholds[machineWithThreshold!];
+    if (machineWithThreshold) return entityThresholds[machineWithThreshold];
 
     // Check if any technique in this column has a specific threshold
     const techniqueWithThreshold = jobs.map(j => j.technique_id).find(id => id && entityThresholds[id]);
-    if (techniqueWithThreshold) return entityThresholds[techniqueWithThreshold!];
+    if (techniqueWithThreshold) return entityThresholds[techniqueWithThreshold];
 
     return thresholds.bottleneckRiskMinutes;
   }, [jobs, entityThresholds, thresholds.bottleneckRiskMinutes]);
