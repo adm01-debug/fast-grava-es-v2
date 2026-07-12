@@ -398,8 +398,10 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                               speed: 'Velocidade',
                               temperature: 'Temperatura'
                             };
-                            const value = (sheet.machine_settings as any)?.[param];
-                            const range = (sheet.settings_ranges as any)?.[param];
+                            const machineSettings = sheet.machine_settings as Record<string, unknown> | null;
+                            const settingsRanges = sheet.settings_ranges as Record<string, { min?: number; max?: number }> | null;
+                            const value = machineSettings?.[param];
+                            const range = settingsRanges?.[param];
 
                             if (!value && (!range || (!range.min && !range.max))) return null;
 
