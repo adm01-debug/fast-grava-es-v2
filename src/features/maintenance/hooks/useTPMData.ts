@@ -125,10 +125,13 @@ export function useTPMData() {
         .order('started_at', { ascending: false })
         .limit(200);
       if (error) throw error;
-      return data.map((r: Record<string, any>) => ({
-        ...r,
-        machine: r.machines,
-      })) as MaintenanceRecord[];
+      return data.map((r) => {
+        const row = r as Record<string, unknown>;
+        return {
+          ...row,
+          machine: row.machines,
+        };
+      }) as MaintenanceRecord[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
