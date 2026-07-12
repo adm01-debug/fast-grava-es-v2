@@ -2,6 +2,21 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 
 const SOUND_ENABLED_KEY = 'theme-sound-enabled';
 
+type BrowserAudioWindow = Window & {
+  webkitAudioContext?: typeof AudioContext;
+};
+
+const createBrowserAudioContext = (): AudioContext => {
+  const audioWindow = window as BrowserAudioWindow;
+  const AudioContextConstructor = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
+
+  if (!AudioContextConstructor) {
+    throw new Error('AudioContext não suportado neste navegador.');
+  }
+
+  return new AudioContextConstructor();
+};
+
 export function useThemeSound() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -24,7 +39,7 @@ export function useThemeSound() {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new ((window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ?? window.AudioContext)();
+      audioContextRef.current = createBrowserAudioContext();
     }
     return audioContextRef.current;
   }, []);
