@@ -657,18 +657,19 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                               {log.change_summary || (log.action === 'CREATE' ? 'Ficha técnica criada.' : 'Alterações realizadas nos parâmetros.')}
                             </p>
                             <div className="flex items-center gap-2 mt-3">
-                              {log.profiles?.avatar_url ? (
-                                <img src={log.profiles.avatar_url} alt={log.profiles.display_name} className="h-6 w-6 rounded-full" />
+                              {profiles?.avatar_url ? (
+                                <img src={profiles.avatar_url} alt={profiles.display_name ?? ''} className="h-6 w-6 rounded-full" />
                               ) : (
                                 <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">
-                                  {log.profiles?.display_name?.substring(0, 2).toUpperCase() || '??'}
+                                  {profiles?.display_name?.substring(0, 2).toUpperCase() || '??'}
                                 </div>
                               )}
-                              <span className="text-xs font-medium">{log.profiles?.display_name || 'Sistema'}</span>
+                              <span className="text-xs font-medium">{profiles?.display_name || 'Sistema'}</span>
                             </div>
                           </div>
                         </div>
-                      ))
+                        );
+                      })
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
                         <History className="h-8 w-8 mx-auto mb-2 opacity-20" />
