@@ -29,8 +29,8 @@ export function useBusinessConfig() {
       if (error) throw error;
       
       // Transform to Map for easier access
-      const configMap = new Map<string, any>();
-      data?.forEach(item => configMap.set(item.key, item.value));
+      const configMap = new Map<string, BusinessConfigValue>();
+      data?.forEach(item => configMap.set(item.key, item.value as BusinessConfigValue));
       return { raw: data as BusinessConfig[], map: configMap };
     },
     enabled: isAuthenticated,
