@@ -41,8 +41,8 @@ export function ButtonLoadingSection() {
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Apenas Ícone</h4>
           <div className="flex flex-wrap gap-3">
-            {['default', 'secondary', 'outline', 'ghost'].map(v => (
-              <Button key={v} size="icon" variant={v as any} disabled><Loader2 className="h-4 w-4 animate-spin" /></Button>
+            {(['default', 'secondary', 'outline', 'ghost'] as ButtonVariant[]).map(v => (
+              <Button key={v} size="icon" variant={v} disabled><Loader2 className="h-4 w-4 animate-spin" /></Button>
             ))}
           </div>
         </div>
