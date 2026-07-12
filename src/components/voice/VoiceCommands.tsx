@@ -27,21 +27,48 @@ export function useVoiceCommands({
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef<ReturnType<typeof Object> | null>(null);
+  interface SpeechRecognitionResult {
+    isFinal: boolean;
+    [index: number]: { transcript: string };
+  }
+  interface SpeechRecognitionEventLike {
+    resultIndex: number;
+    results: SpeechRecognitionResult[];
+  }
+  interface SpeechRecognitionErrorEventLike {
+    error?: string;
+    message?: string;
+  }
+  interface SpeechRecognitionInstance {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+    onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+    onend: (() => void) | null;
+    start: () => void;
+    stop: () => void;
+  }
+  type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
+
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const w = window as any;
+    const w = window as unknown as {
+      SpeechRecognition?: SpeechRecognitionCtor;
+      webkitSpeechRecognition?: SpeechRecognitionCtor;
+    };
     const SpeechRecognitionAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
     setIsSupported(!!SpeechRecognitionAPI);
 
     if (SpeechRecognitionAPI) {
-      recognitionRef.current = new (SpeechRecognitionAPI as any)();
+      recognitionRef.current = new SpeechRecognitionAPI();
       recognitionRef.current.continuous = continuous;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = language;
 
-      recognitionRef.current.onresult = (event: any) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEventLike) => {
         const current = event.resultIndex;
         const result = event.results[current];
         const transcriptText = result[0].transcript.toLowerCase();
@@ -61,7 +88,7 @@ export function useVoiceCommands({
         }
       };
 
-      recognitionRef.current.onerror = (event: any) => {
+      recognitionRef.current.onerror = () => {
         setIsListening(false);
         toast({
           title: 'Erro no reconhecimento de voz',
