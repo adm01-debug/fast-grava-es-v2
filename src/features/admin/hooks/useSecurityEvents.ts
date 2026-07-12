@@ -32,7 +32,7 @@ export function useRealtimeSecurityEvents() {
             });
           } else if (event.severity === 'warning') {
             toast.warning(`Aviso de Segurança: ${event.event_type}`, {
-              description: event.details?.message,
+              description: event.details?.message as string | undefined,
               duration: 5000,
             });
           }
