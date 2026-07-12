@@ -68,7 +68,7 @@ const jobEditSchema = z.object({
   quantity: z.number().min(1, 'Quantidade é obrigatória'),
   gravure_color: z.string().optional(),
   notes: z.string().optional(),
-  priority: z.string(),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']),
 });
 
 type JobEditValues = z.infer<typeof jobEditSchema>;
