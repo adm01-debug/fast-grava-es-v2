@@ -49,7 +49,7 @@ export default function TPMDashboard() {
   } = useTPM();
 
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [selectedSchedule, setSelectedSchedule] = useState<MaintenanceSchedule | null>(null);
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
 
   // Initialize TPM notifications listener
@@ -61,22 +61,22 @@ export default function TPMDashboard() {
       return;
     }
 
-    const schedule = schedules.find((s: any) => s.id === scheduleId);
-    setSelectedSchedule(schedule);
+    const schedule = schedules.find((s) => s.id === scheduleId);
+    setSelectedSchedule(schedule ?? null);
 
     startMaintenance.mutate({
       schedule_id: scheduleId,
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record: any) => {
+      onSuccess: (record: MaintenanceRecord) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
     });
   };
 
-  const handleCompleteMaintenance = (data: any) => {
+  const handleCompleteMaintenance: NonNullable<React.ComponentProps<typeof MaintenanceExecutionModal>['onComplete']> = (data) => {
     if (!currentRecordId) return;
 
     completeMaintenance.mutate({
