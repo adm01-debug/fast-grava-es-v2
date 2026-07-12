@@ -13,7 +13,7 @@ import { TechnicalSheetTip } from '@/hooks/useTechnicalSheets';
 interface EditorTipsSectionProps {
   tips: TechnicalSheetTip[];
   sheetId: string;
-  onAdd: (tip: { technical_sheet_id: string; tip_type: 'tip' | 'warning' | 'important'; content: string }) => Promise<any>;
+  onAdd: (tip: { technical_sheet_id: string; tip_type: 'tip' | 'warning' | 'important'; content: string }) => Promise<unknown>;
   onDelete: (id: string) => void;
   isAdding: boolean;
 }
