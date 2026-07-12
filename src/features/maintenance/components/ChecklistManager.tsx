@@ -78,7 +78,7 @@ export function ChecklistManager() {
     setIsSaving(true);
 
     try {
-      const type = maintenanceTypes.find((t: any) => t.id === selectedTypeId);
+      const type = maintenanceTypes.find((t) => t.id === selectedTypeId);
       const newVersion = (currentChecklist?.version || 0) + 1;
 
       let checklistId = currentChecklist?.id;
