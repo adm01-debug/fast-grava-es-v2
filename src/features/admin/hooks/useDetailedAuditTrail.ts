@@ -41,7 +41,7 @@ export function useDetailedAuditTrail() {
     queryKey: ['job-status-audit'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('job_status_audit' as any)
+        .from('job_status_audit' as never)
         .select(`
           *,
           profiles:changed_by(full_name),
@@ -51,11 +51,7 @@ export function useDetailedAuditTrail() {
         .limit(20);
       
       if (error) throw error;
-      return (data || []).map((item: any) => ({
-        ...item,
-        profiles: item.profiles,
-        jobs: item.jobs
-      })) as JobStatusAudit[];
+      return ((data ?? []) as unknown as JobStatusAudit[]);
     },
     staleTime: 30000,
   });
