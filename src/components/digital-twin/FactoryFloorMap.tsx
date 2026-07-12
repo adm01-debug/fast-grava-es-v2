@@ -43,8 +43,8 @@ export function FactoryFloorMap() {
         .select('*, machines(id, name)')
         .eq('status', 'production');
 
-      const jobsByMachine: Record<string, any> = {};
-      data?.forEach((job: any) => {
+      const jobsByMachine: Record<string, JobRow> = {};
+      data?.forEach((job: JobRow) => {
         if (job.machine_id) {
           jobsByMachine[job.machine_id] = job;
         }
@@ -55,8 +55,8 @@ export function FactoryFloorMap() {
     fetchActiveJobs();
 
     const interval = setInterval(() => {
-      const newData: Record<string, any> = {};
-      machines.forEach((m: any) => {
+      const newData: Record<string, MachineLive> = {};
+      machines.forEach((m: MachineRow) => {
         const hasJob = !!activeJobs[m.id];
         newData[m.id] = {
           load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0,
@@ -127,7 +127,7 @@ export function FactoryFloorMap() {
 
         {/* Machines Placement */}
         <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 h-full overflow-y-auto pr-2 custom-scrollbar">
-          {machines.map((machine: any) => {
+          {machines.map((machine: MachineRow) => {
             const status = liveData[machine.id] || { load: 0, temp: 0, efficiency: 0, isWorking: false };
             const isWorking = status.isWorking;
 
