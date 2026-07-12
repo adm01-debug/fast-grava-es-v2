@@ -54,7 +54,7 @@ export function useDashboardPresets(dashboardId: string) {
       queryClient.invalidateQueries({ queryKey: ['dashboard-presets', dashboardId] });
       toast.success('Filtro salvo com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const appError = createAppError(error, { dashboardId, operation: 'savePreset' });
       toast.error('Erro ao salvar filtro: ' + appError.message);
     }
