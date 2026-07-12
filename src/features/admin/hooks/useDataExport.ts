@@ -83,16 +83,17 @@ export function useDataExport(tableName: TableName) {
 
     try {
       const selectColumns = columns ? columns.join(',') : '*';
-      // Dynamic table name requires generic-erased cast via unknown.
-      let query = supabase.from(tableName).select(selectColumns) as unknown as {
-        eq: (col: string, val: unknown) => typeof query;
-        in: (col: string, val: unknown[]) => typeof query;
-        gte: (col: string, val: unknown) => typeof query;
-        lte: (col: string, val: unknown) => typeof query;
-        order: (col: string, opts?: { ascending?: boolean }) => typeof query;
-        limit: (n: number) => typeof query;
+      // Dynamic table name requires generic-erased cast; use a narrow builder shape.
+      type QueryBuilder = {
+        eq(col: string, val: unknown): QueryBuilder;
+        in(col: string, val: unknown[]): QueryBuilder;
+        gte(col: string, val: unknown): QueryBuilder;
+        lte(col: string, val: unknown): QueryBuilder;
+        order(col: string, opts?: { ascending?: boolean }): QueryBuilder;
+        limit(n: number): QueryBuilder;
         then: PromiseLike<{ data: Record<string, unknown>[] | null; error: Error | null }>['then'];
       };
+      let query = supabase.from(tableName).select(selectColumns) as unknown as QueryBuilder;
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
