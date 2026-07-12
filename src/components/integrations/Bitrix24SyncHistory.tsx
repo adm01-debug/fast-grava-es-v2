@@ -13,7 +13,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 interface SyncDetails {
   synced_ids?: string[];
   failed_ids?: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface SyncHistoryItem {

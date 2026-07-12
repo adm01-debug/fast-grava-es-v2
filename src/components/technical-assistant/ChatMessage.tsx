@@ -70,7 +70,7 @@ export const ChatMessage = React.memo(({ role, content, isStreaming, highlightTe
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  code({ node, inline, className, children, ...props }: any) {
+                  code({ inline, className, children, ...props }: { inline?: boolean; className?: string; children?: React.ReactNode } & React.HTMLAttributes<HTMLElement>) {
                     const match = /language-(\w+)/.exec(className || '');
                     const codeContent = String(children).replace(/\n$/, '');
                     if (!inline && match && match[1] === 'mermaid') {

@@ -7,7 +7,7 @@ import { InventoryItem } from '@/features/inventory';
 interface InventoryStatsProps {
   items: InventoryItem[];
   lowStockItems: InventoryItem[];
-  stats: any;
+  stats?: { movementsCount24h?: number; inventoryValue?: number } | null;
 }
 
 export function InventoryStats({ items, lowStockItems, stats }: InventoryStatsProps) {

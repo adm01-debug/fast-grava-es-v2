@@ -7,41 +7,43 @@ import { Info, Plus, Trash2, CheckSquare, AlertTriangle, Package, Maximize2 } fr
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
+export interface EditorFormData {
+  technique_id: string;
+  product_category_id: string;
+  material_id: string;
+  title: string;
+  description: string;
+  estimated_time_minutes: string;
+  recommended_machine_id: string;
+  ink_specifications: string;
+  tooling_specifications: string;
+  squeegee_passes: string;
+  pressure: string;
+  speed: string;
+  temperature: string;
+  squeegee_passes_min: string;
+  squeegee_passes_max: string;
+  pressure_min: string;
+  pressure_max: string;
+  speed_min: string;
+  speed_max: string;
+  temperature_min: string;
+  temperature_max: string;
+  gap_specifications: string;
+  challenges_notes: string;
+  failure_scenarios: string;
+  quality_requirements: string;
+  setup_instructions: string;
+  quality_checklist: Array<{ id: string; description: string; required: boolean }>;
+  consumables: Array<{ id: string; name: string; quantity: string; alternative?: string }>;
+  gold_standard_image_url: string;
+  failure_standard_image_url: string;
+  version: string;
+}
+
 interface EditorBasicInfoProps {
-  formData: {
-    technique_id: string;
-    product_category_id: string;
-    material_id: string;
-    title: string;
-    description: string;
-    estimated_time_minutes: string;
-    recommended_machine_id: string;
-    ink_specifications: string;
-    tooling_specifications: string;
-    squeegee_passes: string;
-    pressure: string;
-    speed: string;
-    temperature: string;
-    squeegee_passes_min: string;
-    squeegee_passes_max: string;
-    pressure_min: string;
-    pressure_max: string;
-    speed_min: string;
-    speed_max: string;
-    temperature_min: string;
-    temperature_max: string;
-    gap_specifications: string;
-    challenges_notes: string;
-    failure_scenarios: string;
-    quality_requirements: string;
-    setup_instructions: string;
-    quality_checklist: Array<{ id: string; description: string; required: boolean }>;
-    consumables: Array<{ id: string; name: string; quantity: string; alternative?: string }>;
-    gold_standard_image_url: string;
-    failure_standard_image_url: string;
-    version: string;
-  };
-  setFormData: (data: any) => void;
+  formData: EditorFormData;
+  setFormData: (data: EditorFormData | ((prev: EditorFormData) => EditorFormData)) => void;
   techniques: Array<{ id: string; name: string; color: string; short_name: string }>;
   categories: ProductCategory[];
   materials: Material[];

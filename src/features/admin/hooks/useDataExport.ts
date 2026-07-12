@@ -83,8 +83,16 @@ export function useDataExport(tableName: TableName) {
 
     try {
       const selectColumns = columns ? columns.join(',') : '*';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic table name requires runtime cast
-      let query = (supabase.from(tableName) as any).select(selectColumns);
+      // Dynamic table name requires generic-erased cast via unknown.
+      let query = supabase.from(tableName).select(selectColumns) as unknown as {
+        eq: (col: string, val: unknown) => typeof query;
+        in: (col: string, val: unknown[]) => typeof query;
+        gte: (col: string, val: unknown) => typeof query;
+        lte: (col: string, val: unknown) => typeof query;
+        order: (col: string, opts?: { ascending?: boolean }) => typeof query;
+        limit: (n: number) => typeof query;
+        then: PromiseLike<{ data: Record<string, unknown>[] | null; error: Error | null }>['then'];
+      };
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {

@@ -82,7 +82,7 @@ export function EditShipmentModal({ shipment, open, onOpenChange }: EditShipment
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('common.status')}</Label>
-              <Select value={status} onValueChange={(v: any) => setStatus(v)}>
+              <Select value={status} onValueChange={(v) => setStatus(v as DbShipment['status'])}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
