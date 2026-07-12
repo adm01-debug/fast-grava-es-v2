@@ -20,7 +20,7 @@ interface AuditEntryCardProps {
 }
 
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
-type ActionCfg = { icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>; label: string; variant: BadgeVariant; color: string };
+type ActionCfg = { icon: LucideIcon; label: string; variant: BadgeVariant; color: string };
 
 const actionConfig: Record<string, ActionCfg> = {
   INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default', color: 'text-primary' },
