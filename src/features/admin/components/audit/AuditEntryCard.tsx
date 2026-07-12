@@ -68,8 +68,8 @@ export const AuditEntryCard = memo(function AuditEntryCard({ entry }: AuditEntry
             {entry.action === 'status_change' && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-muted-foreground italic">Alterado para:</span>
-                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor(String((entry.new_values as any)?.status || '')))}>
-                  {String((entry.new_values as any)?.status || 'status')}
+                <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", getStatusColor(String((entry.new_values as { status?: string } | null)?.status || '')))}>
+                  {String((entry.new_values as { status?: string } | null)?.status || 'status')}
                 </Badge>
               </div>
             )}
