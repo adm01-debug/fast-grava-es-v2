@@ -48,7 +48,8 @@ export default tseslint.config(
       "no-useless-escape": "warn",
       "prefer-const": "warn",
       "@typescript-eslint/no-require-imports": "warn",
-      "@typescript-eslint/no-explicit-any": "warn",
+      // 🏆 Milestone 10/10: baseline `any` = 0 no src/. Travar regressões.
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-empty-object-type": "warn",
@@ -76,9 +77,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ["src/test/**", "tests/**"],
+    files: ["src/test/**", "tests/**", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
     rules: {
       "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
   {

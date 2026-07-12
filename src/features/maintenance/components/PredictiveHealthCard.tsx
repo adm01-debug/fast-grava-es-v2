@@ -109,7 +109,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
         <div className="pt-2 border-t border-border/50">
           <TooltipProvider>
             <div className="flex items-center gap-2 flex-wrap">
-              {displayData.factors && typeof displayData.factors === 'object' && Object.entries(displayData.factors as Record<string, any>).map(([key, value]) => (
+              {displayData.factors && typeof displayData.factors === 'object' && Object.entries(displayData.factors as Record<string, unknown>).map(([key, value]) => (
                 <Tooltip key={key}>
                   <TooltipTrigger asChild>
                     <Badge variant="secondary" className="text-[10px] bg-secondary/50 capitalize">

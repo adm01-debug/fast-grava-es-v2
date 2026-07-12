@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -5,8 +6,18 @@ import { Brain, Cpu, Zap, RefreshCw, AlertCircle, CheckCircle2, Target, ShieldCh
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface AutonomousEvent {
+  id: number;
+  type: string;
+  message: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bg: string;
+  time: Date;
+}
+
 export function AutonomousEventLog() {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<AutonomousEvent[]>([]);
 
   const events = [
     { type: 'optimization', message: 'Re-otimizando cronograma: Detectado atraso de 15m na Máquina 2.', icon: RefreshCw, color: 'text-blue-500', bg: 'bg-blue-500/10' },

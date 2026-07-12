@@ -9,8 +9,22 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
+interface TPMParameterAlert {
+  id: string;
+  parameter_name: string | null;
+  recorded_value: string | number | null;
+  recommended_range: string | null;
+  created_at: string | null;
+  execution?: {
+    machine?: {
+      name?: string | null;
+      code?: string | null;
+    } | null;
+  } | null;
+}
+
 export function TPMParameterAlerts() {
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<TPMParameterAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +53,7 @@ export function TPMParameterAlerts() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setAlerts(data || []);
+      setAlerts((data ?? []) as unknown as TPMParameterAlert[]);
     } catch (err) {
       logger.warn('Falha ao carregar alertas de parâmetros TPM', err, 'TPMParameterAlerts');
     } finally {
@@ -92,7 +106,7 @@ export function TPMParameterAlerts() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-bold text-warning uppercase">{alert.parameter_name}</span>
                     <span className="text-[10px] text-muted-foreground">
-                      {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR })}
+                      {alert.created_at ? formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR }) : '—'}
                     </span>
                   </div>
                   <p className="text-sm">

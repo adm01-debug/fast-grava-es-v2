@@ -70,7 +70,7 @@ export default function MonthlyCalendar() {
   const filteredJobs = useMemo(() => applyFilters(jobs), [jobs, applyFilters]);
 
   const jobsByDay = useMemo(() => {
-    const acc: Record<string, any[]> = {};
+    const acc: Record<string, typeof filteredJobs> = {};
     filteredJobs.forEach((job) => {
       const d = parseDateOnly(job.scheduled_date);
       if (!d) return;

@@ -26,8 +26,14 @@ interface FieldMappingData {
   statusToStage: Record<string, string>;
 }
 
+interface BitrixCustomField {
+  formLabel?: string;
+  title?: string;
+  type?: string;
+}
+
 interface BitrixFieldsData {
-  customFields: Record<string, any>;
+  customFields: Record<string, BitrixCustomField>;
   totalCustomFields: number;
   currentMapping: Record<string, string[]>;
   techniqueMapping: Record<string, string>;
@@ -303,7 +309,7 @@ export const Bitrix24FieldMapping = () => {
             </div>
             <ScrollArea className="h-[150px]">
               <div className="space-y-1">
-                {fieldsData.customFields && Object.entries(fieldsData.customFields).map(([fieldId, fieldData]: [string, any]) => (
+                {fieldsData.customFields && Object.entries(fieldsData.customFields).map(([fieldId, fieldData]) => (
                   <div
                     key={fieldId}
                     className="p-2 rounded bg-muted/10 border border-border/20 flex items-center justify-between"
