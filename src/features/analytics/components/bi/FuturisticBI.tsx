@@ -122,17 +122,17 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
 
   const studioData = useMemo(() => {
     if (!biMetrics.machineUtilization) return [];
-    const machineGroups: Record<string, BIMetrics['machineUtilization']> = {};
-    (biMetrics.machineUtilization || []).forEach((m: any) => {
+    const machineGroups: Record<string, MachineUtil[]> = {};
+    (biMetrics.machineUtilization || []).forEach((m: MachineUtil) => {
       const studioName = m.technique.includes('Laser') ? 'Studio Alfa' :
                         m.technique.includes('UV') ? 'Studio Beta' :
                         'Studio Gamma';
       if (!machineGroups[studioName]) machineGroups[studioName] = [];
       machineGroups[studioName].push(m);
     });
-    return Object.entries(machineGroups).map(([name, machines]: [string, any]) => {
-      const totalJobs = (machines || []).reduce((sum: number, m: any) => sum + (m.totalJobs || 0), 0);
-      const avgUtilization = (machines || []).reduce((sum: number, m: any) => sum + (m.utilization || 0), 0) / (machines?.length || 1);
+    return Object.entries(machineGroups).map(([name, machines]: [string, MachineUtil[]]) => {
+      const totalJobs = (machines || []).reduce((sum: number, m: MachineUtil) => sum + (m.totalJobs || 0), 0);
+      const avgUtilization = (machines || []).reduce((sum: number, m: MachineUtil) => sum + (m.utilization || 0), 0) / (machines?.length || 1);
       return {
         name,
         jobs: totalJobs,
