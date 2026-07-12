@@ -76,8 +76,8 @@ export function TPMNotificationSettings() {
     setIsSendingTest(true);
     const result = await sendTestNotification(testMachineId, testChannel, force);
 
-    if (result && result.needsValidation) {
-      setValidationData(result);
+    if (result && result.needsValidation && result.machine) {
+      setValidationData({ machine: result.machine, recipients: result.recipients as ValidationRecipient[] });
       setShowValidation(true);
     } else if (result && result.success) {
       setShowValidation(false);
