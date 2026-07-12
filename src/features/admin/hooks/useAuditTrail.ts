@@ -12,8 +12,14 @@ import {
 const CONTEXT = 'useAuditTrail';
 
 async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]> {
-  let query = supabase
-    .from('audit_log' as any)
+  let query = (supabase as unknown as {
+    from: (t: string) => {
+      select: (q: string) => {
+        order: (col: string, opts: { ascending: boolean }) => AuditQuery;
+      };
+    };
+  })
+    .from('audit_log')
     .select('*, profiles:actor_id(full_name)')
     .order('created_at', { ascending: false });
 
