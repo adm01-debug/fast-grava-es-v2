@@ -32,6 +32,7 @@ import { BIPredictiveROI } from './BIPredictiveROI';
 import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 
 import { BIJob, BIMetrics, BIProps } from './types';
+import { BIMetrics as BIPredictiveROIMetrics } from '@/features/analytics/types';
 import { Job } from '@/types/job';
 
 type MachineUtil = NonNullable<BIMetrics['machineUtilization']>[number];
@@ -355,15 +356,15 @@ export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <LossesTable
-            jobs={jobsWithLosses as any}
+            jobs={jobsWithLosses as unknown as Job[]}
             onExport={handleExport}
             onShowDetails={(job) => handleDrillDown(`PERDAS DETALHADAS: ${job.order_number || job.id}`, 'lost')}
           />
         </div>
         <Suspense fallback={<div className="h-full bg-black/20 animate-pulse rounded-2xl" />}>
-          <BIAIInsights biMetrics={biMetrics as any} oeeData={oeeData} />
+          <BIAIInsights biMetrics={biMetrics} oeeData={oeeData} />
         </Suspense>
-        <BIPredictiveROI biMetrics={biMetrics as any} />
+        <BIPredictiveROI biMetrics={biMetrics as unknown as BIPredictiveROIMetrics} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
