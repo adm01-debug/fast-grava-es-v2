@@ -204,10 +204,10 @@ export function useTPMData() {
         .eq('is_resolved', false)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data.map((a: Record<string, any>) => ({
-        ...a,
-        machine: a.machines,
-      })) as MaintenanceAlert[];
+      return data.map((a) => {
+        const row = a as Record<string, unknown>;
+        return { ...row, machine: row.machines };
+      }) as MaintenanceAlert[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
