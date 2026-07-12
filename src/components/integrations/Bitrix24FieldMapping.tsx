@@ -26,8 +26,14 @@ interface FieldMappingData {
   statusToStage: Record<string, string>;
 }
 
+interface BitrixCustomField {
+  formLabel?: string;
+  title?: string;
+  type?: string;
+}
+
 interface BitrixFieldsData {
-  customFields: Record<string, any>;
+  customFields: Record<string, BitrixCustomField>;
   totalCustomFields: number;
   currentMapping: Record<string, string[]>;
   techniqueMapping: Record<string, string>;
