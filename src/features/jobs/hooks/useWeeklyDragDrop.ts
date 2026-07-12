@@ -51,7 +51,7 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
       const duration = job.estimated_duration || 60;
       const nextSlot = findNextAvailableSlot(existingJobsOnDest, duration);
 
-      const updateData: any = {
+      const updateData: JobUpdate = {
         machine_id: machineId,
         scheduled_date: date,
         updated_at: new Date().toISOString(),
