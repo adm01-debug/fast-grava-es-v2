@@ -43,7 +43,9 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     logger.error('Failed to load audit entries', error, CONTEXT);
     throw error;
   }
-  const parsed = (data ?? []).map((row: any) => {
+  type AuditRow = Record<string, unknown> & { profiles?: { full_name?: string } | null; actor_name?: string };
+  const rows = (data ?? []) as AuditRow[];
+  const parsed = rows.map((row) => {
     const result = auditLogEntrySchema.safeParse(row);
     if (!result.success) {
       logger.warn('Audit row failed validation', result.error.flatten(), CONTEXT);
@@ -51,7 +53,7 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     }
     return {
       ...result.data,
-      actor_name: (row as any).profiles?.full_name || (row as any).actor_name // Injecting actor_name for UI
+      actor_name: row.profiles?.full_name || row.actor_name, // Injecting actor_name for UI
     } as AuditLogEntry & { actor_name?: string };
   });
   return parsed.filter((x): x is AuditLogEntry & { actor_name?: string } => x !== null);
