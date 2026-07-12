@@ -53,7 +53,7 @@ export function TPMParameterAlerts() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setAlerts(data || []);
+      setAlerts((data ?? []) as unknown as TPMParameterAlert[]);
     } catch (err) {
       logger.warn('Falha ao carregar alertas de parâmetros TPM', err, 'TPMParameterAlerts');
     } finally {
