@@ -5,11 +5,18 @@ import { TargetArrowIcon } from '@/components/icons/TargetArrowIcon';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
+export interface MachineCardData {
+  id: string;
+  code: string;
+  name: string;
+  is_active: boolean;
+}
+
 interface MachineCardProps {
-  machine: any;
+  machine: MachineCardData;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  onOpenSettings: (machine: any) => void;
+  onOpenSettings: (machine: MachineCardData) => void;
   index: number;
   metrics?: {
     oee: number;
