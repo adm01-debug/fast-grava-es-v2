@@ -56,7 +56,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataExport } from "@/features/admin";
 import { useSmartSequencingWithActions } from "@/features/jobs";
+import type { SequencingSuggestion } from "@/features/jobs";
 import { useLoadBalancingWithActions } from "@/features/analytics/hooks/useLoadBalancingWithActions";
+import type { LoadBalancingSuggestion } from "@/features/analytics";
 import { useAutoBufferPromotion } from "@/features/jobs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow, isAfter, subHours } from "date-fns";
@@ -98,10 +100,11 @@ export default function PendingQueue() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>(() => {
     return window.innerWidth < 1024 ? 'grid' : 'table';
   });
-  const [selectedAISuggestion, setSelectedAISuggestion] = useState<{
-    type: 'setup' | 'balancing';
-    data: any;
-  } | null>(null);
+  const [selectedAISuggestion, setSelectedAISuggestion] = useState<
+    | { type: 'setup'; data: SequencingSuggestion }
+    | { type: 'balancing'; data: LoadBalancingSuggestion }
+    | null
+  >(null);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
 
   const queryClient = useQueryClient();
@@ -527,13 +530,13 @@ export default function PendingQueue() {
           <CollapsibleContent className="animate-accordion-down">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <SmartSequencingPanel
-                onExplain={(suggestion: any) => {
+                onExplain={(suggestion) => {
                   setSelectedAISuggestion({ type: 'setup', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
               />
               <LoadBalancingPanel
-                onExplain={(suggestion: any) => {
+                onExplain={(suggestion) => {
                   setSelectedAISuggestion({ type: 'balancing', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
