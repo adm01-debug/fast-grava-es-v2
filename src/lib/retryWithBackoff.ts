@@ -17,9 +17,9 @@ interface RetryOptions {
   /** Whether to add random jitter (default: true) */
   jitter?: boolean;
   /** Predicate to decide if the error is retryable (default: all errors) */
-  isRetryable?: (error: any) => boolean;
+  isRetryable?: (error: unknown) => boolean;
   /** Called before each retry with the attempt number and delay */
-  onRetry?: (attempt: number, delay: number, error: any) => void;
+  onRetry?: (attempt: number, delay: number, error: unknown) => void;
 }
 
 const DEFAULT_OPTIONS: Required<RetryOptions> = {
