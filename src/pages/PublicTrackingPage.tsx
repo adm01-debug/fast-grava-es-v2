@@ -83,7 +83,7 @@ export default function PublicTrackingPage() {
       } else {
         setJob(data);
       }
-    } catch (err: any) {
+    } catch {
       setError(t('tracking.errorFetching'));
 
     } finally {
