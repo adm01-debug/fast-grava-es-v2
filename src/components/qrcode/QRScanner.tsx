@@ -103,7 +103,7 @@ export const QRScanner = () => {
         if (error) throw error;
         job = res;
       } else {
-        const cached = getCachedJobs() as ScannedJob[];
+        const cached = getCachedJobs() as unknown as ScannedJob[];
         job = cached.find(j => j.id === data.id);
       }
 

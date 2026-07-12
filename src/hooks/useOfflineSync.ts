@@ -12,10 +12,14 @@ interface PendingAction {
   retryCount: number;
 }
 
+type CachedJob = Record<string, unknown> & { id: string };
+type CachedMachine = Record<string, unknown> & { id: string };
+type CachedTechnique = Record<string, unknown> & { id: string };
+
 interface CachedData {
-  jobs: any[];
-  machines: any[];
-  techniques: any[];
+  jobs: CachedJob[];
+  machines: CachedMachine[];
+  techniques: CachedTechnique[];
   lastSyncedAt: string | null;
 }
 
@@ -281,7 +285,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: any) => {
+        const updatedJobs = cachedData.jobs.map((job) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return { ...jobObj, ...updates };
@@ -329,7 +333,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: any) => {
+        const updatedJobs = cachedData.jobs.map((job) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return {
