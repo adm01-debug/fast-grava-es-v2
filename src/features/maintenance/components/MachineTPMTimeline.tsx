@@ -23,8 +23,8 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
 
   const machineRecords = useMemo(() => {
     return records
-      .filter((r: any) => r.machine_id === machineId)
-      .sort((a: any, b: any) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+      .filter((r) => r.machine_id === machineId)
+      .sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
   }, [records, machineId]);
 
   const getStatusIcon = (status: string) => {
