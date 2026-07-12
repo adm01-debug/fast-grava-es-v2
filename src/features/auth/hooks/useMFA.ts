@@ -16,7 +16,7 @@ interface MFAFactor {
 interface MFAEnrollmentData {
   id: string;
   type: 'totp';
-  totp?: {
+  totp: {
     qr_code: string;
     secret: string;
     uri: string;
