@@ -41,7 +41,7 @@ export function useDetailedAuditTrail() {
     queryKey: ['job-status-audit'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('job_status_audit' as any)
+        .from('job_status_audit' as never)
         .select(`
           *,
           profiles:changed_by(full_name),
@@ -51,11 +51,7 @@ export function useDetailedAuditTrail() {
         .limit(20);
       
       if (error) throw error;
-      return (data || []).map((item: any) => ({
-        ...item,
-        profiles: item.profiles,
-        jobs: item.jobs
-      })) as JobStatusAudit[];
+      return ((data ?? []) as unknown as JobStatusAudit[]);
     },
     staleTime: 30000,
   });
@@ -64,7 +60,7 @@ export function useDetailedAuditTrail() {
     queryKey: ['machine-event-audit'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('machine_event_audit' as any)
+        .from('machine_event_audit' as never)
         .select(`
           *,
           profiles:performed_by(full_name),
@@ -74,11 +70,7 @@ export function useDetailedAuditTrail() {
         .limit(10);
       
       if (error) throw error;
-      return (data || []).map((item: any) => ({
-        ...item,
-        profiles: item.profiles,
-        machines: item.machines
-      })) as MachineEventAudit[];
+      return ((data ?? []) as unknown as MachineEventAudit[]);
     },
     staleTime: 30000,
   });
