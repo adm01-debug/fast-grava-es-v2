@@ -94,7 +94,7 @@ export function TwoFactorSetup() {
 
       // Save to user_mfa_settings
       await supabase.from('user_mfa_settings').upsert({
-        user_id: user!.id,
+        user_id: (user?.id ?? ""),
         totp_enabled: true,
         totp_verified_at: new Date().toISOString(),
       });
@@ -145,7 +145,7 @@ export function TwoFactorSetup() {
 
       // Update user_mfa_settings
       await supabase.from('user_mfa_settings').upsert({
-        user_id: user!.id,
+        user_id: (user?.id ?? ""),
         totp_enabled: false,
         totp_verified_at: null,
       });

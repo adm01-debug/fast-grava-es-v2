@@ -29,8 +29,8 @@ export function calculateRealOEE(jobs: DbJob[]) {
   for (const job of finishedJobs) {
     if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
       try {
-        const start = parseISO(job.actual_start_time!);
-        const end = parseISO(job.actual_end_time!);
+        const start = parseISO((job.actual_start_time ?? ""));
+        const end = parseISO((job.actual_end_time ?? ""));
         totalActualMinutes += sanitizeNumber(differenceInMinutes(end, start));
       } catch {
         // Datas já validadas acima; ignora qualquer falha residual de parse.
