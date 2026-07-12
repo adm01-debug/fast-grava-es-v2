@@ -23,8 +23,8 @@ export function ChecklistManager() {
 
   // Get unique techniques from machines
   const techniques = useMemo(() => {
-    const uniqueTechniques = new Map();
-    machines.forEach((m: any) => {
+    const uniqueTechniques = new Map<string, string>();
+    machines.forEach((m) => {
       if (m.technique_id) {
         uniqueTechniques.set(m.technique_id, m.technique_id);
       }
@@ -33,7 +33,7 @@ export function ChecklistManager() {
   }, [machines]);
 
   const currentChecklist = useMemo(() => {
-    return checklists.find((c: any) =>
+    return checklists.find((c) =>
       c.maintenance_type_id === selectedTypeId &&
       (c.technique_id === selectedTechniqueId || (!c.technique_id && !selectedTechniqueId))
     );
