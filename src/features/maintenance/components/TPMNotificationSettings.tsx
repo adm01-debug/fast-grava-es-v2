@@ -197,7 +197,7 @@ export function TPMNotificationSettings() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Select value={testChannel} onValueChange={(v: any) => setTestChannel(v)}>
+                  <Select value={testChannel} onValueChange={(v) => setTestChannel(v as TestChannel)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
