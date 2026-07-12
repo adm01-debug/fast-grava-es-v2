@@ -54,12 +54,12 @@ export function useBusinessConfig() {
       queryClient.invalidateQueries({ queryKey: ['business-config'] });
       toast.success('Configuração atualizada com sucesso');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao atualizar configuração: ' + (error.message || 'Erro desconhecido'));
     }
   });
 
-  const getConfig = useCallback((key: string, defaultValue: any) => {
+  const getConfig = useCallback(<T = BusinessConfigValue>(key: string, defaultValue: T): T => {
     if (!configQuery.data) return defaultValue;
     return configQuery.data.map.get(key) ?? defaultValue;
   }, [configQuery.data]);
