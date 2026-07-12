@@ -51,13 +51,15 @@ export function useRolePermissions(role: AppRole | null) {
         if (error) throw error;
         setPermissions(prev => prev.filter(p => p !== permissionStr));
       } else {
+        const [resource, action = 'read'] = permissionStr.split(':');
         const { error } = await supabase
           .from('role_permissions')
-          .insert({ 
-            role: targetRole, 
+          .insert({
+            role: targetRole,
             permission: permissionStr,
-            resource: permissionStr.split(':')[0]
-          } as any);
+            resource,
+            action,
+          });
         if (error) throw error;
         setPermissions(prev => [...prev, permissionStr]);
       }
