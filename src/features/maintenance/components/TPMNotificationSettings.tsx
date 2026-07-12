@@ -21,6 +21,16 @@ import { TPMNotificationQueue } from './TPMNotificationQueue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+interface ValidationRecipient {
+  user_id: string;
+  whatsapp_number?: string | null;
+}
+interface ValidationData {
+  machine: { code: string; name: string };
+  recipients: ValidationRecipient[];
+}
+type TestChannel = 'email' | 'whatsapp' | 'push';
+
 export function TPMNotificationSettings() {
   const { permission, isSupported, requestPermission, sendTestNotification } = useTPMNotifications();
   const { settings, isLoading, updateSettings } = useNotificationSettings();
