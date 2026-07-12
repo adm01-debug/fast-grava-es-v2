@@ -22,8 +22,16 @@ import { Badge } from "@/components/ui/badge";
 import { calculateRealOEE } from "@/features/production";
 import { useSchedulingData } from "@/features/jobs";
 
+interface MachineSummary {
+  id: string;
+  code: string;
+  name: string;
+  is_active: boolean;
+  technique_id?: string | null;
+}
+
 interface MachineDetailsModalProps {
-  machine: any | null;
+  machine: MachineSummary | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
