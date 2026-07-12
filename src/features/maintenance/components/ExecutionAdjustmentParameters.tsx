@@ -2,8 +2,23 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { AlertTriangle, MoveHorizontal, Thermometer } from 'lucide-react';
 
+interface Range {
+  min?: string | null;
+  max?: string | null;
+}
+
+interface AdjustmentParametersData {
+  squeegee_passes?: string;
+  pressure?: string;
+  speed?: string;
+  temperature?: string;
+  ranges?: Record<string, Range | undefined>;
+  recommended?: Record<string, string | undefined>;
+  [key: string]: unknown;
+}
+
 interface AdjustmentParametersProps {
-  adjustmentParameters: any;
+  adjustmentParameters: AdjustmentParametersData | null | undefined;
 }
 
 export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParametersProps) {
@@ -11,7 +26,7 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
     return null;
   }
 
-  const isOutOfRange = (val: string, r: any) => {
+  const isOutOfRange = (val: string, r: Range | undefined) => {
     if (!r || (!r.min && !r.max)) return false;
     const v = parseFloat(val.replace(/[^0-9.]/g, ''));
     const min = r.min ? parseFloat(r.min.replace(/[^0-9.]/g, '')) : -Infinity;
@@ -29,7 +44,8 @@ export function AdjustmentParameters({ adjustmentParameters }: AdjustmentParamet
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {params.map(({ key, label, icon }) => {
-        const value = adjustmentParameters[key];
+        const rawValue = adjustmentParameters[key];
+        const value = typeof rawValue === 'string' ? rawValue : '';
         const range = adjustmentParameters.ranges?.[key];
         const recommended = adjustmentParameters.recommended?.[key];
 
