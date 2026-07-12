@@ -1,7 +1,7 @@
 // Sound feedback utility for operator interactions
 // Uses Web Audio API for lightweight, no-file-needed sounds
 
-const AudioContextClass = typeof window !== 'undefined' ? (window.AudioContext || (window as any).webkitAudioContext) : null;
+const AudioContextClass = typeof window !== 'undefined' ? (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext) : null;
 const audioContext = AudioContextClass ? new AudioContextClass() : null;
 
 function playTone(frequency: number, duration: number, type: OscillatorType = 'sine', volume = 0.15) {
