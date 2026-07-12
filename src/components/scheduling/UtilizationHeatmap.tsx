@@ -7,9 +7,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { DbJob } from '@/features/jobs';
 
+interface MachineForHeatmap {
+  id: string;
+  code: string;
+  name: string;
+  technique_id?: string | null;
+}
+
 interface UtilizationHeatmapProps {
   jobs: DbJob[];
-  machines: any[];
+  machines: MachineForHeatmap[];
 }
 
 export function UtilizationHeatmap({ jobs, machines }: UtilizationHeatmapProps) {
@@ -40,7 +47,7 @@ export function UtilizationHeatmap({ jobs, machines }: UtilizationHeatmapProps) 
         <span className="text-[10px] uppercase font-bold text-muted-foreground mr-2 tracking-widest">Carga:</span>
         {machines.map((machine) => {
           const value = utilization[machine.id] || 0;
-          const technique = getTechniqueById(machine.technique_id);
+          const technique = machine.technique_id ? getTechniqueById(machine.technique_id) : null;
 
           return (
             <Tooltip key={machine.id}>

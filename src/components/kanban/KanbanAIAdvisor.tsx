@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -379,7 +380,7 @@ function AdviceCard({
   severity,
   onClick
 }: {
-  icon: any,
+  icon: React.ComponentType<{ className?: string }>,
   title: string,
   description: string,
   actionLabel: string,

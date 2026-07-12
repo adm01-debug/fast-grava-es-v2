@@ -102,7 +102,7 @@ export function useDataImport(tableName: TableName) {
           return record;
         });
 
-        const { error } = await (supabase.from(tableName) as any).insert(records);
+        const { error } = await supabase.from(tableName).insert(records as never);
         if (error) {
           failed += batchRows.length;
           errors.push({ row: i, error: error.message });

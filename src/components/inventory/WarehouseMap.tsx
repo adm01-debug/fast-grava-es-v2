@@ -9,10 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useInventory } from '@/features/inventory';
+import { useInventory, type InventoryItem } from '@/features/inventory';
 
 interface WarehouseMapProps {
-  items: any[];
+  items: InventoryItem[];
 }
 
 export function WarehouseMap({ items }: WarehouseMapProps) {

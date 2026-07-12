@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useMemo, useState, Fragment, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
@@ -30,7 +31,15 @@ interface CalendarTimelineProps {
   allJobs?: DbJob[];
 }
 
-function DroppableRow({ children, id, className, onClick, style }: any) {
+interface DroppableRowProps {
+  children: React.ReactNode;
+  id: string;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  style?: React.CSSProperties;
+}
+
+function DroppableRow({ children, id, className, onClick, style }: DroppableRowProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
   return (
     <div
