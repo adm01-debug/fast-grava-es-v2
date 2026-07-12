@@ -33,21 +33,24 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
         // Transform push_notifications to Notification format
         return data.map(n => {
-          const metadata = (n.data as any) || {};
+          const metadata = (n.data as Record<string, unknown> | null) || {};
+          const severity = metadata.severity as string | undefined;
+          const notificationType: Notification['type'] =
+            severity === 'critical' ? 'urgent' :
+            severity === 'warning' ? 'warning' :
+            severity === 'success' ? 'success' : 'info';
           return {
             id: `push-${n.id}`,
             title: n.title,
             message: n.body,
-            type: (metadata.severity === 'critical' ? 'urgent' :
-                   metadata.severity === 'warning' ? 'warning' :
-                   metadata.severity === 'success' ? 'success' : 'info') as any,
-            category: metadata.type || null,
-            source_system: metadata.source || 'push',
+            type: notificationType,
+            category: (metadata.type as string) || null,
+            source_system: (metadata.source as string) || 'push',
             is_read: n.status === 'read',
             read_at: n.status === 'read' ? n.created_at : null,
-            action_url: metadata.route || null,
-            action_label: metadata.action_label || null,
-            priority: metadata.priority || 1,
+            action_url: (metadata.route as string) || null,
+            action_label: (metadata.action_label as string) || null,
+            priority: (metadata.priority as number) || 1,
             group_count: 1,
             is_grouped: false,
             created_at: n.created_at,
