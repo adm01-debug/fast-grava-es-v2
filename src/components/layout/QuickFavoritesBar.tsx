@@ -49,6 +49,7 @@ import { useQuickFavorites, QuickFavorite } from '@/hooks/useQuickFavorites';
 import { useAlertCount } from '@/hooks/useAlertCount';
 
 type BrowserAudioWindow = Window & {
+  AudioContext?: typeof AudioContext;
   webkitAudioContext?: typeof AudioContext;
 };
 

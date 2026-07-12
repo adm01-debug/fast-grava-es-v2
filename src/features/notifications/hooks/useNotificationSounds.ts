@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 
 type BrowserAudioWindow = Window & {
+  AudioContext?: typeof AudioContext;
   webkitAudioContext?: typeof AudioContext;
 };
 

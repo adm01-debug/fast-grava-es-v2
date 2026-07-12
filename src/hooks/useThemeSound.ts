@@ -3,6 +3,7 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 const SOUND_ENABLED_KEY = 'theme-sound-enabled';
 
 type BrowserAudioWindow = Window & {
+  AudioContext?: typeof AudioContext;
   webkitAudioContext?: typeof AudioContext;
 };
 
