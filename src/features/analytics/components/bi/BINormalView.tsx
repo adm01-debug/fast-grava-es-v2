@@ -358,11 +358,11 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-24 h-2.5 bg-muted rounded-full overflow-hidden">
                           <div className="h-full rounded-full transition-all duration-500" style={{
-                            width: `${machine.utilization}%`,
-                            background: machine.utilization >= 80 ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' : machine.utilization >= 50 ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))' : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))'
+                            width: `${machine.utilization ?? 0}%`,
+                            background: (machine.utilization ?? 0) >= 80 ? 'linear-gradient(90deg, hsl(var(--success)), hsl(var(--success) / 0.8))' : (machine.utilization ?? 0) >= 50 ? 'linear-gradient(90deg, hsl(var(--warning)), hsl(var(--warning) / 0.8))' : 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--destructive) / 0.8))'
                           }} />
                         </div>
-                        <span className="text-sm font-bold w-12 text-right">{machine.utilization.toFixed(0)}%</span>
+                        <span className="text-sm font-bold w-12 text-right">{(machine.utilization ?? 0).toFixed(0)}%</span>
                       </div>
                     </td>
                   </tr>
