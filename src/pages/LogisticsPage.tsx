@@ -298,7 +298,7 @@ export default function LogisticsPage() {
                                 <DropdownMenuItem onClick={() => setEditingShipment(shipment)}>
                                   Editar Envio
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleCopyLink(shipment.job?.order_number)}>
+                                <DropdownMenuItem onClick={() => shipment.job?.order_number && handleCopyLink(shipment.job.order_number)}>
                                   Copiar Link
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleStatusUpdate(shipment.id, 'delivered')}>
