@@ -343,7 +343,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                 </tr>
               </thead>
               <tbody>
-                {(biMetrics.machineUtilization || []).map((machine: any, index: number) => (
+                {(biMetrics.machineUtilization || []).map((machine: { machine?: string; name?: string; technique?: string; totalJobs?: number; completedJobs?: number; utilization?: number }, index: number) => (
                   <tr key={machine.machine || index} className="border-b border-border/50 hover:bg-primary/5 transition-all duration-200 group">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
