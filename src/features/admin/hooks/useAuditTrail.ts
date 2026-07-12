@@ -12,13 +12,11 @@ import {
 const CONTEXT = 'useAuditTrail';
 
 async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]> {
-  let query = (supabase as unknown as {
-    from: (t: string) => {
-      select: (q: string) => {
-        order: (col: string, opts: { ascending: boolean }) => AuditQuery;
-      };
-    };
-  })
+  // audit_log table isn't in generated Database types; cast client narrowly.
+  const client = supabase as unknown as {
+    from: (t: string) => ReturnType<typeof supabase.from>;
+  };
+  let query = client
     .from('audit_log')
     .select('*, profiles:actor_id(full_name)')
     .order('created_at', { ascending: false });
