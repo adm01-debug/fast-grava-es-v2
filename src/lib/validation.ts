@@ -38,7 +38,7 @@ export function safeParse<T>(schema: ZodSchema<T>, data: unknown, context?: stri
  */
 export function safeParseArray<T>(
   schema: ZodSchema<T>,
-  items: any[],
+  items: unknown[],
   context?: string
 ): { valid: T[]; rejected: number } {
   const valid: T[] = [];
