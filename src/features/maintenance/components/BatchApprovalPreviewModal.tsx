@@ -49,7 +49,7 @@ export function BatchApprovalPreviewModal({
     });
   }, [selectedRecords]);
 
-  const allValid = validationResults.every((v: any) => v.isValid);
+  const allValid = validationResults.every((v) => v.isValid);
 
   const handleViewDetails = (id: string) => {
     setSelectedRecordId(id);
