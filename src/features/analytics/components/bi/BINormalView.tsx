@@ -278,7 +278,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.success}
                   name="Produzidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => {
+                  onClick={(data: { name?: string; id?: string }) => {
                     if (data && data.name) onDrillDown(`TÉCNICA: ${data.name}`, biMetrics.periodJobsList.filter(j => j.technique_id === data.id));
                   }}
                 />
@@ -287,7 +287,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   fill={CHART_COLORS.danger}
                   name="Perdidas"
                   radius={[0, 6, 6, 0]}
-                  onClick={(data: any) => {
+                  onClick={(data: { name?: string; id?: string }) => {
                     if (data && data.name) onDrillDown(`PERDAS EM ${data.name}`, biMetrics.periodJobsList.filter(j => j.technique_id === data.id && (j.lost_pieces || 0) > 0));
                   }}
                 />
