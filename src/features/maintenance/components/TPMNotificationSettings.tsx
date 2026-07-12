@@ -39,7 +39,7 @@ export function TPMNotificationSettings() {
   const [testMachineId, setTestMachineId] = useState<string>('');
   const [testChannel, setTestChannel] = useState<'email' | 'whatsapp' | 'push'>('push');
   const [isSendingTest, setIsSendingTest] = useState(false);
-  const [validationData, setValidationData] = useState<any>(null);
+  const [validationData, setValidationData] = useState<ValidationData | null>(null);
   const [showValidation, setShowValidation] = useState(false);
 
   useEffect(() => {
