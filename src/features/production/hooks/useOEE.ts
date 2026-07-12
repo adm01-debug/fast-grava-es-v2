@@ -5,7 +5,7 @@ import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinI
 import { logger } from '@/lib/logger';
 
 // Data validation helpers
-function isValidDate(dateStr: string | null | undefined): boolean {
+function isValidDate(dateStr: string | null | undefined): dateStr is string {
   if (!dateStr) return false;
   try {
     const date = parseISO(dateStr);
@@ -15,10 +15,15 @@ function isValidDate(dateStr: string | null | undefined): boolean {
   }
 }
 
+
 function sanitizeNumber(value: unknown, fallback = 0): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
   return Math.max(0, value);
 }
+
+/** Narrowing helper — invariante já garantida pelo filtro `isValidDate` acima. */
+const asStr = (v: string | null | undefined): string => (v ?? '') as string;
+
 
 export interface MachineOEE {
   machineId: string;
@@ -202,12 +207,12 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     });
 
     const periodJobs = allRelevantJobs.filter(job => {
-      const endTime = parseISO(job.actual_end_time!);
+      const endTime = parseISO(asStr(job.actual_end_time));
       return isWithinInterval(endTime, { start: startDate, end: endDate });
     });
 
     const prevPeriodJobs = allRelevantJobs.filter(job => {
-      const endTime = parseISO(job.actual_end_time!);
+      const endTime = parseISO(asStr(job.actual_end_time));
       return isWithinInterval(endTime, { start: previousStartDate, end: previousEndDate });
     });
 
@@ -216,8 +221,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       for (const job of jobList) {
         if (isValidDate(job.actual_start_time) && isValidDate(job.actual_end_time)) {
           try { 
-            const start = parseISO(job.actual_start_time!);
-            const end = parseISO(job.actual_end_time!);
+            const start = parseISO(asStr(job.actual_start_time));
+            const end = parseISO(asStr(job.actual_end_time));
             actual += differenceInMinutes(end, start);
           } catch {
             // Datas já validadas acima; ignora qualquer falha residual de parse.
@@ -243,8 +248,8 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const machineJobs = periodJobs.filter(j => j.machine_id === machine.id);
       const prevMachineJobs = prevPeriodJobs.filter(j => j.machine_id === machine.id);
 
-      const daysWithJobs = new Set(machineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())).size || 1;
-      const prevDaysWithJobs = new Set(prevMachineJobs.map(j => startOfDay(parseISO(j.actual_end_time!)).toISOString())).size || 1;
+      const daysWithJobs = new Set(machineJobs.map(j => startOfDay(parseISO(asStr(j.actual_end_time))).toISOString())).size || 1;
+      const prevDaysWithJobs = new Set(prevMachineJobs.map(j => startOfDay(parseISO(asStr(j.actual_end_time))).toISOString())).size || 1;
 
       const current = calculateMetrics(machineJobs, daysWithJobs, PLANNED_MINUTES_PER_DAY);
       const previous = calculateMetrics(prevMachineJobs, prevDaysWithJobs, PLANNED_MINUTES_PER_DAY);
@@ -412,7 +417,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     // Group periodJobs by date for efficient trend calculation
     const jobsByDate = new Map<string, typeof periodJobs>();
     periodJobs.forEach(job => {
-      const dateKey = startOfDay(parseISO(job.actual_end_time!)).toISOString();
+      const dateKey = startOfDay(parseISO(asStr(job.actual_end_time))).toISOString();
       const existing = jobsByDate.get(dateKey) || [];
       existing.push(job);
       jobsByDate.set(dateKey, existing);
@@ -438,7 +443,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const machineDateJobs = periodJobs.filter(j => j.machine_id === machine.machineId);
       const mJobsByDate = new Map<string, typeof periodJobs>();
       machineDateJobs.forEach(job => {
-        const dateKey = startOfDay(parseISO(job.actual_end_time!)).toISOString();
+        const dateKey = startOfDay(parseISO(asStr(job.actual_end_time))).toISOString();
         const existing = mJobsByDate.get(dateKey) || [];
         existing.push(job);
         mJobsByDate.set(dateKey, existing);
@@ -516,7 +521,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           ? byMachine.reduce((s, m) => {
               const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
               if (!pJobs.length) return s;
-              const pDays = new Set(pJobs.map(j => j.actual_end_time!.slice(0, 10))).size || 1;
+              const pDays = new Set(pJobs.map(j => asStr(j.actual_end_time).slice(0, 10))).size || 1;
               const pm = calculateMetrics(pJobs, pDays, PLANNED_MINUTES_PER_DAY);
               return s + pm.avail;
             }, 0) / Math.max(prevMachinesWithData.length, 1)
@@ -525,7 +530,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           ? byMachine.reduce((s, m) => {
               const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
               if (!pJobs.length) return s;
-              const pDays = new Set(pJobs.map(j => j.actual_end_time!.slice(0, 10))).size || 1;
+              const pDays = new Set(pJobs.map(j => asStr(j.actual_end_time).slice(0, 10))).size || 1;
               const pm = calculateMetrics(pJobs, pDays, PLANNED_MINUTES_PER_DAY);
               return s + pm.perf;
             }, 0) / Math.max(prevMachinesWithData.length, 1)
@@ -534,7 +539,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           ? byMachine.reduce((s, m) => {
               const pJobs = prevPeriodJobs.filter(j => j.machine_id === m.machineId);
               if (!pJobs.length) return s;
-              const pDays = new Set(pJobs.map(j => j.actual_end_time!.slice(0, 10))).size || 1;
+              const pDays = new Set(pJobs.map(j => asStr(j.actual_end_time).slice(0, 10))).size || 1;
               const pm = calculateMetrics(pJobs, pDays, PLANNED_MINUTES_PER_DAY);
               return s + pm.qual;
             }, 0) / Math.max(prevMachinesWithData.length, 1)
