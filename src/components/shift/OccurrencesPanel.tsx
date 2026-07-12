@@ -157,7 +157,7 @@ export default function OccurrencesPanel() {
                     </div>
                     <div className="space-y-2">
                       <Label>Severidade</Label>
-                      <Select value={newOccurrence.severity} onValueChange={(v) => setNewOccurrence(prev => ({ ...prev, severity: v as any }))}>
+                      <Select value={newOccurrence.severity} onValueChange={(v) => setNewOccurrence(prev => ({ ...prev, severity: v as ShiftOccurrence['severity'] }))}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{Object.entries(SEVERITY_CONFIG).map(([key, config]) => (<SelectItem key={key} value={key}>{config.label}</SelectItem>))}</SelectContent>
                       </Select>
