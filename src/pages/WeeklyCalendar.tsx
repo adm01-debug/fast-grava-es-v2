@@ -34,7 +34,15 @@ import { Fragment } from 'react';
 import '@/components/calendar/calendar-print.css';
 
 // Helper components for DnD
-function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabels, updateStatus }: any) {
+interface DraggableJobProps {
+  job: DbJob;
+  isConflict: boolean;
+  onClick: () => void;
+  statusColorsSolid: Record<JobStatus, string>;
+  statusLabels: Record<JobStatus, string>;
+  updateStatus: (args: { jobId: string; status: JobStatus }) => void;
+}
+function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabels, updateStatus }: DraggableJobProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: job.id,
   });
@@ -105,7 +113,12 @@ function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabel
   );
 }
 
-function DroppableCell({ children, id, isToday }: any) {
+interface DroppableCellProps {
+  children: React.ReactNode;
+  id: string;
+  isToday: boolean;
+}
+function DroppableCell({ children, id, isToday }: DroppableCellProps) {
   const { isOver, setNodeRef } = useDroppable({
     id,
   });
