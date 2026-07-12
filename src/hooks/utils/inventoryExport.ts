@@ -1,6 +1,16 @@
-import { InventoryMovement } from '@/features/inventory';
+export interface InventoryMovementExportRow {
+  id: string;
+  created_at: string | null;
+  type: 'IN' | 'OUT' | 'TRANSFER' | 'ADJUST' | string;
+  quantity: number;
+  from_location?: string | null;
+  to_location?: string | null;
+  reason?: string | null;
+  inventory_items?: { name?: string | null } | null;
+  profiles?: { display_name?: string | null; full_name?: string | null } | null;
+}
 
-export function exportInventoryMovementsToCSV(movements: any[]) {
+export function exportInventoryMovementsToCSV(movements: InventoryMovementExportRow[]) {
   if (!movements || movements.length === 0) return;
 
   const headers = [
@@ -18,9 +28,9 @@ export function exportInventoryMovementsToCSV(movements: any[]) {
   const csvContent = [
     headers.join(','),
     ...movements.map(m => {
-      const date = new Date(m.created_at).toLocaleString('pt-BR');
+      const date = m.created_at ? new Date(m.created_at).toLocaleString('pt-BR') : '';
       const itemName = m.inventory_items?.name || 'N/A';
-      const userName = m.profiles?.display_name || 'N/A';
+      const userName = m.profiles?.display_name || m.profiles?.full_name || 'N/A';
       const type = m.type === 'IN' ? 'Entrada' :
                    m.type === 'OUT' ? 'Saída' :
                    m.type === 'TRANSFER' ? 'Transferência' : 'Ajuste';
