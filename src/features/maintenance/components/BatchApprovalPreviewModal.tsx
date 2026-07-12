@@ -59,7 +59,7 @@ export function BatchApprovalPreviewModal({
   const handleExportCSV = () => {
     if (validationResults.length === 0) return;
     const headers = ['Máquina', 'Código', 'Data', 'Status Validação', 'Pendências'];
-    const rows = validationResults.map((v: any) => [
+    const rows = validationResults.map((v) => [
       v.machine?.name || '',
       v.machine?.code || '',
       v.completed_at ? new Date(v.completed_at).toLocaleDateString() : 'N/A',
