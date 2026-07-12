@@ -34,6 +34,9 @@ import { CHART_COLORS, GRADIENTS } from '@/constants/biConstants';
 import { BIJob, BIMetrics, BIProps } from './types';
 import { Job } from '@/types/job';
 
+type MachineUtil = NonNullable<BIMetrics['machineUtilization']>[number];
+type StatusSlice = BIMetrics['statusDistribution'][number];
+
 export function FuturisticBI({ biMetrics, kpis, oeeData, isLoading }: BIProps) {
   const navigate = useNavigate();
   const { operators } = useOperatorProductivity(30);
