@@ -157,7 +157,7 @@ export function useDataExport(tableName: TableName) {
         doc.text(`Data: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, 22);
 
         const tableHeaders = ['Data', 'Ação', 'Usuário', 'Entidade', 'Campos Alterados'];
-        const tableBody = data.map((entry: any) => [
+        const tableBody = (data as AuditLogEntry[]).map((entry) => [
           format(new Date(entry.created_at), 'dd/MM/yy HH:mm'),
           entry.action,
           entry.actor_email || entry.actor_id || 'Sistema',
