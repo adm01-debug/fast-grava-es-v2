@@ -285,7 +285,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: any) => {
+        const updatedJobs = cachedData.jobs.map((job) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return { ...jobObj, ...updates };
@@ -333,7 +333,7 @@ export function useOfflineSync() {
 
       // Update local cache
       if (cachedData) {
-        const updatedJobs = cachedData.jobs.map((job: any) => {
+        const updatedJobs = cachedData.jobs.map((job) => {
           const jobObj = job as { id: string };
           if (jobObj.id === jobId) {
             return {
