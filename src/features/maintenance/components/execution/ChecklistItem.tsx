@@ -4,10 +4,29 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Camera, CheckCircle2 } from 'lucide-react';
 
+export interface ChecklistItemData {
+  id: string;
+  description: string;
+  is_critical?: boolean;
+  requires_measurement?: boolean;
+  measurement_unit?: string | null;
+  min_value?: number | null;
+  max_value?: number | null;
+  requires_photo?: boolean;
+}
+
+export interface ChecklistItemResponse {
+  is_checked?: boolean;
+  measurement_value?: number | null;
+  photo_url?: string | null;
+}
+
+export type ChecklistItemUpdate = Partial<ChecklistItemResponse>;
+
 interface ChecklistItemProps {
-  item: any;
-  response: any;
-  onUpdate: (updates: any) => void;
+  item: ChecklistItemData;
+  response: ChecklistItemResponse | null | undefined;
+  onUpdate: (updates: ChecklistItemUpdate) => void;
   onFileUpload: (file: File) => void;
   isUploading: boolean;
 }
