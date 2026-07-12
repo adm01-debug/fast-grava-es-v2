@@ -5,7 +5,7 @@ import { Camera, Zap, Info } from 'lucide-react';
 
 export interface RiskAlert {
   description: string;
-  expected_range: string;
+  expected_range?: string;
   evidence_urls: string[];
   is_critical_risk?: boolean;
 }
