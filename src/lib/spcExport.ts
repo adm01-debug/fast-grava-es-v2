@@ -56,7 +56,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
 
   // Capability Indices
   if (capability) {
-    const finalY = (doc as any).lastAutoTable.finalY || 100;
+    const finalY = doc.lastAutoTable.finalY || 100;
     doc.text('2. Índices de Capabilidade (Cp/Cpk)', 14, finalY + 15);
 
     autoTable(doc, {
@@ -100,7 +100,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
   });
 
   // Footer
-  const pageCount = (doc as any).internal.getNumberOfPages();
+  const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
