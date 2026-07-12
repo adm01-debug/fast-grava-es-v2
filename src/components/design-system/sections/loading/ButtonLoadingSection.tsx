@@ -20,8 +20,8 @@ export function ButtonLoadingSection() {
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Variantes com Loading</h4>
           <div className="flex flex-wrap gap-3">
-            {[{ v: 'default', l: 'Carregando...' }, { v: 'secondary', l: 'Processando' }, { v: 'outline', l: 'Aguarde' }, { v: 'gradient', l: 'Salvando' }, { v: 'destructive', l: 'Excluindo' }].map(b => (
-              <Button key={b.v} variant={b.v as any} disabled className={b.v === 'gradient' ? 'opacity-80' : ''}>
+            {([{ v: 'default', l: 'Carregando...' }, { v: 'secondary', l: 'Processando' }, { v: 'outline', l: 'Aguarde' }, { v: 'gradient', l: 'Salvando' }, { v: 'destructive', l: 'Excluindo' }] as Array<{ v: ButtonVariant; l: string }>).map(b => (
+              <Button key={b.v} variant={b.v} disabled className={b.v === 'gradient' ? 'opacity-80' : ''}>
                 <Loader2 className="h-4 w-4 animate-spin" />{b.l}
               </Button>
             ))}
