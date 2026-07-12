@@ -9,8 +9,22 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
+interface TPMParameterAlert {
+  id: string;
+  parameter_name: string;
+  recorded_value: string | number;
+  recommended_range: string;
+  created_at: string;
+  execution?: {
+    machine?: {
+      name?: string;
+      code?: string;
+    };
+  } | null;
+}
+
 export function TPMParameterAlerts() {
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<TPMParameterAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
