@@ -272,7 +272,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
     try {
       const registration = await navigator.serviceWorker.ready;
       if ('sync' in registration) {
-        await (registration as any).sync.register('sync-pending-actions');
+        await (registration as ServiceWorkerRegistration & { sync: { register: (tag: string) => Promise<void> } }).sync.register('sync-pending-actions');
         return true;
       }
     } catch (error) {
