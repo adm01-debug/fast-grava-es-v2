@@ -8,7 +8,7 @@ interface VirtualSensorPanelProps {
 }
 
 export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Array<{ time: number; vibration: number; temperature: number }>>([]);
   const [currentValues, setCurrentValues] = useState({
     vibration: 2.4,
     temperature: 42,
