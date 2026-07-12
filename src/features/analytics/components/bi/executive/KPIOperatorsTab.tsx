@@ -5,9 +5,36 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Users, TrendingUp, Clock, Package, Target } from 'lucide-react';
 
+interface OperatorRanking {
+  operatorId: string;
+  operatorName: string;
+  avatarUrl?: string | null;
+  totalJobsCompleted: number;
+  efficiencyScore: number;
+}
+
+interface TechniqueProductivity {
+  techniqueId: string;
+  techniqueName: string;
+  jobCount: number;
+  avgDuration: number;
+}
+
+interface ProductProductivity {
+  productName: string;
+  totalPieces: number;
+  lossRate: number;
+}
+
+interface KPIData {
+  productivityByTechnique: TechniqueProductivity[];
+  productivityByProduct: ProductProductivity[];
+  lossRate: number;
+}
+
 interface KPIOperatorsTabProps {
-  operators: any[];
-  kpis: any;
+  operators: OperatorRanking[];
+  kpis: KPIData;
   formatDuration: (mins: number) => string;
 }
 
