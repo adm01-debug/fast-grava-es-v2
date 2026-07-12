@@ -95,7 +95,7 @@ const KPIOperatorsTabComponent = ({
               <CardTitle className="text-base">Tempo Médio de Produção</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {kpis.productivityByTechnique.slice(0, 4).map((tech: any) => (
+              {kpis.productivityByTechnique.slice(0, 4).map((tech) => (
                 <div key={tech.techniqueId} className="flex items-center justify-between">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{tech.techniqueName}</span>
