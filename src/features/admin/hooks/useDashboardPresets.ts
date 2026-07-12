@@ -8,7 +8,7 @@ export interface DashboardPreset {
   user_id: string;
   name: string;
   dashboard_id: string;
-  filters: any;
+  filters: Record<string, unknown>;
   is_default: boolean;
   created_at: string;
 }
