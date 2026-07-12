@@ -113,7 +113,12 @@ function DraggableJob({ job, isConflict, onClick, statusColorsSolid, statusLabel
   );
 }
 
-function DroppableCell({ children, id, isToday }: any) {
+interface DroppableCellProps {
+  children: React.ReactNode;
+  id: string;
+  isToday: boolean;
+}
+function DroppableCell({ children, id, isToday }: DroppableCellProps) {
   const { isOver, setNodeRef } = useDroppable({
     id,
   });
