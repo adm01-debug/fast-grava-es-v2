@@ -22,7 +22,7 @@ import { useOperatorAudit } from '@/features/production';
 import { format, subDays, isAfter } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const actionConfig: Record<string, any> = {
+const actionConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
   activated: {
     label: 'Ativado',
     icon: UserCheck,
