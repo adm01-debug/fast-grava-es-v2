@@ -80,11 +80,14 @@ export function useTPMData() {
         .eq('is_active', true)
         .order('next_due_at');
       if (error) throw error;
-      return data.map((s: Record<string, any>) => ({
-        ...s,
-        machine: s.machines,
-        maintenance_type: s.maintenance_types,
-      })) as MaintenanceSchedule[];
+      return data.map((s) => {
+        const row = s as Record<string, unknown>;
+        return {
+          ...row,
+          machine: row.machines,
+          maintenance_type: row.maintenance_types,
+        };
+      }) as MaintenanceSchedule[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -100,10 +103,13 @@ export function useTPMData() {
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data.map((c: Record<string, any>) => ({
-        ...c,
-        items: c.maintenance_checklist_items || [],
-      })) as MaintenanceChecklist[];
+      return data.map((c) => {
+        const row = c as Record<string, unknown>;
+        return {
+          ...row,
+          items: (row.maintenance_checklist_items as unknown[]) || [],
+        };
+      }) as MaintenanceChecklist[];
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
@@ -119,10 +125,13 @@ export function useTPMData() {
         .order('started_at', { ascending: false })
         .limit(200);
       if (error) throw error;
-      return data.map((r: Record<string, any>) => ({
-        ...r,
-        machine: r.machines,
-      })) as MaintenanceRecord[];
+      return data.map((r) => {
+        const row = r as Record<string, unknown>;
+        return {
+          ...row,
+          machine: row.machines,
+        };
+      }) as MaintenanceRecord[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -175,10 +184,10 @@ export function useTPMData() {
         machine: record.machines,
         maintenance_type: record.maintenance_types,
         technical_sheet: technicalSheet,
-        responses: responses.map((r: { maintenance_checklist_items: any }) => ({
-          ...r,
-          item: r.maintenance_checklist_items
-        })),
+        responses: responses.map((r) => {
+          const row = r as Record<string, unknown>;
+          return { ...row, item: row.maintenance_checklist_items };
+        }),
         parts,
         supplies_used: supplies,
         execution_alerts: executionAlerts
@@ -195,10 +204,10 @@ export function useTPMData() {
         .eq('is_resolved', false)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data.map((a: Record<string, any>) => ({
-        ...a,
-        machine: a.machines,
-      })) as MaintenanceAlert[];
+      return data.map((a) => {
+        const row = a as Record<string, unknown>;
+        return { ...row, machine: row.machines };
+      }) as MaintenanceAlert[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
