@@ -178,7 +178,7 @@ export function FactoryFloorMap() {
                           <div className="space-y-2">
                              <div className="p-1.5 rounded bg-primary/10 border border-primary/20">
                                 <p className="text-[10px] font-black text-primary uppercase">OP em Andamento</p>
-                                <p className="text-[10px] font-bold truncate">{activeJobs[machine.id]?.order_number || 'S/N'}</p>
+                                <p className="text-[10px] font-bold truncate">{String(activeJobs[machine.id]?.order_number ?? 'S/N')}</p>
                              </div>
                              <div className="flex items-center gap-4 text-[10px] font-bold">
                               <div className="flex items-center gap-1">
