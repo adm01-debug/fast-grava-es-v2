@@ -536,7 +536,7 @@ export default function PendingQueue() {
                 }}
               />
               <LoadBalancingPanel
-                onExplain={(suggestion: any) => {
+                onExplain={(suggestion) => {
                   setSelectedAISuggestion({ type: 'balancing', data: suggestion });
                   setIsAISidePanelOpen(true);
                 }}
