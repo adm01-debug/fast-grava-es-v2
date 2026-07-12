@@ -446,7 +446,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* KPI Grid */}
-        <ExecutiveKPICardsGrid kpiCards={kpiCards as any} />
+        <ExecutiveKPICardsGrid kpiCards={kpiCards as unknown as Parameters<typeof ExecutiveKPICardsGrid>[0]['kpiCards']} />
 
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

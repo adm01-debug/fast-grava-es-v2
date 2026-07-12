@@ -422,7 +422,7 @@ export default function KPIDashboard() {
       open={drillDownOpen}
       onOpenChange={setDrillDownOpen}
       title={drillDownTitle}
-      jobs={drillDownJobs as any}
+      jobs={drillDownJobs as unknown as Parameters<typeof DrillDownDialog>[0]['jobs']}
       onExport={(format) => handleExport(format, drillDownTitle.replace(/\s+/g, '_'), kpis)}
     />
     </MainLayout>
