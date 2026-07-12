@@ -196,7 +196,7 @@ export const SystemOnboarding = () => {
         spotlight: {
           borderRadius: 12,
         },
-      } as any}
+      } as Partial<Styles>}
       locale={{
         back: t('common.back', { defaultValue: '← Voltar' }),
         close: t('common.close', { defaultValue: 'Fechar' }),
