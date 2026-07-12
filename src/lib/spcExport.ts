@@ -56,7 +56,7 @@ export const exportSPCReport = async (parameter: SPCParameter, measurements: SPC
 
   // Capability Indices
   if (capability) {
-    const finalY = doc.lastAutoTable.finalY || 100;
+    const finalY = doc.lastAutoTable?.finalY ?? 100;
     doc.text('2. Índices de Capabilidade (Cp/Cpk)', 14, finalY + 15);
 
     autoTable(doc, {
