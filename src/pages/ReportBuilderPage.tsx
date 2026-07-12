@@ -471,7 +471,7 @@ export default function ReportBuilderPage() {
                    </CardTitle>
                  </CardHeader>
                  <CardContent className="pt-4 space-y-2 max-h-[200px] overflow-y-auto">
-                    {savedTemplates.map((template: any) => (
+                    {savedTemplates.map((template) => (
                       <button
                         key={template.id}
                         onClick={() => {
