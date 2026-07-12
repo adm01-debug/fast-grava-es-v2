@@ -1,5 +1,16 @@
 import { Job } from "@/types/job";
 
+export interface BITechniquePerformance {
+  id: string;
+  name: string;
+  jobs: number;
+  produced: number;
+  lost: number;
+  machines: number;
+  quality: number;
+  color: string;
+}
+
 export interface BIMetrics {
   totalJobs: number;
   completedJobs: number;
@@ -15,7 +26,7 @@ export interface BIMetrics {
   periodJobsList: BIJob[];
   toDoJobs: number;
   periodLossRate: number;
-  techniquePerformance: any[];
+  techniquePerformance: BITechniquePerformance[];
   periodJobs: number;
   periodCompletedJobs: number;
   periodCompletedPieces: number;
@@ -30,9 +41,21 @@ export interface BIJob extends Omit<Job, 'status'> {
   efficiency: string;
 }
 
+export interface BIKPIs {
+  inProgressJobs: number;
+  delayedJobs: number;
+}
+
+export interface BIOEEData {
+  overallAvailability: number;
+  overallOEE: number;
+  overallPerformance: number;
+  overallQuality: number;
+}
+
 export interface BIProps {
   biMetrics: BIMetrics;
-  kpis: any;
-  oeeData: any;
+  kpis: BIKPIs;
+  oeeData: BIOEEData;
   isLoading: boolean;
 }
