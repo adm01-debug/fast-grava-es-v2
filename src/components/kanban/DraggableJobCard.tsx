@@ -39,7 +39,8 @@ function getAgingIndicator(updatedAt: string): { color: string; label: string; d
 
 function getDeadlineInfo(job: DbJob): { label: string; isOverdue: boolean; color: string } | null {
   if (!job.scheduled_date) return null;
-  const scheduled = parseDateOnly(job.scheduled_date)!;
+  const scheduled = parseDateOnly(job.scheduled_date);
+  if (!scheduled) return null;
   const now = new Date();
   const diffDays = differenceInDays(scheduled, now);
 
