@@ -76,7 +76,7 @@ export function ShiftHandoverWidget() {
                   {lastHandover.outgoing_profile?.full_name?.split(' ')[0]} → {lastHandover.incoming_profile?.full_name?.split(' ')[0] || 'Pendente'}
                 </p>
                 <p className="text-[9px] text-muted-foreground">
-                  {format(parseDateOnly(lastHandover.shift_date)!, "dd 'de' MMM", { locale: ptBR })}
+                  {format(parseDateOnly(lastHandover.shift_date) ?? new Date(), "dd 'de' MMM", { locale: ptBR })}
                 </p>
               </div>
             </div>

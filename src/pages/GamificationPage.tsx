@@ -363,7 +363,7 @@ export default function GamificationPage() {
                       <div className="text-right hidden sm:block">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('gamification.xpProgress')}</p>
                         <div className="w-32">
-                          <Progress value={(r.xp_progress! / r.xp_target!) * 100} className="h-1.5 bg-muted/50" />
+                          <Progress value={((r.xp_progress ?? 0) / (r.xp_target || 1)) * 100} className="h-1.5 bg-muted/50" />
                           <p className="text-[9px] text-muted-foreground mt-1">
                             {r.xp_progress} / {r.xp_target} XP
                           </p>

@@ -411,14 +411,14 @@ export const toast = {
 
     try {
       const result = await promise;
-      window.__toastManager?.updateToast(id!, {
+      window.__toastManager?.updateToast(String(id), {
         title: typeof messages.success === "function" ? messages.success(result) : messages.success,
         type: "success",
         duration: 5000,
       });
       return result;
     } catch (err) {
-      window.__toastManager?.updateToast(id!, {
+      window.__toastManager?.updateToast(String(id), {
         title: typeof messages.error === "function" ? messages.error(err as Error) : messages.error,
         type: "error",
         duration: 8000,

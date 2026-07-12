@@ -110,7 +110,7 @@ const TechnicalAssistantPage = () => {
                 if (last?.role === "assistant" && last.id.startsWith('temp-')) {
                   return [...prev.slice(0, -1), { ...last, content: assistantContent }];
                 }
-                return [...prev, { id: 'temp-assistant-' + Date.now(), conversation_id: selectedConversationId!, role: "assistant", content: assistantContent, created_at: new Date().toISOString() }];
+                return [...prev, { id: 'temp-assistant-' + Date.now(), conversation_id: selectedConversationId ?? '', role: "assistant", content: assistantContent, created_at: new Date().toISOString() }];
               });
             }
           } catch (e) { /* Ignore partial JSON */ }

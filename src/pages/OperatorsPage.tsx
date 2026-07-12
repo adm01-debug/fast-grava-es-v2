@@ -635,7 +635,7 @@ export default function OperatorsPage() {
                       className="w-full mt-2"
                       onClick={() => {
                         setDetailsModalOpen(false);
-                        handleOpenAssignment(operatorToShowDetails!);
+                        operatorToShowDetails && handleOpenAssignment(operatorToShowDetails);
                       }}
                     >
                       Gerenciar Atribuições

@@ -58,7 +58,7 @@ export function JobTraceabilityTab({ jobId }: JobTraceabilityTabProps) {
               <div>
                 <h3 className="text-lg font-bold">Lote: {jobLot.lot_number}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Produzido em {format(parseDateOnly(jobLot.production_date)!, "dd/MM/yyyy", { locale: ptBR })}
+                  Produzido em {format(parseDateOnly(jobLot.production_date) ?? new Date(), "dd/MM/yyyy", { locale: ptBR })}
                 </p>
               </div>
             </div>

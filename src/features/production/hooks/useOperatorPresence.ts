@@ -62,7 +62,7 @@ export function useOperatorPresence() {
               // Track last seen time when user leaves
               setLastSeen((prevLastSeen) => {
                 const newMap = new Map(prevLastSeen);
-                newMap.set(presence.user_id!, now);
+                newMap.set(presence.user_id ?? '', now);
                 return newMap;
               });
             }

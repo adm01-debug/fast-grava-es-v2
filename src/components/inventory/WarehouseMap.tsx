@@ -65,7 +65,7 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
 
     try {
       await transferItems({
-        fromLocation: selectedLocation!,
+        fromLocation: selectedLocation ?? '',
         toLocation: newLocation,
         itemIds
       });

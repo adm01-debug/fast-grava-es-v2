@@ -130,7 +130,7 @@ export const TechnicalSheetEditor = ({ sheetId, techniques, categories, material
       failure_standard_image_url: formData.failure_standard_image_url || undefined
     };
     if (isNew) { await createSheet.mutateAsync(payload); onClose(); }
-    else { await updateSheet.mutateAsync({ id: sheetId!, ...payload }); toast.success('Ficha atualizada!'); }
+    else { await updateSheet.mutateAsync({ id: sheetId ?? '', ...payload }); toast.success('Ficha atualizada!'); }
   };
 
   if (isLoading && !isNew) {

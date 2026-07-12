@@ -132,7 +132,7 @@ export function CalendarTimeline({
       const tech = techniques.find((t) => t.id === m.technique_id);
       if (!tech) return;
       if (!map.has(tech.id)) map.set(tech.id, { technique: tech, machines: [] });
-      map.get(tech.id)!.machines.push(m);
+      map.get(tech.id)?.machines.push(m);
     });
     return Array.from(map.values()).sort((a, b) => a.technique.name.localeCompare(b.technique.name));
   }, [machines, techniques, groupBy]);

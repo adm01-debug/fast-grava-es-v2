@@ -70,7 +70,8 @@ export function buildICalFeed(jobs: DbJob[], machines: DbMachine[], calendarName
   const events = jobs
     .filter((j) => j.scheduled_date && j.start_time && j.end_time)
     .map((job) => {
-      const date = parseDateOnly(job.scheduled_date as string)!;
+      const date = parseDateOnly(job.scheduled_date as string);
+      if (!date) continue;
       const start = toICalDateTime(date, job.start_time as string);
       const end = toICalDateTime(date, job.end_time as string);
       const machine = job.machine_id ? machineMap.get(job.machine_id) : null;

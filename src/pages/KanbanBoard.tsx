@@ -272,7 +272,7 @@ export default function KanbanBoard() {
       groups.set('unknown', { label: 'Sem técnica', color: '#888', jobs: [] });
 
       filteredJobs.forEach(job => {
-        const group = groups.get(job.technique_id) || groups.get('unknown')!;
+        const group = groups.get(job.technique_id) || (groups.get('unknown') ?? { label: '', color: '', jobs: [] });
         group.jobs.push(job);
       });
 
@@ -288,7 +288,7 @@ export default function KanbanBoard() {
 
       filteredJobs.forEach(job => {
         const key = job.machine_id || 'unassigned';
-        const group = groups.get(key) || groups.get('unassigned')!;
+        const group = groups.get(key) || (groups.get('unassigned') ?? { label: '', color: '', jobs: [] });
         group.jobs.push(job);
       });
 

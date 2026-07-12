@@ -789,7 +789,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                 <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
                   {machineId !== 'all' ? (
                     <OEECalculationAudit 
-                      machine={data.byMachine.find(m => m.machineId === machineId)!} 
+                      machine={data.byMachine.find(m => m.machineId === machineId) as (typeof data.byMachine)[number]} 
                     />
                   ) : (
                     <OEECalculationAudit 
