@@ -39,8 +39,8 @@ export function KanbanMetricsBar({ jobs }: KanbanMetricsBarProps) {
     const finishedJobs = jobs.filter(j => j.status === 'finished' && j.actual_start_time && j.actual_end_time);
     const avgLeadTimeHours = finishedJobs.length > 0
       ? finishedJobs.reduce((sum, j) => {
-          const start = new Date(j.actual_start_time!);
-          const end = new Date(j.actual_end_time!);
+          const start = new Date((j.actual_start_time ?? ""));
+          const end = new Date((j.actual_end_time ?? ""));
           return sum + differenceInHours(end, start);
         }, 0) / finishedJobs.length
       : 0;
