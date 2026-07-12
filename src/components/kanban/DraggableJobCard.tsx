@@ -225,7 +225,7 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           {job.scheduled_date && (
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {format(parseDateOnly(job.scheduled_date)!, "dd/MM", { locale: ptBR })}
+              {format(parseDateOnly(job.scheduled_date) ?? new Date(), "dd/MM", { locale: ptBR })}
               {job.start_time && <span>{job.start_time}</span>}
             </span>
           )}
