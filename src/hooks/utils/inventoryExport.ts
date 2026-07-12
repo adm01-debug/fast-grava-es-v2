@@ -1,6 +1,16 @@
-import { InventoryMovement } from '@/features/inventory';
+export interface InventoryMovementExportRow {
+  id: string;
+  created_at: string;
+  type: 'IN' | 'OUT' | 'TRANSFER' | 'ADJUST' | string;
+  quantity: number;
+  from_location?: string | null;
+  to_location?: string | null;
+  reason?: string | null;
+  inventory_items?: { name?: string | null } | null;
+  profiles?: { display_name?: string | null } | null;
+}
 
-export function exportInventoryMovementsToCSV(movements: any[]) {
+export function exportInventoryMovementsToCSV(movements: InventoryMovementExportRow[]) {
   if (!movements || movements.length === 0) return;
 
   const headers = [
