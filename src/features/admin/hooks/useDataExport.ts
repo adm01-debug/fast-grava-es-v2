@@ -110,7 +110,7 @@ export function useDataExport(tableName: TableName) {
     }
   }, [tableName]);
 
-  const exportAuditTrail = useCallback(async (filters: any, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
+  const exportAuditTrail = useCallback(async (filters: AuditExportFilters, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
     setIsExporting(true);
     try {
       let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false });
