@@ -557,7 +557,7 @@ function InventoryHistoryTable() {
                   {m.type === 'TRANSFER' ? `${m.from_location} → ${m.to_location}` : (m.reason || '-')}
                 </td>
                 <td className="p-4 font-medium italic">
-                  {m.profiles?.display_name || 'Sistema'}
+                  {m.profiles?.full_name || 'Sistema'}
                 </td>
                 <td className="p-4 text-right">
                   <Button
