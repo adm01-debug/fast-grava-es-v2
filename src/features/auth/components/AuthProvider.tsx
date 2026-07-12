@@ -19,6 +19,18 @@ function isAppRole(value: unknown): value is AppRole {
   return value === 'coordinator' || value === 'operator' || value === 'manager' || value === 'admin';
 }
 
+class LockoutError extends Error {
+  isLockout = true as const;
+  remainingMinutes?: number;
+  lockoutMinutes?: number;
+  constructor(message: string, opts?: { remainingMinutes?: number; lockoutMinutes?: number }) {
+    super(message);
+    this.name = 'LockoutError';
+    this.remainingMinutes = opts?.remainingMinutes;
+    this.lockoutMinutes = opts?.lockoutMinutes;
+  }
+}
+
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeoutId = window.setTimeout(() => {
