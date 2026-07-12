@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
+import type { MaintenanceSchedule } from '@/features/maintenance/hooks/types';
 import { useTPMNotifications } from '@/features/notifications';
 import { useAuth } from '@/features/auth';
 import { TPMAlertsPanel } from '@/features/maintenance/components/TPMAlertsPanel';
@@ -49,7 +50,7 @@ export default function TPMDashboard() {
   } = useTPM();
 
   const [executionModalOpen, setExecutionModalOpen] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [selectedSchedule, setSelectedSchedule] = useState<MaintenanceSchedule | null>(null);
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
 
   // Initialize TPM notifications listener
@@ -61,22 +62,22 @@ export default function TPMDashboard() {
       return;
     }
 
-    const schedule = schedules.find((s: any) => s.id === scheduleId);
-    setSelectedSchedule(schedule);
+    const schedule = schedules.find((s) => s.id === scheduleId);
+    setSelectedSchedule(schedule ?? null);
 
     startMaintenance.mutate({
       schedule_id: scheduleId,
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record: any) => {
+      onSuccess: (record) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
     });
   };
 
-  const handleCompleteMaintenance = (data: any) => {
+  const handleCompleteMaintenance: NonNullable<React.ComponentProps<typeof MaintenanceExecutionModal>['onComplete']> = (data) => {
     if (!currentRecordId) return;
 
     completeMaintenance.mutate({
@@ -284,7 +285,7 @@ export default function TPMDashboard() {
               <div className="lg:col-span-2">
                 <TPMCalendar
                   schedules={schedules}
-                  onSelectSchedule={(schedule: any) => handleStartMaintenance(schedule.id)}
+                  onSelectSchedule={(schedule: MaintenanceSchedule) => handleStartMaintenance(schedule.id)}
                 />
               </div>
               <div className="space-y-6">
