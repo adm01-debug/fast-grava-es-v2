@@ -212,9 +212,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const lockoutStatus = await AuthService.checkLockout(email, ipAddress);
     
     if (lockoutStatus.locked) {
-      const lockoutError = new Error(lockoutStatus.message || 'Conta temporariamente bloqueada') as any;
-      lockoutError.isLockout = true;
-      lockoutError.remainingMinutes = lockoutStatus.remaining_minutes || 0;
+      const lockoutError = new LockoutError(
+        lockoutStatus.message || 'Conta temporariamente bloqueada',
+        { remainingMinutes: lockoutStatus.remaining_minutes || 0 }
+      );
       return { error: lockoutError };
     }
 
