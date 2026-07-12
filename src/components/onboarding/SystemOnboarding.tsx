@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, type ComponentType } from 'react';
-import { Joyride as JoyrideBase, Step, STATUS, type CallBackProps, type Styles } from 'react-joyride';
+import { Joyride as JoyrideBase, Step, STATUS, type Styles } from 'react-joyride';
 const Joyride = JoyrideBase as unknown as ComponentType<Record<string, unknown>>;
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth';
