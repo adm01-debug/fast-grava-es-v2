@@ -48,7 +48,7 @@ export function MachineTPMTimeline({ machineId }: MachineTimelineProps) {
   return (
     <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary/20 before:via-border before:to-transparent">
       {machineRecords.length > 0 ? (
-        machineRecords.map((record: any, index: number) => (
+        machineRecords.map((record, index: number) => (
           <div key={record.id} className="relative flex items-start gap-6 stagger-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
             {/* Dot/Icon */}
             <div className="absolute left-0 flex items-center justify-center w-10 h-10 rounded-full bg-background border-2 border-border shadow-sm z-10 cursor-pointer hover:border-primary transition-colors" onClick={() => handleViewDetails(record.id)}>
