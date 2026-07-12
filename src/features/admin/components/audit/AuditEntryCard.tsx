@@ -18,7 +18,10 @@ interface AuditEntryCardProps {
   entry: AuditLogEntry;
 }
 
-const actionConfig: Record<string, { icon: any; label: string; variant: any; color: string }> = {
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
+type ActionCfg = { icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>; label: string; variant: BadgeVariant; color: string };
+
+const actionConfig: Record<string, ActionCfg> = {
   INSERT: { icon: PlusCircleIcon, label: 'Criado', variant: 'default', color: 'text-primary' },
   UPDATE: { icon: PencilIcon, label: 'Atualizado', variant: 'secondary', color: 'text-secondary-foreground' },
   DELETE: { icon: Trash2Icon, label: 'Excluído', variant: 'destructive', color: 'text-destructive' },
