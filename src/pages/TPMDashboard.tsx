@@ -285,7 +285,7 @@ export default function TPMDashboard() {
               <div className="lg:col-span-2">
                 <TPMCalendar
                   schedules={schedules}
-                  onSelectSchedule={(schedule: any) => handleStartMaintenance(schedule.id)}
+                  onSelectSchedule={(schedule: MaintenanceSchedule) => handleStartMaintenance(schedule.id)}
                 />
               </div>
               <div className="space-y-6">
