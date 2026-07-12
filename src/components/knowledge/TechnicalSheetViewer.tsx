@@ -410,7 +410,7 @@ export const TechnicalSheetViewer = ({ sheetId, onEdit, onDuplicate }: Technical
                                 <Label className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                                   {param === 'temperature' ? <Thermometer className="h-3 w-3" /> : param === 'squeegee_passes' ? <MoveHorizontal className="h-3 w-3" /> : <Zap className="h-3 w-3" />} {labels[param]}
                                 </Label>
-                                <p className="text-sm font-bold">{value || '-'}</p>
+                                <p className="text-sm font-bold">{String(value ?? '-') || '-'}</p>
                                 {range && (range.min || range.max) && (
                                   <p className="text-[10px] text-muted-foreground mt-1 border-t border-warning/10 pt-1">
                                     Faixa: {range.min || '-'} a {range.max || '-'}
