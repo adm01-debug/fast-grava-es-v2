@@ -534,7 +534,7 @@ function InventoryHistoryTable() {
             {filteredMovements.map((m) => (
               <tr key={m.id} className="hover:bg-muted/10 transition-colors group">
                 <td className="p-4 font-mono text-muted-foreground">
-                  {format(parseISO(m.created_at), 'dd/MM/yy HH:mm')}
+                  {m.created_at ? format(parseISO(m.created_at), 'dd/MM/yy HH:mm') : '-'}
                 </td>
                 <td className="p-4 font-bold text-foreground">
                   {m.inventory_items?.name}
