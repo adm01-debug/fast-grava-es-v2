@@ -90,7 +90,7 @@ export async function retryWithBackoff<T>(
 /**
  * Default retryable check: retries on network errors, timeouts, and 5xx/429.
  */
-export function isNetworkRetryable(error: any): boolean {
+export function isNetworkRetryable(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   const msg = error.message.toLowerCase();
   return (
