@@ -238,7 +238,7 @@ export function BINormalView({ biMetrics, kpis, oeeData, getPeriodLabel, onDrill
                   dataKey="value"
                   label={({ name, percent }: { name: string; percent: number }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={false}
-                  onClick={(data: any) => {
+                  onClick={(data: { name?: string }) => {
                     if (data && data.name) {
                       onDrillDown(`PEDIDOS: ${data.name}`, biMetrics.periodJobsList.filter(j => j.status === (data.name === 'Finalizados' ? 'finished' : data.name === 'Em Produção' ? 'production' : data.name === 'Atrasados' ? 'delayed' : 'scheduled')));
                     }
