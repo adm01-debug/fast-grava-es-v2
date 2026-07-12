@@ -49,7 +49,7 @@ interface PendingAction {
   id: string;
   type: 'create' | 'update' | 'delete';
   entity: string;
-  data: any;
+  data: unknown;
   timestamp: string;
   retries: number;
 }
