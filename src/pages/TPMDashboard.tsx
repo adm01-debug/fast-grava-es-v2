@@ -70,7 +70,7 @@ export default function TPMDashboard() {
       performed_by: user.id,
       performed_by_name: profile.full_name || 'Usuário',
     }, {
-      onSuccess: (record: MaintenanceRecord) => {
+      onSuccess: (record) => {
         setCurrentRecordId(record.id);
         setExecutionModalOpen(true);
       }
