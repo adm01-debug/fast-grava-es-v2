@@ -144,17 +144,18 @@ function PublicPage({
 
 export function AnimatedRoutes() {
   const location = useLocation();
-  const prevPathRef = useRef(location.pathname);
-  const directionRef = useRef<'forward' | 'backward'>('forward');
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
   useRoutePrefetch();
 
-  // Derived state: compute navigation direction during render (no setState in effect)
-  if (location.pathname !== prevPathRef.current) {
-    directionRef.current = getNavigationDirection(prevPathRef.current, location.pathname);
-    prevPathRef.current = location.pathname;
+  // Derived state pattern: compute during render when input changes (React docs recommended)
+  if (location.pathname !== prevPath) {
+    setDirection(getNavigationDirection(prevPath, location.pathname));
+    setPrevPath(location.pathname);
   }
-  const direction = directionRef.current;
+
+
 
 
 
