@@ -67,10 +67,23 @@ export function useMonitoringData(windowKey: MonitoringWindow) {
           .limit(1000),
       ]);
 
-      const rls = rlsRes.data ?? [];
+      const rls = (rlsRes.data ?? []).map((r) => ({
+        ...r,
+        user_email: (r.user_email as string | null) ?? null,
+      }));
       const errors = errorsRes.data ?? [];
-      const slow = slowRes.data ?? [];
-      const logins = loginRes.data ?? [];
+      const slow = (slowRes.data ?? []).map((r) => ({
+        ...r,
+        table_name: r.table_name as string | null,
+        severity: r.severity as string | null,
+      }));
+      const logins = (loginRes.data ?? []).map((r) => ({
+        id: r.id,
+        created_at: r.created_at,
+        user_email: r.user_email,
+        failure_reason: r.failure_reason,
+        ip_address: r.ip_address == null ? null : String(r.ip_address),
+      }));
       const durations = (avgRes.data ?? []).map((r) => r.duration_ms ?? 0);
       const avgMs = durations.length ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
 
