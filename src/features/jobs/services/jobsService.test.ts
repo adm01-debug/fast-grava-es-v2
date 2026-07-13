@@ -67,7 +67,7 @@ describe('jobsService', () => {
 
   it('deve lidar com erros na busca de jobs', async () => {
     // Override mock for this test
-    // @ts-ignore - Mocking Supabase internal structure
+    // @ts-expect-error - Mocking Supabase internal structure
     (supabase.from as any).mockReturnValueOnce({
       select: vi.fn(() => ({
         order: vi.fn(() => ({

@@ -60,7 +60,7 @@ describe('useNotifications', () => {
 
   it('should handle unread count', async () => {
     const { supabase } = await import('@/integrations/supabase/client');
-    // @ts-ignore
+    // @ts-expect-error
     supabase.from.mockImplementation((table: string) => {
       if (table === 'push_notifications') {
         return {
