@@ -23,7 +23,7 @@ const TechnicalKnowledgeBase = () => {
   const [selectedTechnique, setSelectedTechnique] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedMachine, setSelectedMachine] = useState<string>('all');
-  const [selectedSheet, setSelectedSheet] = useState<string | null>(null);
+  const [selectedSheet, setSelectedSheet] = useState<string | null>(() => searchParams.get('sheet'));
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const { role } = useAuth();
@@ -44,23 +44,21 @@ const TechnicalKnowledgeBase = () => {
     gcTime: 10 * 60 * 1000,
   });
 
-  // Deep linking: read sheet from URL
+  // Deep linking: validate URL sheet id once sheets load; clear if not found
   useEffect(() => {
     const sheetParam = searchParams.get('sheet');
-    if (sheetParam && sheets.length > 0) {
-      const exists = sheets.find(s => s.id === sheetParam);
-      if (exists) setSelectedSheet(sheetParam);
+    if (!sheetParam || sheets.length === 0) return;
+    const exists = sheets.some(s => s.id === sheetParam);
+    if (!exists && selectedSheet === sheetParam) {
+      setSelectedSheet(null);
     }
-  }, [searchParams, sheets]);
+  }, [searchParams, sheets, selectedSheet]);
 
-  // Update URL when sheet changes
+  // Sync selection back to URL
   useEffect(() => {
-    if (selectedSheet) {
-      setSearchParams({ sheet: selectedSheet }, { replace: true });
-    } else {
-      setSearchParams({}, { replace: true });
-    }
-  }, [selectedSheet]);
+    setSearchParams(selectedSheet ? { sheet: selectedSheet } : {}, { replace: true });
+  }, [selectedSheet, setSearchParams]);
+
 
   // Expanded fuzzy search: title, description, material, machine
   const fuseSearchedSheets = useFuseSearch(sheets, searchTerm, {

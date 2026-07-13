@@ -144,19 +144,19 @@ function PublicPage({
 
 export function AnimatedRoutes() {
   const location = useLocation();
-  const [prevPath, setPrevPath] = useState(location.pathname);
-  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-  
+  const prevPathRef = useRef(location.pathname);
+  const directionRef = useRef<'forward' | 'backward'>('forward');
+
   useRoutePrefetch();
 
-  // Optimized navigation direction update
-  useEffect(() => {
-    if (location.pathname !== prevPath) {
-      const newDirection = getNavigationDirection(prevPath, location.pathname);
-      setDirection(newDirection);
-      setPrevPath(location.pathname);
-    }
-  }, [location.pathname, prevPath]);
+  // Derived state: compute navigation direction during render (no setState in effect)
+  if (location.pathname !== prevPathRef.current) {
+    directionRef.current = getNavigationDirection(prevPathRef.current, location.pathname);
+    prevPathRef.current = location.pathname;
+  }
+  const direction = directionRef.current;
+
+
 
 
   return (
