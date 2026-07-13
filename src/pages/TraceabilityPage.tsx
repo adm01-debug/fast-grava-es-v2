@@ -158,7 +158,7 @@ export default function TraceabilityPage() {
     });
   };
 
-  const processBulkStatusUpdate = (validLots: ProductionLot[], newStatus: string, reason?: string) => {
+  const processBulkStatusUpdate = useCallback((validLots: ProductionLot[], newStatus: string, reason?: string) => {
     validLots.forEach(lot => {
       updateLot.mutate({
         id: lot.id,
@@ -168,7 +168,7 @@ export default function TraceabilityPage() {
     });
     toast.success(`${validLots.length} lote(s) atualizados para ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
     setSelectedIds(new Set());
-  };
+  }, [updateLot]);
 
   const handleBulkStatusChange = useCallback((newStatus: string) => {
     const validLots = filteredAndSortedLots.filter(l =>
@@ -184,7 +184,8 @@ export default function TraceabilityPage() {
     } else {
       processBulkStatusUpdate(validLots, newStatus);
     }
-  }, [filteredAndSortedLots, selectedIds]);
+  }, [filteredAndSortedLots, selectedIds, processBulkStatusUpdate]);
+
 
   const handleExportCSV = () => {
     const headers = ['Lote', 'Produto', 'Quantidade', 'Produzido', 'Status', 'Data Produção', 'Validade', 'Job'];
