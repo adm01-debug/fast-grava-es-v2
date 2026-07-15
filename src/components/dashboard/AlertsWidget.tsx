@@ -1,3 +1,4 @@
+import { clickableProps } from '@/lib/a11y';
 import { AlertTriangle, Clock, AlertCircle, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

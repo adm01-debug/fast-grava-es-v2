@@ -1,3 +1,4 @@
+import { clickableProps } from '@/lib/a11y';
 import * as React from 'react';
 import { useMemo, useState, Fragment, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
