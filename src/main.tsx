@@ -3,6 +3,7 @@ import { onCLS, onFID, onLCP, onTTFB, onINP } from "web-vitals";
 import * as Sentry from "@sentry/react";
 import App from "./App.tsx";
 import "./index.css";
+import { logger } from "./lib/logger";
 
 // Initialize i18n
 import "./i18n";
@@ -50,7 +51,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     navigator.serviceWorker
       .register('/sw.js', { scope: '/' })
       .catch((err) => {
-        console.warn('[SW] Registration failed:', err);
+        logger.warn('Service Worker registration failed', err, 'sw');
       });
   });
 }

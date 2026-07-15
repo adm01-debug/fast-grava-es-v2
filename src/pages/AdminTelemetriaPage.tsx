@@ -562,8 +562,8 @@ export default function AdminTelemetriaPage() {
                             <div className="flex items-center justify-between text-[10px]">
                               <span className="font-mono text-muted-foreground truncate max-w-[300px]">{err.url}</span>
                               <Button variant="link" size="sm" className="h-auto p-0 text-[10px] font-bold" onClick={() => {
-                                console.log('Metadata:', err.metadata);
-                                toast.info('Metadata logado no console para depuração');
+                                logger.info('Error log metadata inspected', err.metadata, 'AdminTelemetriaPage');
+                                toast.info('Metadata registrado nos logs para depuração');
                               }}>
                                 Ver Metadata
                               </Button>

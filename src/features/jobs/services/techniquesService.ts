@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { logger } from '@/lib/logger';
 
 export type Technique = Database['public']['Tables']['techniques']['Row'];
 export type TechniqueInsert = Database['public']['Tables']['techniques']['Insert'];
@@ -13,7 +14,7 @@ export const techniquesService = {
       .order('name');
 
     if (error) {
-      console.error('Failed to fetch techniques:', error);
+      logger.error('Failed to fetch techniques', error, 'techniquesService');
       return [];
     }
     return data || [];

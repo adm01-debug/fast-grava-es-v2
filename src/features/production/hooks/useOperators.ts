@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth';
+import { logger } from '@/lib/logger';
 
 const OPERATORS_ERROR_CONTEXT = {
   fetch: { entity: 'operators', operation: 'fetch' },
@@ -65,7 +66,7 @@ export function useOperators() {
           };
         }) as OperatorWithProfile[];
       } catch (error) {
-        console.error('Failed to fetch operators:', error);
+        logger.error('Failed to fetch operators', error, 'useOperators');
         return [];
       }
     },
@@ -115,7 +116,7 @@ export function useOperators() {
         });
 
       if (auditError) {
-        console.warn('Failed to log operator removal audit:', auditError);
+        logger.warn('Failed to log operator removal audit', auditError, 'useOperators');
       }
 
       return operatorId;
@@ -129,7 +130,7 @@ export function useOperators() {
       });
     },
     onError: (error) => {
-      console.error('Failed to remove operator:', error);
+      logger.error('Failed to remove operator', error, 'useOperators');
       toast.error('Erro ao remover operador');
     },
   });
@@ -167,7 +168,7 @@ export function useOperators() {
         });
 
       if (auditError) {
-        console.warn('Failed to log operator status toggle audit:', auditError);
+        logger.warn('Failed to log operator status toggle audit', auditError, 'useOperators');
       }
 
       return { operatorId, isActive };
@@ -182,7 +183,7 @@ export function useOperators() {
       });
     },
     onError: (error) => {
-      console.error('Failed to toggle operator status:', error);
+      logger.error('Failed to toggle operator status', error, 'useOperators');
       toast.error('Erro ao alterar status do operador');
     },
   });

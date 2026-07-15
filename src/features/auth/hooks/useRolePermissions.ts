@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { type AppRole } from '../index';
 import { ROLE_PERMISSIONS } from './useRBAC';
 
@@ -21,7 +22,7 @@ export function useRolePermissions(role: AppRole | null) {
       if (error) throw error;
       setPermissions((data || []).map(p => p.permission));
     } catch (error: unknown) {
-      console.error('Error fetching permissions:', error);
+      logger.error('Error fetching permissions', error, 'useRolePermissions');
       // Fallback to static permissions from useRBAC
       if (selectedRole && ROLE_PERMISSIONS[selectedRole]) {
         setPermissions(ROLE_PERMISSIONS[selectedRole]);
