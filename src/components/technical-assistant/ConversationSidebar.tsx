@@ -121,8 +121,12 @@ export function ConversationSidebar({
                     {items.map((conv) => (
                       <div
                         key={conv.id}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Abrir conversa ${conv.title}`}
                         onClick={() => onSelect(conv.id)}
-                        className={`p-3 rounded-xl cursor-pointer transition-all group relative border ${
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(conv.id); } }}
+                        className={`p-3 rounded-xl cursor-pointer transition-all group relative border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                           selectedId === conv.id 
                             ? "bg-primary/10 border-primary/30 shadow-sm" 
                             : "hover:bg-muted/50 border-transparent hover:border-border/50"

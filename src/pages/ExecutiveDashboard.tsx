@@ -661,8 +661,20 @@ export default function ExecutiveDashboard() {
                 {kpis.machinePerformance.slice(0, 5).map((m, index) => (
                   <div
                     key={index}
-                    className="space-y-1 cursor-pointer hover:bg-primary/5 p-1 rounded-lg transition-colors"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Filtrar por máquina ${m.machine}`}
+                    className="space-y-1 cursor-pointer hover:bg-primary/5 p-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     onClick={() => {
+                      const machine = machines?.find(mac => (mac.code || mac.name) === m.machine);
+                      if (machine) {
+                        setMachineId(machine.id);
+                        toast.success(`Filtrando por máquina: ${machine.code || machine.name}`);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter' && e.key !== ' ') return;
+                      e.preventDefault();
                       const machine = machines?.find(mac => (mac.code || mac.name) === m.machine);
                       if (machine) {
                         setMachineId(machine.id);

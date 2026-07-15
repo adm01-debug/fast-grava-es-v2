@@ -67,11 +67,15 @@ export function NotificationCenter() {
                   {notifications.map((n) => (
                     <div
                       key={n.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Notificação: ${n.title || n.type}`}
                       className={cn(
-                        "p-4 hover:bg-accent/40 cursor-pointer transition-colors relative group",
+                        "p-4 hover:bg-accent/40 cursor-pointer transition-colors relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                         !n.is_read && "bg-primary/[0.03]"
                       )}
                       onClick={() => { markAsRead(n.id); if (n.action_url) window.location.href = n.action_url; }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); markAsRead(n.id); if (n.action_url) window.location.href = n.action_url; } }}
                     >
                       {!n.is_read && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
                       <div className="flex items-start gap-3">

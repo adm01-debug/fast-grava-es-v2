@@ -437,8 +437,12 @@ export default function ShiftHandoverPage() {
                   handovers.map((handover) => (
                     <div
                       key={handover.id}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Ver passagem de turno ${handover.shift_date}`}
+                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       onClick={() => setSelectedHandover(handover)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedHandover(handover); } }}
                     >
                       <div className="flex items-center gap-3">
                         <Badge variant={STATUS_LABELS[handover.status]?.variant || 'default'}>

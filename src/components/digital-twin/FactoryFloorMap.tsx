@@ -8,6 +8,7 @@ import { Activity, Zap, Thermometer, Box, Layers, MousePointer2 } from 'lucide-r
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { clickableProps } from '@/lib/a11y';
 
 interface MachineLive {
   load: number;
@@ -137,9 +138,9 @@ export function FactoryFloorMap() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        onClick={() => setSelectedMachine(selectedMachine === machine.id ? null : machine.id)}
+                        {...clickableProps(() => setSelectedMachine(selectedMachine === machine.id ? null : machine.id), { label: `Selecionar máquina ${machine.id}` })}
                         className={cn(
-                          "w-full aspect-square rounded-lg border-2 flex flex-col items-center justify-center p-4 transition-all duration-500 cursor-pointer relative overflow-hidden",
+                          "w-full aspect-square rounded-lg border-2 flex flex-col items-center justify-center p-4 transition-all duration-500 cursor-pointer relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                           isWorking ? "bg-primary/5 border-primary/40 shadow-glow-primary" : "bg-muted/20 border-border/30 grayscale opacity-70",
                           heatmapType === 'load' && isWorking && status.load > 90 ? "bg-warning/20 border-warning/60 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-[1.02]" :
                           heatmapType === 'temp' && isWorking && status.temp > 60 ? "bg-rose-500/20 border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.4)] scale-[1.02]" :

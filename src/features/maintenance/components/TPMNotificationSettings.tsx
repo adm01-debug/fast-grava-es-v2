@@ -301,9 +301,13 @@ export function TPMNotificationSettings() {
                     ].map(type => (
                       <div
                         key={type.id}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Alternar alerta ${type.label}`}
                         onClick={() => handleToggleType(type.id)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggleType(type.id); } }}
                         className={cn(
-                          "flex items-center gap-3 p-3 rounded-lg border border-border/50 cursor-pointer transition-all",
+                          "flex items-center gap-3 p-3 rounded-lg border border-border/50 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                           settings?.notification_types.includes(type.id) ? "bg-primary/10 border-primary/40" : "bg-card hover:bg-secondary/20"
                         )}
                       >

@@ -103,9 +103,13 @@ export function WarehouseMap({ items }: WarehouseMapProps) {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Localização ${area}${level}`}
                             onClick={() => handleTransferInit(`${area}${level}`)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleTransferInit(`${area}${level}`); } }}
                             className={cn(
-                            "h-12 border rounded-md flex items-center justify-center transition-all cursor-pointer relative group active:scale-95",
+                            "h-12 border rounded-md flex items-center justify-center transition-all cursor-pointer relative group active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                             locationItems.length > 0 ? "bg-primary/5 border-primary/20" : "bg-muted/10 border-border/30 opacity-50",
                             isLow && "bg-destructive/10 border-destructive/30"
                           )}>

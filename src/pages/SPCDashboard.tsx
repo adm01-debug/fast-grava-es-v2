@@ -193,7 +193,7 @@ export default function SPCDashboard() {
               {loadingParams ? <p className="text-muted-foreground">Carregando...</p> : parameters && parameters.length > 0 ? (
                 <div className="space-y-2">
                   {parameters.map(param => (
-                    <div key={param.id} className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedParameter?.id === param.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'}`} onClick={() => setSelectedParameter(param)}>
+                    <div key={param.id} role="button" tabIndex={0} aria-label={`Selecionar parâmetro ${param.name}`} className={`p-3 rounded-lg border cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selectedParameter?.id === param.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'}`} onClick={() => setSelectedParameter(param)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedParameter(param); } }}>
                       <div className="flex items-center justify-between">
                         <div><p className="font-medium">{param.name}</p><p className="text-sm text-muted-foreground">{param.target_value} {param.unit} (±{((param.upper_spec_limit - param.lower_spec_limit) / 2).toFixed(3)})</p></div>
                         <Badge variant={param.is_active ? 'default' : 'secondary'}>{param.is_active ? 'Ativo' : 'Inativo'}</Badge>

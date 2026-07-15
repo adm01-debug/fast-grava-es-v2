@@ -392,7 +392,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                     ) : (
                       presets?.map((preset) => (
                         <div key={preset.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors">
-                          <span className="text-xs font-medium truncate flex-1 cursor-pointer" onClick={() => applyPreset(preset)}>{preset.name}</span>
+                          <span role="button" tabIndex={0} aria-label={`Aplicar preset ${preset.name}`} className="text-xs font-medium truncate flex-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded" onClick={() => applyPreset(preset)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); applyPreset(preset); } }}>{preset.name}</span>
                           <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deletePreset(preset.id)}>
                             <Trash2 className="h-3 w-3" />
                           </Button>
