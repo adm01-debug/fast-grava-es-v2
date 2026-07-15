@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, AlertTriangle, Maximize2 } from 'lucide-react';
+import { clickableProps } from '@/lib/a11y';
 
 interface VisualReferenceProps {
   goldStandardUrl?: string;
@@ -18,8 +19,8 @@ export function VisualReference({ goldStandardUrl, failureStandardUrl }: VisualR
         </CardHeader>
         <CardContent className="px-4 pb-4">
           <div
-            className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-success/20 group cursor-pointer hover:bg-success/5 transition-colors overflow-hidden"
-            onClick={() => goldStandardUrl && window.open(goldStandardUrl, '_blank')}
+            {...clickableProps(() => goldStandardUrl && window.open(goldStandardUrl, '_blank'), { label: 'Abrir padrão de ouro', disabled: !goldStandardUrl })}
+            className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-success/20 group cursor-pointer hover:bg-success/5 transition-colors overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success"
           >
             {goldStandardUrl ? (
               <img src={goldStandardUrl} alt="Padrão Ouro" className="w-full h-full object-cover" />
@@ -43,8 +44,8 @@ export function VisualReference({ goldStandardUrl, failureStandardUrl }: VisualR
         </CardHeader>
         <CardContent className="px-4 pb-4">
           <div
-            className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors overflow-hidden"
-            onClick={() => failureStandardUrl && window.open(failureStandardUrl, '_blank')}
+            {...clickableProps(() => failureStandardUrl && window.open(failureStandardUrl, '_blank'), { label: 'Abrir padrão de falha', disabled: !failureStandardUrl })}
+            className="aspect-video bg-muted rounded flex flex-col items-center justify-center border-2 border-dashed border-rose-500/20 group cursor-pointer hover:bg-rose-500/5 transition-colors overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
             {failureStandardUrl ? (
               <img src={failureStandardUrl} alt="Padrão Falha" className="w-full h-full object-cover" />

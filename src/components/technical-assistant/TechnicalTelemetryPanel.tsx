@@ -5,6 +5,7 @@ import { Activity, Thermometer, Gauge, Zap, TrendingUp, AlertTriangle, CheckCirc
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { clickableProps } from '@/lib/a11y';
 import { motion } from 'framer-motion';
 
 const generateMockData = () => {
@@ -54,10 +55,10 @@ export function TechnicalTelemetryPanel() {
       <CardContent className="p-4 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
         {/* Core KPIs Grid */}
         <div className="grid grid-cols-2 gap-2">
-          <div 
-            onClick={() => setActiveMetric('temp')}
+          <div
+            {...clickableProps(() => setActiveMetric('temp'), { label: 'Selecionar métrica temperatura' })}
             className={cn(
-              "p-3 rounded-xl border transition-all cursor-pointer group",
+              "p-3 rounded-xl border transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               activeMetric === 'temp' ? "bg-orange-500/10 border-orange-500/50 shadow-lg shadow-orange-500/10" : "bg-muted/30 border-border/50 hover:bg-muted/50"
             )}
           >
@@ -69,10 +70,10 @@ export function TechnicalTelemetryPanel() {
             <p className="text-lg font-black tracking-tight">{data[data.length - 1].temp.toFixed(1)}°C</p>
           </div>
 
-          <div 
-            onClick={() => setActiveMetric('pressure')}
+          <div
+            {...clickableProps(() => setActiveMetric('pressure'), { label: 'Selecionar métrica pressão' })}
             className={cn(
-              "p-3 rounded-xl border transition-all cursor-pointer group",
+              "p-3 rounded-xl border transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               activeMetric === 'pressure' ? "bg-blue-500/10 border-blue-500/50 shadow-lg shadow-blue-500/10" : "bg-muted/30 border-border/50 hover:bg-muted/50"
             )}
           >
