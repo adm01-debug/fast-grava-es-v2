@@ -207,8 +207,11 @@ export function showErrorToast(
       timestamp: appError.timestamp
     });
   }).catch(() => {
-    // Fallback if logger fails
-    console.error(`AppError [${appError.code}]: ${message}`, error);
+    // Fallback if logger fails: emit a single line to stderr via a safe channel.
+    // We intentionally do not re-enter the logger to avoid recursion.
+    if (typeof globalThis !== 'undefined' && typeof (globalThis as { reportError?: (e: unknown) => void }).reportError === 'function') {
+      (globalThis as { reportError: (e: unknown) => void }).reportError(new Error(`AppError [${appError.code}]: ${message}`));
+    }
   });
 }
 
