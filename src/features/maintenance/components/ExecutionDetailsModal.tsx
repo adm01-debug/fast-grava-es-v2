@@ -1,5 +1,3 @@
-   infinitos, invalidação excessiva de cache ou recomputação em cada
-   render. Callbacks/valores externos são estáveis por contrato. */
 import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';

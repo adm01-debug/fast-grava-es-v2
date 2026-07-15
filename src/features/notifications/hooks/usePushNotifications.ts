@@ -1,5 +1,3 @@
-   infinitos, invalidação excessiva de cache ou recomputação em cada
-   render. Callbacks/valores externos são estáveis por contrato. */
 /* eslint-disable react-hooks/set-state-in-effect --
    Effects nesse arquivo sincronizam com sistemas externos legítimos
    (URL params, localStorage, timers, subscriptions Supabase realtime,

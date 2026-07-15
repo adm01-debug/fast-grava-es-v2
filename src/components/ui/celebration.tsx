@@ -1,6 +1,3 @@
-   (URL params, localStorage, timers, subscriptions Supabase realtime,
-   matchMedia, event listeners DOM, deep-linking) e não são estado
-   derivado. A cascata é intencional para refletir mudanças externas. */
 import { memo, useEffect, useState, useCallback, createContext, useContext, ReactNode } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';

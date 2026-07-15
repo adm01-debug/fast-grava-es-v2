@@ -1,5 +1,3 @@
-   infinitos, invalidação excessiva de cache ou recomputação em cada
-   render. Callbacks/valores externos são estáveis por contrato. */
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { MainLayout } from "@/components/layout/MainLayout";

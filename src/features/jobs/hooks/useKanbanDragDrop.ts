@@ -1,5 +1,3 @@
-   infinitos, invalidação excessiva de cache ou recomputação em cada
-   render. Callbacks/valores externos são estáveis por contrato. */
 import { useState, useCallback } from 'react';
 import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';

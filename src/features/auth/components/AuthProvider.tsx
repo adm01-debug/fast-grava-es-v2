@@ -1,5 +1,3 @@
-   infinitos, invalidação excessiva de cache ou recomputação em cada
-   render. Callbacks/valores externos são estáveis por contrato. */
 import { useEffect, useState, ReactNode, useCallback, useRef, useMemo } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
