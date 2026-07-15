@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, AlertTriangle, Maximize2 } from 'lucide-react';
+import { clickableProps } from '@/lib/a11y';
 
 interface VisualReferenceProps {
   goldStandardUrl?: string;
