@@ -98,7 +98,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
         className="fixed inset-0 z-[100] flex items-center justify-center"
       >
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={handleSkip} />
+        <div role="button" tabIndex={-1} aria-label="Fechar tour" className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={handleSkip} onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); handleSkip(); } }} />
 
         {/* Tour Card */}
         <motion.div

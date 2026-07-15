@@ -108,8 +108,12 @@ export function MachineSuggestionPanel({ techniqueId, onSelectMachine }: Machine
                   {suggestions.slice(1, 3).map((s) => (
                     <div
                       key={s.machineId}
-                      className="p-2 rounded-lg bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors cursor-pointer group"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Selecionar máquina ${s.machineCode}`}
+                      className="p-2 rounded-lg bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       onClick={() => onSelectMachine?.(s.machineId)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectMachine?.(s.machineId); } }}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium group-hover:text-primary transition-colors">{s.machineCode}</span>

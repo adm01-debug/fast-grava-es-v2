@@ -320,12 +320,16 @@ export function DroppableColumn({
       {isCollapsed ? (
         <div
           ref={setNodeRef}
+          role="button"
+          tabIndex={0}
+          aria-label={`Expandir coluna ${label}`}
           className={cn(
-            "flex items-center justify-center h-12 rounded-xl border transition-all",
+            "flex items-center justify-center h-12 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
             "bg-muted/10 border-border/30 text-xs text-muted-foreground cursor-pointer",
             isOver && "border-primary/50 bg-primary/5"
           )}
           onClick={() => setIsCollapsed(false)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsCollapsed(false); } }}
         >
           {jobs.length} jobs • Clique para expandir
         </div>

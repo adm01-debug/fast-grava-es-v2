@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
+import { clickableProps } from '@/lib/a11y';
 
 interface Job {
   id: string;
@@ -152,7 +153,7 @@ export function AlertScheduleModal({ open, onOpenChange, selectedJob, jobs, mach
                 <p className="text-xs text-muted-foreground mt-1">{selectedJob.quantity} peças • {selectedJob.estimated_duration} min estimados</p>
               </div>
               {suggestion && (
-                <div onClick={handleOpenOptimization} className="p-3 bg-primary/10 border border-primary/30 rounded-lg cursor-pointer hover:bg-primary/20 transition-colors group">
+                <div {...clickableProps(handleOpenOptimization, { label: 'Analisar otimização' })} className="p-3 bg-primary/10 border border-primary/30 rounded-lg cursor-pointer hover:bg-primary/20 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /><span className="text-sm font-medium text-primary">Sugestão Inteligente</span></div>
                     <Button size="sm" variant="ghost" className="h-6 text-xs group-hover:bg-primary group-hover:text-primary-foreground">Analisar Otimização</Button>
