@@ -269,8 +269,9 @@ export default function KPIDashboard() {
                     {isEditingTargets ? (
                       <div className="space-y-3 pt-2">
                         <div className="space-y-1">
-                          <label className="text-[10px]">Meta de Conclusão (%)</label>
+                          <label htmlFor="kpi-target-completion" className="text-[10px]">Meta de Conclusão (%)</label>
                           <Input
+                            id="kpi-target-completion"
                             type="number"
                             className="h-7 text-xs"
                             defaultValue={kpis.targets.completionRate}
@@ -278,8 +279,9 @@ export default function KPIDashboard() {
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[10px]">Meta de Ocupação (%)</label>
+                          <label htmlFor="kpi-target-occupancy" className="text-[10px]">Meta de Ocupação (%)</label>
                           <Input
+                            id="kpi-target-occupancy"
                             type="number"
                             className="h-7 text-xs"
                             defaultValue={kpis.targets.occupancyRate}
@@ -287,8 +289,9 @@ export default function KPIDashboard() {
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[10px]">Meta de Perda Máx (%)</label>
+                          <label htmlFor="kpi-target-loss" className="text-[10px]">Meta de Perda Máx (%)</label>
                           <Input
+                            id="kpi-target-loss"
                             type="number"
                             className="h-7 text-xs"
                             defaultValue={kpis.targets.lossRate}

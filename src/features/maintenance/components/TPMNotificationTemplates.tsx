@@ -126,7 +126,7 @@ export function TPMNotificationTemplates() {
 
         {activeTab === 'email' && (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Assunto</label>
+            <label htmlFor={`subject-${template.id}`} className="text-xs font-medium text-muted-foreground">Assunto</label>
             <Input
               id={`subject-${template.id}`}
               defaultValue={template.subject || ''}
@@ -136,7 +136,7 @@ export function TPMNotificationTemplates() {
         )}
 
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Corpo do Template</label>
+          <label htmlFor={`body-${template.id}`} className="text-xs font-medium text-muted-foreground">Corpo do Template</label>
           <Textarea
             id={`body-${template.id}`}
             defaultValue={template.template_body}

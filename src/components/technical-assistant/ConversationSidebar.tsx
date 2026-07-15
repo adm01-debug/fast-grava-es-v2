@@ -134,6 +134,7 @@ export function ConversationSidebar({
                       >
                         {editingId === conv.id ? (
                           <div className="flex items-center gap-2">
+                            {/* eslint-disable-next-line jsx-a11y/no-autofocus -- foco imediato no input de edição inline é UX esperada */}
                             <Input value={editTitle} onChange={(e) => onEditTitleChange(e.target.value)} className="h-7 text-sm" onClick={(e) => e.stopPropagation()} autoFocus />
                             <div className="flex items-center gap-1">
                               <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onSaveEdit(conv.id); }}>
