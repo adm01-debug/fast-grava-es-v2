@@ -41,12 +41,15 @@ interface DroppableRowProps {
 
 function DroppableRow({ children, id, className, onClick, style }: DroppableRowProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const interactive = onClick
+    ? clickableProps<HTMLDivElement>((e) => onClick(e as React.MouseEvent<HTMLDivElement>), { label: 'Selecionar linha do calendário' })
+    : {};
   return (
     <div
       ref={setNodeRef}
-      className={cn(className, isOver && 'bg-primary/10 ring-1 ring-inset ring-primary/30')}
-      onClick={onClick}
+      className={cn(className, isOver && 'bg-primary/10 ring-1 ring-inset ring-primary/30', onClick && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary')}
       style={style}
+      {...interactive}
     >
       {children}
     </div>
