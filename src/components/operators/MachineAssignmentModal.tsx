@@ -119,11 +119,14 @@ export function MachineAssignmentModal({ operator, open, onOpenChange }: Machine
                       {techMachines?.map(machine => (
                         <label
                           key={machine.id}
+                          htmlFor={`machine-assign-${machine.id}`}
                           className="flex items-center gap-3 p-2 rounded-lg border border-border/50 hover:bg-muted/50 cursor-pointer transition-colors"
                         >
                           <Checkbox
+                            id={`machine-assign-${machine.id}`}
                             checked={selectedMachines.has(machine.id)}
                             onCheckedChange={() => handleToggleMachine(machine.id)}
+                            aria-label={machine.name}
                           />
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{machine.name}</p>

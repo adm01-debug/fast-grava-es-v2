@@ -180,6 +180,7 @@ export function ReauthProvider({ children }: { children: ReactNode }) {
                       handleReauth();
                     }
                   }}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus -- foco no dialog de reautenticação é UX esperada
                   autoFocus
                 />
               </div>
