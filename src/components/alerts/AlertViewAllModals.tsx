@@ -7,6 +7,7 @@ import { DbJob, StuckJob } from "@/features/jobs";
 import { parseDateOnly } from "@/lib/dateUtils";
 import { BottleneckAlert, LoadBalancingSuggestion } from "@/features/analytics";
 import { priorityColors, priorityLabels } from "./AlertJobCard";
+import { clickableProps } from "@/lib/a11y";
 
 
 interface JobsViewAllProps {
