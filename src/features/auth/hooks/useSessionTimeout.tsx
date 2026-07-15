@@ -67,7 +67,7 @@ export function useSessionTimeout({
   const warningTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const logoutTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
-  const lastActivityRef = React.useRef<number>(Date.now());
+  const lastActivityRef = React.useRef<number>(0);
   // Mirror of showWarning so the activity listener can read it without being a
   // dependency of the setup effect (which would tear down/rebuild all timers
   // every time the warning toggles — that bug made the warning flash and reset,
