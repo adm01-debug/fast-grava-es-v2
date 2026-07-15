@@ -559,10 +559,14 @@ export default function ReportBuilderPage() {
                   {TABLE_COLUMNS[selectedTable].map((col) => (
                     <div
                       key={col}
-                      className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Alternar coluna ${col}`}
+                      className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                         selectedColumns.includes(col) ? 'bg-primary/5 border-primary/40 shadow-inner' : 'bg-background border-border/50 hover:border-primary/20'
                       }`}
                       onClick={() => toggleColumn(col)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleColumn(col); } }}
                     >
                       <Checkbox
                         id={col}

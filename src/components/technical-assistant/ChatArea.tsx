@@ -311,7 +311,7 @@ export function ChatArea({
                     <Sparkles className="h-3 w-3 text-primary/50" />
                     <span className="text-[9px] font-bold uppercase text-primary/70">AI Optimizer On</span>
                   </div>
-                  <div className="flex items-center gap-1.5 cursor-pointer group" onClick={() => setDiagnosticMode(!diagnosticMode)}>
+                  <div role="button" tabIndex={0} aria-label="Alternar modo diagnóstico" className="flex items-center gap-1.5 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded" onClick={() => setDiagnosticMode(!diagnosticMode)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDiagnosticMode(!diagnosticMode); } }}>
                     <Activity className={cn("h-3 w-3 transition-colors", diagnosticMode ? "text-primary animate-pulse" : "text-muted-foreground/50")} />
                     <span className={cn("text-[9px] font-black uppercase tracking-widest", diagnosticMode ? "text-primary" : "text-muted-foreground group-hover:text-primary transition-colors")}>
                       {diagnosticMode ? "Diagnostic Active" : "Diagnostic Mode"}

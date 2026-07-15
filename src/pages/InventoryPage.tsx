@@ -307,7 +307,7 @@ function InventoryCard({
       isLowStock && "border-red-500/30"
     )}>
       <CardHeader className="pb-3 border-b border-border/50 bg-muted/20 relative">
-        <div className="absolute top-3 left-3 z-10" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute top-3 left-3 z-10" role="presentation" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
           <Checkbox
             checked={isSelected}
             onCheckedChange={(checked) => onSelect(item.id, !!checked)}
