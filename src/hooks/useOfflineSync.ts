@@ -32,40 +32,37 @@ const MAX_RETRIES = 3;
 
 export function useOfflineSync() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
-  const [cachedData, setCachedData] = useState<CachedData | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
-
-  // Load pending actions from localStorage
-  useEffect(() => {
+  const [pendingActions, setPendingActions] = useState<PendingAction[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PENDING_ACTIONS);
-      if (stored) {
-        setPendingActions(JSON.parse(stored));
-      }
+      return stored ? (JSON.parse(stored) as PendingAction[]) : [];
     } catch (error) {
       logger.warn('Falha ao carregar ações offline do localStorage', error, 'useOfflineSync');
       localStorage.removeItem(STORAGE_KEYS.PENDING_ACTIONS);
+      return [];
     }
-  }, []);
-
-  // Load cached data from localStorage
-  useEffect(() => {
+  });
+  const [cachedData, setCachedData] = useState<CachedData | null>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.CACHED_DATA);
-      if (stored) {
-        const data = JSON.parse(stored) as CachedData;
-        setCachedData(data);
-        if (data.lastSyncedAt) {
-          setLastSyncedAt(new Date(data.lastSyncedAt));
-        }
-      }
+      return stored ? (JSON.parse(stored) as CachedData) : null;
     } catch (error) {
       logger.warn('Falha ao carregar dados em cache do localStorage', error, 'useOfflineSync');
       localStorage.removeItem(STORAGE_KEYS.CACHED_DATA);
+      return null;
     }
-  }, []);
+  });
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.CACHED_DATA);
+      if (!stored) return null;
+      const data = JSON.parse(stored) as CachedData;
+      return data.lastSyncedAt ? new Date(data.lastSyncedAt) : null;
+    } catch {
+      return null;
+    }
+  });
 
   // Save pending actions to localStorage whenever they change
   useEffect(() => {

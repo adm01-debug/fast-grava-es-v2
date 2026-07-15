@@ -17,19 +17,14 @@ const defaultConfig: AutoThemeConfig = {
 
 export function useAutoTheme() {
   const { setTheme, theme } = useTheme();
-  const [config, setConfigState] = useState<AutoThemeConfig>(defaultConfig);
-
-  // Load config from localStorage
-  useEffect(() => {
+  const [config, setConfigState] = useState<AutoThemeConfig>(() => {
     try {
       const stored = localStorage.getItem(AUTO_THEME_KEY);
-      if (stored) {
-        setConfigState(JSON.parse(stored));
-      }
+      return stored ? { ...defaultConfig, ...JSON.parse(stored) } : defaultConfig;
     } catch {
-      // Use default
+      return defaultConfig;
     }
-  }, []);
+  });
 
   // Apply auto theme based on time
   useEffect(() => {

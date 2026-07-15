@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect, useMemo, createContext, useContext, ReactNode } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef, createContext, useContext, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 /**
  * Persists state in localStorage with automatic JSON serialization and error handling.
@@ -13,7 +14,7 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
     } catch (e) {
-      console.error(`Failed to load value for key "${key}" from localStorage:`, e);
+      logger.error(`Failed to load value for key "${key}" from localStorage`, e, 'useLocalStorage');
       return initialValue;
     }
   });
@@ -25,7 +26,7 @@ export function useLocalStorage<T>(
         try {
           window.localStorage.setItem(key, JSON.stringify(nextValue));
         } catch (e) {
-          console.error(`Failed to set value for key "${key}" to localStorage:`, e);
+          logger.error(`Failed to set value for key "${key}" to localStorage`, e, 'useLocalStorage');
         }
         return nextValue;
       });
@@ -38,7 +39,7 @@ export function useLocalStorage<T>(
       window.localStorage.removeItem(key);
       setStoredValue(initialValue);
     } catch (e) {
-      console.error(`Failed to remove key "${key}" from localStorage:`, e);
+      logger.error(`Failed to remove key "${key}" from localStorage`, e, 'useLocalStorage');
     }
   }, [key, initialValue]);
 
@@ -123,11 +124,19 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     }
   }, [isOnline, isSyncing, pendingActions, setPendingActions]);
 
+  // Trigger sync when coming back online, keeping the effect free of direct
+  // setState calls. syncNow is stored in a ref so we don't rerun on every
+  // callback identity change.
+  const syncNowRef = useRef(syncNow);
+  useEffect(() => {
+    syncNowRef.current = syncNow;
+  }, [syncNow]);
   useEffect(() => {
     if (isOnline && pendingActions.length > 0) {
-      syncNow();
+      void syncNowRef.current();
     }
-  }, [isOnline, pendingActions.length, syncNow]);
+  }, [isOnline, pendingActions.length]);
+
 
   const addPendingAction = useCallback((action: Omit<PendingAction, 'id' | 'timestamp' | 'retries'>) => {
     const newAction: PendingAction = {
