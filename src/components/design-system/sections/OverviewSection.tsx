@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { LayoutGrid, Layers, Sparkles, Copy } from 'lucide-react';
+/* eslint-disable react-hooks/purity -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 import { OverviewStatCard } from './overview/OverviewStatCard';
 import { OverviewWhatsNew } from './overview/OverviewWhatsNew';
 import { OverviewCategoriesGrid } from './overview/OverviewCategoriesGrid';

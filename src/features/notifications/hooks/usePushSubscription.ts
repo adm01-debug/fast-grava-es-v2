@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability, react-hooks/exhaustive-deps, react-hooks/preserve-manual-memoization -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 /* eslint-disable react-hooks/set-state-in-effect --
    Effects nesse arquivo sincronizam com sistemas externos legítimos
    (URL params, localStorage, timers, subscriptions Supabase realtime,

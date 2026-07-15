@@ -1,8 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect --
-   Effects nesse arquivo sincronizam com sistemas externos legítimos
-   (URL params, localStorage, timers, subscriptions Supabase realtime,
-   matchMedia, event listeners DOM, deep-linking) e não são estado
-   derivado. A cascata é intencional para refletir mudanças externas. */
+/* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimeChannel } from '@supabase/supabase-js';

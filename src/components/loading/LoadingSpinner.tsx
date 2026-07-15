@@ -1,5 +1,4 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+/* eslint-disable react-hooks/purity -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 

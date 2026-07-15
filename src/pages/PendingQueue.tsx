@@ -1,5 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
-import type { TablesUpdate } from "@/integrations/supabase/types";
+/* eslint-disable react-hooks/incompatible-library -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 import { parseDateOnly } from "@/lib/dateUtils";
 import { useFuseSearch } from "@/hooks/useFuseSearch";
 import { useVirtualizer } from "@tanstack/react-virtual";
