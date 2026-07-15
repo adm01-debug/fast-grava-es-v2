@@ -1,3 +1,4 @@
+import { clickableProps } from '@/lib/a11y';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,8 +41,8 @@ export function StuckJobsCard({ stuckJobs, stuckCritical, onJobClick, onViewAll,
               return (
                 <div
                   key={stuck.job.id}
-                  onClick={() => onJobClick(stuck.job)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                  {...clickableProps(() => onJobClick(stuck.job), { label: `Abrir job travado ${stuck.job.order_number}` })}
+                  className={`p-3 rounded-lg border cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                     stuck.severity === 'critical'
                       ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20'
                       : 'bg-warning/10 border-warning/30 hover:bg-warning/20'

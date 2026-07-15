@@ -1,3 +1,4 @@
+import { clickableProps } from '@/lib/a11y';
 import { AlertTriangle, Clock, AlertCircle, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -166,7 +167,7 @@ export function AlertsWidget() {
             alerts.slice(0, 5).map((alert) => {
               const Icon = alertIcons[alert.type];
               return (
-                <div key={alert.id} onClick={() => handleAlertClick(alert)} className={cn("flex items-center gap-2 p-2 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20", "hover:-translate-x-0.5 hover:border-primary/30", alert.canSchedule && "group")}>
+                <div key={alert.id} {...clickableProps(() => handleAlertClick(alert), { label: `Abrir alerta ${alert.title}` })} className={cn("flex items-center gap-2 p-2 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-all cursor-pointer border border-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary", "hover:-translate-x-0.5 hover:border-primary/30", alert.canSchedule && "group")}>
                   <div className={cn('w-6 h-6 rounded-lg flex items-center justify-center shrink-0', alertColors[alert.type])}><Icon className="w-3 h-3" /></div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-foreground truncate">{alert.title}</p>
