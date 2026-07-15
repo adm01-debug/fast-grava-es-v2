@@ -84,10 +84,13 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
     return (
       <div
         ref={setNodeRef}
+        role="button"
+        tabIndex={0}
+        aria-label={`Abrir job ${job.order_number} - ${job.client}`}
         className={cn(
           "flex items-center gap-2 px-2 py-1.5 rounded-md border border-l-2 cursor-pointer transition-all",
           "bg-card/50 border-border/30 hover:bg-card hover:border-border",
-          "group touch-none text-xs",
+          "group touch-none text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
           isDragging && "opacity-50 shadow-xl scale-105 z-50 ring-2 ring-primary",
           isSelected && "ring-2 ring-primary bg-primary/5"
         )}
@@ -96,8 +99,23 @@ export function DraggableJobCard({ job, technique, machine, onClick, viewMode = 
           borderLeftColor: technique?.color || 'transparent',
         }}
         onClick={onClick}
+        onKeyDown={(e) => {
+          if ((e.key === 'Enter' || e.key === ' ') && onClick) {
+            e.preventDefault();
+            onClick();
+          }
+        }}
       >
-        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing" onClick={(e) => e.stopPropagation()}>
+        <div
+          {...attributes}
+          {...listeners}
+          role="button"
+          tabIndex={-1}
+          aria-label="Arrastar job"
+          className="cursor-grab active:cursor-grabbing"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
           <GripVertical className="h-3 w-3 text-muted-foreground" />
         </div>
         {onSelect && (
