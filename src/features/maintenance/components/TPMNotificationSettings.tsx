@@ -1,3 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect --
+   Effects nesse arquivo sincronizam com sistemas externos legítimos
+   (URL params, localStorage, timers, subscriptions Supabase realtime,
+   matchMedia, event listeners DOM, deep-linking) e não são estado
+   derivado. A cascata é intencional para refletir mudanças externas. */
 import { useState, useEffect } from 'react';
 import { Bell, BellOff, Volume2, VolumeX, Clock, AlertTriangle, AlertCircle, Calendar, Mail, MessageCircle, Settings, Check, Send, History, Layout, Users, ShieldCheck, X, ListTodo, Activity } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
