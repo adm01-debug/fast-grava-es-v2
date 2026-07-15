@@ -1,9 +1,3 @@
-/* eslint-disable react-hooks/purity, react-hooks/immutability, react-hooks/incompatible-library, react-hooks/use-memo, react-hooks/preserve-manual-memoization --
-   Padrões avaliados: mutações controladas em refs, memoização manual
-   necessária por perfil de performance, integração com libs externas
-   (Framer Motion, dnd-kit) que exigem instâncias fora do ciclo React. */
-import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";

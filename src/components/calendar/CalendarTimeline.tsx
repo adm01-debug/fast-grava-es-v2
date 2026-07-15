@@ -1,9 +1,3 @@
-/* eslint-disable react-hooks/purity, react-hooks/immutability, react-hooks/incompatible-library, react-hooks/use-memo, react-hooks/preserve-manual-memoization --
-   Padrões avaliados: mutações controladas em refs, memoização manual
-   necessária por perfil de performance, integração com libs externas
-   (Framer Motion, dnd-kit) que exigem instâncias fora do ciclo React. */
-import { clickableProps } from '@/lib/a11y';
-import * as React from 'react';
 import { useMemo, useState, Fragment, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';

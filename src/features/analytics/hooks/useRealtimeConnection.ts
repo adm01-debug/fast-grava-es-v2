@@ -1,9 +1,3 @@
-/* eslint-disable react-hooks/purity, react-hooks/immutability, react-hooks/incompatible-library, react-hooks/use-memo, react-hooks/preserve-manual-memoization --
-   Padrões avaliados: mutações controladas em refs, memoização manual
-   necessária por perfil de performance, integração com libs externas
-   (Framer Motion, dnd-kit) que exigem instâncias fora do ciclo React. */
-/* eslint-disable react-hooks/set-state-in-effect --
-   Effects nesse arquivo sincronizam com sistemas externos legítimos
    (URL params, localStorage, timers, subscriptions Supabase realtime,
    matchMedia, event listeners DOM, deep-linking) e não são estado
    derivado. A cascata é intencional para refletir mudanças externas. */

@@ -1,9 +1,3 @@
-/* eslint-disable react-hooks/purity, react-hooks/immutability, react-hooks/incompatible-library, react-hooks/use-memo, react-hooks/preserve-manual-memoization --
-   Padrões avaliados: mutações controladas em refs, memoização manual
-   necessária por perfil de performance, integração com libs externas
-   (Framer Motion, dnd-kit) que exigem instâncias fora do ciclo React. */
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
