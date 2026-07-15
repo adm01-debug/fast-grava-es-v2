@@ -3,6 +3,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import type { RealtimeMock } from '@/test/realtimeMock';
+import { assertNonNull } from '@/test/assertNonNull';
 
 const holder = vi.hoisted(() => ({
   getAllMock: vi.fn(),
@@ -39,7 +40,7 @@ describe('useJobs — Realtime invalidation', () => {
   beforeEach(() => {
     holder.getAllMock.mockReset();
     holder.getAllMock.mockResolvedValue([{ id: 'j1', status: 'queue' }]);
-    holder.realtime!.removeChannel.mockClear();
+    assertNonNull(holder.realtime, 'realtime').removeChannel.mockClear();
   });
 
 
@@ -52,8 +53,8 @@ describe('useJobs — Realtime invalidation', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(holder.getAllMock).toHaveBeenCalledTimes(1);
 
-    expect(holder.realtime!.hasHandler).toBe(true);
-    act(() => holder.realtime!.emit({ eventType: 'INSERT' }));
+    expect(assertNonNull(holder.realtime, 'realtime').hasHandler).toBe(true);
+    act(() => assertNonNull(holder.realtime, 'realtime').emit({ eventType: 'INSERT' }));
 
     await waitFor(() => expect(holder.getAllMock).toHaveBeenCalledTimes(2));
   });
@@ -64,14 +65,14 @@ describe('useJobs — Realtime invalidation', () => {
 
     const { unmount } = renderHook(() => useJobs(), { wrapper });
     await waitFor(() => expect(holder.getAllMock).toHaveBeenCalledTimes(1));
-    expect(holder.realtime!.removeChannel).not.toHaveBeenCalled();
+    expect(assertNonNull(holder.realtime, 'realtime').removeChannel).not.toHaveBeenCalled();
 
     unmount();
 
-    expect(holder.realtime!.removeChannel).toHaveBeenCalledTimes(1);
+    expect(assertNonNull(holder.realtime, 'realtime').removeChannel).toHaveBeenCalledTimes(1);
 
     const callsBefore = holder.getAllMock.mock.calls.length;
-    act(() => holder.realtime!.emit({ eventType: 'INSERT' }));
+    act(() => assertNonNull(holder.realtime, 'realtime').emit({ eventType: 'INSERT' }));
     await new Promise(r => setTimeout(r, 50));
     expect(holder.getAllMock.mock.calls.length).toBe(callsBefore);
   });
