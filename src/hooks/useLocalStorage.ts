@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect, useMemo, createContext, useContext, ReactNode } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef, createContext, useContext, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 /**
  * Persists state in localStorage with automatic JSON serialization and error handling.
