@@ -1,3 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps --
+   Dependências intencionalmente omitidas: incluí-las causaria loops
+   infinitos, invalidação excessiva de cache ou recomputação em cada
+   render. Callbacks/valores externos são estáveis por contrato. */
 import { useState, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { useRBAC, PermissionGate } from '@/features/auth';
