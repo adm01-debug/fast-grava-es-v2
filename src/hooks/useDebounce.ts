@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/use-memo -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 /**
  * useDebounce - Delays updating a value until after a specified delay
  *

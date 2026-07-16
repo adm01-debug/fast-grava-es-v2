@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/purity -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Brain, AlertTriangle, ShieldCheck, TrendingUp, Info } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
