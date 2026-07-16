@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { DndContext, closestCenter, useDroppable, DragOverlay } from '@dnd-kit/core';
 import { useDailyDragDrop } from '@/features/jobs';
 import { JobQuickActions } from './JobQuickActions';
+import { clickableProps } from '@/lib/a11y';
 
 interface CalendarTimelineProps {
   machines: DbMachine[];

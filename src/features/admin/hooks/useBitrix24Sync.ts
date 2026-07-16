@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/immutability -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
+import { useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { createAppError } from '@/lib/errorHandling';

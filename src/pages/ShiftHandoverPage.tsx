@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/purity -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
+import { format } from 'date-fns';
+import { useState, useEffect, useMemo } from 'react';
 import { ptBR } from 'date-fns/locale';
 import { parseDateOnly } from '@/lib/dateUtils';
 import {

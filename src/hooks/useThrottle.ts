@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/use-memo -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
+import { useRef, useEffect, useCallback } from 'react';
 /**
  * Returns a throttled version of the callback that executes at most once per `delay` ms.
  */
