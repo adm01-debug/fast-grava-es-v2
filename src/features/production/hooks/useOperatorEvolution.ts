@@ -140,7 +140,8 @@ export function useOperatorEvolution(days: number = 30) {
         });
 
         const jobsCompleted = dayJobs.length;
-        const piecesProduced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? (j.quantity - (j.lost_pieces || 0))), 0);
+        // Null produced_quantity means "not recorded" — not "fully produced".
+        const piecesProduced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? 0), 0);
         const piecesLost = dayJobs.reduce((sum, j) => sum + (j.lost_pieces || 0), 0);
         const totalPieces = piecesProduced + piecesLost;
         const lossRate = totalPieces > 0 ? (piecesLost / totalPieces) * 100 : 0;

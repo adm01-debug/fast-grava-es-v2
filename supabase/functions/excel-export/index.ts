@@ -108,8 +108,12 @@ serve(async (req) => {
       }
     }
 
-    // Build query using service role for data access
-    let query = adminClient.from(table).select(columns?.join(",") || "*");
+    // Build query using service role for data access. Capped — an
+    // unbounded select on a large table (e.g. jobs, spc_measurements) risks
+    // function timeout/OOM; exports beyond this size should be paginated by
+    // the caller instead of one giant response.
+    const EXPORT_ROW_LIMIT = 20000;
+    let query = adminClient.from(table).select(columns?.join(",") || "*").limit(EXPORT_ROW_LIMIT);
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -130,12 +134,18 @@ serve(async (req) => {
       });
     }
 
-    // Convert to CSV
+    // Convert to CSV. Cells starting with = + - @ are formula-injection
+    // vectors in Excel/Sheets (e.g. =HYPERLINK(...)) — prefix with a quote
+    // so they render as literal text instead of executing on open.
     const headers = columns || Object.keys(data[0] || {});
     const csvContent = [
       headers.join(","),
-      ...data.map((row: Record<string, unknown>) => 
-        headers.map((h: string) => `"${String(row[h] ?? "").replace(/"/g, '""')}"`).join(",")
+      ...data.map((row: Record<string, unknown>) =>
+        headers.map((h: string) => {
+          const raw = String(row[h] ?? "");
+          const safe = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+          return `"${safe.replace(/"/g, '""')}"`;
+        }).join(",")
       ),
     ].join("\n");
 

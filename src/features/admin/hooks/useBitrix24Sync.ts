@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { createAppError } from '@/lib/errorHandling';
+import { edgeFunctionFetch } from '@/lib/edgeFunctionFetch';
 
 const BITRIX_ERROR_CONTEXT = {
   call: { entity: 'bitrix24', operation: 'api_call' },
@@ -45,16 +46,10 @@ export const useBitrix24Sync = () => {
   const callBitrixSync = useCallback(async <T = SyncResult>(action: string, body?: Record<string, unknown>, retryCount = 0): Promise<T> => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 1000;
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const url = `${supabaseUrl}/functions/v1/bitrix24-sync?action=${action}`;
 
     try {
-      const response = await fetch(url, {
+      const response = await edgeFunctionFetch(`bitrix24-sync?action=${action}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
         body: body ? JSON.stringify(body) : undefined
       });
 

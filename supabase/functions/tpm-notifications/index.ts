@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { requireCronSecret } from '../_shared/cronAuth.ts'
 
 const ALLOWED_ORIGINS = [
   Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
@@ -21,6 +22,10 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: getCorsHeaders(req) })
   }
+
+  // Internal/cron-only — no frontend caller. Fail closed.
+  const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) })
+  if (unauthorized) return unauthorized
 
   try {
     const supabase = createClient(

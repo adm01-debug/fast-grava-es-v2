@@ -12,7 +12,12 @@ interface VirtualSensorPanelProps {
   machineId: string;
 }
 
-export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
+// There is no real IIoT sensor feed wired into this system — all values here
+// are randomly generated (not derived from `machineId`, so every machine
+// would show identical "live" numbers). Labeled explicitly as a simulation
+// so it can't be mistaken for real machine telemetry; do not present these
+// numbers as live data without wiring a real sensor/MQTT source first.
+export function VirtualSensorPanel({ machineId: _machineId }: VirtualSensorPanelProps) {
   const [data, setData] = useState<Array<{ time: number; vibration: number; temperature: number }>>([]);
   const [currentValues, setCurrentValues] = useState({
     vibration: 2.4,
@@ -61,12 +66,12 @@ export function VirtualSensorPanel({ machineId }: VirtualSensorPanelProps) {
       <CardHeader className="pb-2 border-b border-border/50 bg-secondary/10">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm text-title flex items-center gap-2">
-            <Activity className="h-4 w-4 text-primary animate-pulse" />
-            Telemetria em Tempo Real (IIoT)
+            <Activity className="h-4 w-4 text-primary" />
+            Telemetria (Simulação)
           </CardTitle>
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-            <span className="text-[10px] font-medium text-success uppercase">Live</span>
+            <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+            <span className="text-[10px] font-medium text-muted-foreground uppercase">Demo — sem sensor real</span>
           </div>
         </div>
       </CardHeader>

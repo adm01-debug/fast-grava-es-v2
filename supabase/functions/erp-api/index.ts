@@ -35,11 +35,23 @@ async function validateApiKey(req: Request, supabase: ReturnType<typeof createCl
   const authHeader = req.headers.get('authorization');
   const apiKey = req.headers.get('x-api-key');
 
-  // Accept Supabase service role JWT
+  // Accept a Supabase user JWT, but only for an elevated role — this API
+  // exposes full ERP CRUD (jobs) and operator PII (profiles); any logged-in
+  // user's JWT previously passed this check regardless of role.
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.slice(7);
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (!error && user) return true;
+    if (!error && user) {
+      const { data: roleRows } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+      const roles = (roleRows ?? []).map((r: { role: string }) => r.role);
+      if (roles.some((role: string) => ['coordinator', 'manager', 'admin'].includes(role))) {
+        return true;
+      }
+    }
   }
 
   // Accept configured API keys stored in DB

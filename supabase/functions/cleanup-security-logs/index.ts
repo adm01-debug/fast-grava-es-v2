@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requireCronSecret } from '../_shared/cronAuth.ts';
 
 const ALLOWED_ORIGINS = [
   Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
@@ -20,6 +21,11 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
+
+  // Destructive cleanup of the security audit trail — fail closed if
+  // CRON_SECRET is not configured, same posture as cron-cleanup/backup-scheduler.
+  const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) });
+  if (unauthorized) return unauthorized;
 
   try {
     console.log('Starting security logs cleanup...');

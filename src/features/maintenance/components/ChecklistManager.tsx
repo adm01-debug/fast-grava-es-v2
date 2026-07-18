@@ -18,6 +18,12 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { MaintenanceChecklistItem } from '@/features/maintenance/hooks/types';
 
+// Radix Select forbids an empty-string item value (it's reserved to mean
+// "no selection" internally and throws at render). selectedTechniqueId=''
+// means "global (all machines)" throughout this component, so this sentinel
+// is only used at the Select boundary and mapped back to '' immediately.
+const GLOBAL_TECHNIQUE_VALUE = '__global__';
+
 export function ChecklistManager() {
   const { maintenanceTypes, checklists, machines } = useTPM();
   const queryClient = useQueryClient();
@@ -219,12 +225,15 @@ export function ChecklistManager() {
           </div>
           <div className="space-y-2">
             <Label>Tipo/Categoria de Máquina (Opcional)</Label>
-            <Select value={selectedTechniqueId} onValueChange={setSelectedTechniqueId}>
+            <Select
+              value={selectedTechniqueId || GLOBAL_TECHNIQUE_VALUE}
+              onValueChange={(v) => setSelectedTechniqueId(v === GLOBAL_TECHNIQUE_VALUE ? '' : v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Global (Toda as máquinas)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Global (Todas as máquinas)</SelectItem>
+                <SelectItem value={GLOBAL_TECHNIQUE_VALUE}>Global (Todas as máquinas)</SelectItem>
                 {techniques.map((tech) => (
                   <SelectItem key={tech} value={tech}>
                     {tech}

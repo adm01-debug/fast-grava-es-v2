@@ -17,6 +17,7 @@ import {
   List
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { edgeFunctionFetch } from '@/lib/edgeFunctionFetch';
 
 interface FieldMappingData {
   fieldMapping: Record<string, string[]>;
@@ -47,16 +48,7 @@ export const Bitrix24FieldMapping = () => {
   const { data: mappingData, isLoading: mappingLoading, refetch: refetchMapping } = useQuery({
     queryKey: ['bitrix24-mapping'],
     queryFn: async () => {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/bitrix24-sync?action=mapping`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          }
-        }
-      );
+      const response = await edgeFunctionFetch('bitrix24-sync?action=mapping');
       const data = await response.json();
       return data as FieldMappingData;
     }
@@ -65,16 +57,7 @@ export const Bitrix24FieldMapping = () => {
   const { data: fieldsData, isLoading: fieldsLoading, refetch: refetchFields } = useQuery({
     queryKey: ['bitrix24-fields'],
     queryFn: async () => {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/bitrix24-sync?action=fields`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          }
-        }
-      );
+      const response = await edgeFunctionFetch('bitrix24-sync?action=fields');
       const data = await response.json();
       return data as BitrixFieldsData;
     },
@@ -84,16 +67,7 @@ export const Bitrix24FieldMapping = () => {
   const testConnection = async () => {
     setIsTestingConnection(true);
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/bitrix24-sync?action=test`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          }
-        }
-      );
+      const response = await edgeFunctionFetch('bitrix24-sync?action=test');
       const data = await response.json();
 
       if (data.connected) {

@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { format } from 'date-fns';
+import { sanitizeCsvCell } from '@/lib/csvSafety';
 
 interface OEEMachineRow {
   machineName: string;
@@ -29,6 +30,12 @@ export const exportOEETabledData = (data: OEETableData, formatType: 'pdf' | 'csv
     m.quality.toFixed(1),
     m.oee.toFixed(1),
   ]);
+  // machineName is free-text (admin-editable) — the other columns are
+  // always formatted numbers and need no sanitizing.
+  const csvBody: string[][] = body.map(([machineName, ...rest]) => [
+    `"${sanitizeCsvCell(machineName).replace(/"/g, '""')}"`,
+    ...rest,
+  ]);
 
   if (formatType === 'pdf') {
     const doc = new jsPDF() as JsPDFWithAutoTable;
@@ -48,7 +55,7 @@ export const exportOEETabledData = (data: OEETableData, formatType: 'pdf' | 'csv
   } else {
     const csvRows = [
       headers[0].join(','),
-      ...body.map((row) => row.join(',')),
+      ...csvBody.map((row) => row.join(',')),
     ].join('\n');
 
     const blob = new Blob([csvRows], { type: 'text/csv;charset=utf-8;' });

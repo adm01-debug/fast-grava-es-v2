@@ -162,7 +162,8 @@ export default function BIDashboard() {
         try { return isWithinInterval(parseISO(j.actual_end_time), { start: startOfDay(date), end: endOfDay(date) }); }
         catch { return false; }
       });
-      const produced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
+      // Null produced_quantity means "not recorded" — not "fully produced".
+      const produced = dayJobs.reduce((sum, j) => sum + (j.produced_quantity ?? 0), 0);
       const lost = dayJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
       dailyTrend.push({
         date: format(date, 'dd/MM', { locale: ptBR }), 
@@ -176,7 +177,7 @@ export default function BIDashboard() {
 
     const techniquePerformance = techniques.map(tech => {
       const techJobs = filteredJobs.filter(j => j.technique_id === tech.id && j.status === 'finished');
-      const totalProduced = techJobs.reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
+      const totalProduced = techJobs.reduce((sum, j) => sum + (j.produced_quantity ?? 0), 0);
       const totalLost = techJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
       return {
         id: tech.id, name: tech.short_name || tech.name, jobs: techJobs.length,
@@ -200,7 +201,7 @@ export default function BIDashboard() {
     }).filter(m => m.totalJobs > 0).sort((a, b) => b.utilization - a.utilization);
 
     const periodCompletedJobs = filteredJobs.filter(j => j.status === 'finished').length;
-    const periodCompletedPieces = filteredJobs.filter(j => j.status === 'finished').reduce((sum, j) => sum + (j.produced_quantity ?? j.quantity ?? 0), 0);
+    const periodCompletedPieces = filteredJobs.filter(j => j.status === 'finished').reduce((sum, j) => sum + (j.produced_quantity ?? 0), 0);
     const periodLostPieces = filteredJobs.reduce((sum, j) => sum + (j.lost_pieces ?? 0), 0);
     const totalAttempted = periodCompletedPieces + periodLostPieces;
     const periodLossRate = totalAttempted > 0 ? (periodLostPieces / totalAttempted) * 100 : 0;

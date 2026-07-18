@@ -37,7 +37,9 @@ export function calculateRealOEE(jobs: DbJob[]) {
       }
     }
     totalEstimatedMinutes += sanitizeNumber(job.estimated_duration || 60);
-    const producedQty = sanitizeNumber(job.produced_quantity ?? job.quantity);
+    // Null produced_quantity means "not recorded" — must not be treated as
+    // "fully produced as ordered" (fabricates 100% output / zero loss).
+    const producedQty = sanitizeNumber(job.produced_quantity ?? 0);
     totalProducedPieces += producedQty;
     totalLostPieces += sanitizeNumber(job.lost_pieces);
   }

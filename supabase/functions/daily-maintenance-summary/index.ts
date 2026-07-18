@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requireUserOrCronSecret } from '../_shared/cronAuth.ts';
 
 const ALLOWED_ORIGINS = [
   Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
@@ -38,10 +39,17 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
 
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const unauthorized = await requireUserOrCronSecret(req, {
+    supabaseUrl,
+    supabaseAnonKey: Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    corsHeaders: getCorsHeaders(req),
+  });
+  if (unauthorized) return unauthorized;
+
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const today = new Date();

@@ -14,8 +14,10 @@ export const techniquesService = {
       .order('name');
 
     if (error) {
+      // Throw instead of swallowing: a connectivity/RLS failure must not be
+      // indistinguishable from "no techniques" (see jobsService.getAll).
       logger.error('Failed to fetch techniques', error, 'techniquesService');
-      return [];
+      throw error;
     }
     return data || [];
   },

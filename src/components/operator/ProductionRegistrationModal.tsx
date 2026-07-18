@@ -231,6 +231,7 @@ export function ProductionRegistrationModal({
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SCHEDULING_DATA });
       toast.success('Produção finalizada com sucesso!');
       onOpenChange(false);

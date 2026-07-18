@@ -25,6 +25,10 @@ const BITRIX24_ACCESS_TOKEN_ENV = Deno.env.get('BITRIX24_ACCESS_TOKEN');
 const BITRIX24_REFRESH_TOKEN_ENV = Deno.env.get('BITRIX24_REFRESH_TOKEN');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+// Shared secret Bitrix24 must send (as ?token= query param or x-bitrix-webhook-secret
+// header) on its outgoing webhook so action=webhook cannot be triggered by anyone else.
+const BITRIX24_WEBHOOK_SECRET = Deno.env.get('BITRIX24_WEBHOOK_SECRET');
 
 // Base URL for Bitrix24 REST API (configurado via secret BITRIX24_DOMAIN — sem tenant hardcoded)
 const BITRIX24_DOMAIN = Deno.env.get('BITRIX24_DOMAIN');
@@ -758,6 +762,75 @@ async function logSyncHistory(
   }
 }
 
+interface AuthResult {
+  ok: boolean;
+  status?: number;
+  error?: string;
+}
+
+// Any authenticated app user may trigger a status push for a job they can see
+// (fired automatically by jobsService.syncToBitrix24 on every status change).
+async function requireAuthenticatedUser(req: Request): Promise<AuthResult> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    return { ok: false, status: 401, error: 'Não autorizado' };
+  }
+  const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data: { user } } = await userClient.auth.getUser();
+  if (!user) {
+    return { ok: false, status: 401, error: 'Não autorizado' };
+  }
+  return { ok: true };
+}
+
+// Management/config actions require an active coordinator/manager/admin role.
+async function requireElevatedRole(req: Request, supabase: any): Promise<AuthResult> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    return { ok: false, status: 401, error: 'Não autorizado' };
+  }
+  const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data: { user } } = await userClient.auth.getUser();
+  if (!user) {
+    return { ok: false, status: 401, error: 'Não autorizado' };
+  }
+
+  const { data: roleRows, error: roleError } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('is_active', true);
+
+  if (roleError) {
+    // A backend failure must not be silently reported as an authorization denial.
+    return { ok: false, status: 500, error: 'Falha ao verificar permissão' };
+  }
+
+  const roles = (roleRows ?? []).map((r: { role: string }) => r.role);
+  if (!roles.some((role: string) => ['coordinator', 'manager', 'admin'].includes(role))) {
+    return { ok: false, status: 403, error: 'Apenas coordenadores, gerentes e administradores podem gerenciar a integração Bitrix24' };
+  }
+  return { ok: true };
+}
+
+// action=webhook is called BY Bitrix24 itself (no Supabase session available),
+// so it is authenticated via a pre-shared secret instead of a user JWT.
+function verifyBitrixWebhookSecret(req: Request, url: URL): AuthResult {
+  if (!BITRIX24_WEBHOOK_SECRET) {
+    console.error('[bitrix24-sync] BITRIX24_WEBHOOK_SECRET is not configured — rejecting all webhook calls (fail closed).');
+    return { ok: false, status: 401, error: 'Webhook não configurado' };
+  }
+  const provided = req.headers.get('x-bitrix-webhook-secret') || url.searchParams.get('token');
+  if (provided !== BITRIX24_WEBHOOK_SECRET) {
+    return { ok: false, status: 401, error: 'Não autorizado' };
+  }
+  return { ok: true };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: getCorsHeaders(req) });
@@ -771,6 +844,36 @@ serve(async (req) => {
   const url = new URL(req.url);
   const action = url.searchParams.get('action');
   const triggeredBy = url.searchParams.get('triggered_by') || 'manual';
+
+  // Auth gate — every action except the OAuth browser-redirect callback
+  // (which cannot carry a Supabase session) requires either a signed-in user
+  // (push), an elevated role (management/config actions) or the Bitrix
+  // webhook shared secret (webhook).
+  if (action === 'webhook') {
+    const auth = verifyBitrixWebhookSecret(req, url);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error }), {
+        status: auth.status,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+  } else if (action === 'push') {
+    const auth = await requireAuthenticatedUser(req);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error }), {
+        status: auth.status,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+  } else if (action !== 'oauth-callback') {
+    const auth = await requireElevatedRole(req, supabase);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error }), {
+        status: auth.status,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+  }
 
   try {
     let result;

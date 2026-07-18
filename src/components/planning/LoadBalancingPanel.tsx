@@ -48,6 +48,7 @@ export function LoadBalancingPanel({ onExplain }: LoadBalancingPanelProps) {
       });
 
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
     } catch (error) {
 
       toast.error('Erro ao reequilibrar carga');

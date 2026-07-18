@@ -52,3 +52,36 @@ export function requireCronSecret(
 
   return reject();
 }
+
+/**
+ * Guard for functions that are both (a) invoked by the app on behalf of any
+ * signed-in user (e.g. `supabase.functions.invoke(...)`, which forwards the
+ * caller's session as `Authorization: Bearer <access_token>`) and (b) meant
+ * to also run unattended from a scheduler. Accepts either a valid Supabase
+ * user session OR the cron secret — never a bare "no header" pass-through.
+ *
+ * Needs a service-role client to verify the token (auth.getUser via an
+ * anon-key client scoped to the caller's Authorization header).
+ */
+export async function requireUserOrCronSecret(
+  req: Request,
+  options: { supabaseUrl: string; supabaseAnonKey: string; corsHeaders?: Record<string, string> }
+): Promise<Response | null> {
+  const { supabaseUrl, supabaseAnonKey, corsHeaders = {} } = options;
+  const authHeader = req.headers.get("Authorization");
+
+  if (authHeader) {
+    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user } } = await userClient.auth.getUser();
+    if (user) return null;
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  return requireCronSecret(req, { failClosed: true, corsHeaders });
+}

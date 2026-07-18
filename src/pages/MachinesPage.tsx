@@ -488,6 +488,7 @@ export default function MachinesPage() {
           schedule={selectedSchedule}
           recordId={currentRecordId}
           onComplete={handleCompleteMaintenance}
+          isSubmitting={completeMaintenance.isPending}
         />
 
         {/* Create Schedule Modal */}

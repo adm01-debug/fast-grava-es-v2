@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth, AppRole } from '@/features/auth';
+import { useAuth, AppRole, useAuthenticatorAssuranceLevel } from '@/features/auth';
 import { logger } from '@/lib/logger';
 import { Loader2 } from 'lucide-react';
 
@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, role, isLoading } = useAuth();
+  const { checked: aalChecked, needsMfaChallenge } = useAuthenticatorAssuranceLevel();
   const location = useLocation();
 
   // Log rendering path in development
@@ -24,7 +25,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }, 'ProtectedRoute');
   }
 
-  if (isLoading) {
+  if (isLoading || (user && !aalChecked)) {
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -38,6 +39,17 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (!user) {
     logger.info('No user session, redirecting to /auth', { path: location.pathname }, 'ProtectedRoute');
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  // A session (AAL1) does not by itself prove MFA was completed. If the
+  // account has a verified MFA factor and this session hasn't stepped up to
+  // aal2, send the user back to /auth — which shows the MFA challenge for an
+  // existing session — instead of rendering protected content. Without this,
+  // MFA was enforced only by AuthPage's own UI flow and could be bypassed by
+  // navigating straight to any protected route right after password sign-in.
+  if (needsMfaChallenge) {
+    logger.info('Session has not completed MFA (aal1), redirecting to /auth', { path: location.pathname }, 'ProtectedRoute');
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 

@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { Database } from '@/integrations/supabase/types';
+import { sanitizeCsvCell } from '@/lib/csvSafety';
 
 type TableName = keyof Database['public']['Tables'];
 export type ExportFormat = 'csv' | 'json';
@@ -43,7 +44,7 @@ function convertToCSV(data: Record<string, unknown>[], columns?: string[]): stri
     keys.map(key => {
       const value = row[key];
       if (value === null || value === undefined) return '';
-      const str = String(value);
+      const str = sanitizeCsvCell(String(value));
       if (str.includes(',') || str.includes('"') || str.includes('\n')) {
         return `"${str.replace(/"/g, '""')}"`;
       }

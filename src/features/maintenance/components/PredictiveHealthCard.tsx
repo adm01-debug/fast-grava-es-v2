@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/purity -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -38,14 +37,36 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
     );
   }
 
-  // Fallback to simulated data if no prediction exists in DB
-  const displayData = prediction || {
-    risk_score: 15,
-    confidence: 0.92,
-    predicted_failure_date: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-    factors: { vibration: 'low', temperature: 'normal', runtime: '850h' },
-    recommendations: ['Manter plano de lubrificação atual', 'Verificar alinhamento no próximo setup']
-  };
+  // No fabricated fallback: a machine without a real prediction row shows an
+  // explicit "no data" state instead of invented risk/confidence numbers
+  // presented as if they were AI output.
+  if (!prediction) {
+    return (
+      <Card className="glass-card overflow-hidden">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Brain className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-base text-title">Saúde Preditiva IA</CardTitle>
+              <CardDescription className="text-xs">Motor de inferência TPM 4.0</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground text-center py-6">
+            Sem predição disponível para esta máquina ainda.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const displayData = prediction;
+  const recommendation = Array.isArray(displayData.recommendations) && displayData.recommendations.length > 0
+    ? String(displayData.recommendations[0])
+    : 'Sem recomendação disponível';
 
   const riskColor = displayData.risk_score > 70 ? 'text-destructive' : displayData.risk_score > 40 ? 'text-warning' : 'text-success';
   const riskBg = displayData.risk_score > 70 ? 'bg-destructive/10' : displayData.risk_score > 40 ? 'bg-warning/10' : 'bg-success/10';
@@ -102,7 +123,7 @@ export function PredictiveHealthCard({ machineId }: PredictiveHealthCardProps) {
             <p className="text-[10px] text-muted-foreground uppercase">Recomendação</p>
             <div className="flex items-center gap-1">
               <AlertTriangle className="h-3 w-3 text-warning" />
-              <p className="text-[10px] font-medium truncate">Monitorar Vibração</p>
+              <p className="text-[10px] font-medium truncate" title={recommendation}>{recommendation}</p>
             </div>
           </div>
         </div>

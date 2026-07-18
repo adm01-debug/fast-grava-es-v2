@@ -331,7 +331,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       // Validação de requisitos mínimos (fotos e assinaturas)
       const { data: record, error: fetchErr } = await supabase
         .from('maintenance_records')
-        .select('*, responses:maintenance_item_responses(*)')
+        .select('*, responses:maintenance_item_responses(*, checklist_item:maintenance_checklist_items(requires_photo))')
         .eq('id', data.record_id)
         .single();
 
@@ -339,10 +339,14 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
 
       if (!record.signature_url) throw new Error('Assinatura obrigatória ausente');
 
-      // Requisito: pelo menos uma foto se algum item de checklist exigir foto
-      type ResponseRow = { requires_photo?: boolean | null; photo_url?: string | null };
+      // Requisito: pelo menos uma foto se algum item de checklist exigir foto.
+      // requires_photo lives on maintenance_checklist_items, not on the
+      // response row itself — must join through checklist_item_id to read it
+      // (a bare cast to a shape with requires_photo on the response silently
+      // always evaluated to false, so this check never actually fired).
+      type ResponseRow = { checklist_item?: { requires_photo?: boolean | null } | null; photo_url?: string | null };
       const responses = (record.responses || []) as ResponseRow[];
-      const hasPhotoRequired = responses.some((r) => r.requires_photo);
+      const hasPhotoRequired = responses.some((r) => r.checklist_item?.requires_photo);
       const hasPhoto = responses.some((r) => r.photo_url);
       if (hasPhotoRequired && !hasPhoto) {
         throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
@@ -558,26 +562,54 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
   });
 
-  // Approve batch mutation
+  // Approve batch mutation. Must enforce the same minimum-evidence
+  // requirements as single approveMaintenance (signature + photo when
+  // required) — the batch path previously skipped that validation entirely,
+  // letting records without required evidence get approved when done via
+  // the batch UI but not the single-record UI. Every write's error is also
+  // checked; a mid-batch RLS/constraint failure previously went unnoticed
+  // and was still reported to the user as a full success.
   const approveBatch = useMutation({
     mutationFn: async (data: {
       record_ids: string[];
       approver_id: string;
     }) => {
-      const results = [];
+      const approved: string[] = [];
+      const failed: Array<{ id: string; reason: string }> = [];
+
       for (const id of data.record_ids) {
-        const { data: recordRaw } = await supabase
+        const { data: recordRaw, error: fetchErr } = await supabase
           .from('maintenance_records')
-          .select('*, schedule:maintenance_schedules(*)')
+          .select('*, schedule:maintenance_schedules(*), responses:maintenance_item_responses(*, checklist_item:maintenance_checklist_items(requires_photo))')
           .eq('id', id)
           .single();
 
-        const record = recordRaw as (typeof recordRaw & { schedule?: { id: string; interval_days?: number } | null }) | null;
-        if (!record) continue;
+        const record = recordRaw as (typeof recordRaw & {
+          schedule?: { id: string; interval_days?: number } | null;
+          responses?: Array<{ checklist_item?: { requires_photo?: boolean | null } | null; photo_url?: string | null }> | null;
+        }) | null;
+
+        if (fetchErr || !record) {
+          failed.push({ id, reason: 'Registro não encontrado' });
+          continue;
+        }
+
+        if (!record.signature_url) {
+          failed.push({ id, reason: 'Assinatura obrigatória ausente' });
+          continue;
+        }
+
+        const responses = record.responses || [];
+        const hasPhotoRequired = responses.some((r) => r.checklist_item?.requires_photo);
+        const hasPhoto = responses.some((r) => r.photo_url);
+        if (hasPhotoRequired && !hasPhoto) {
+          failed.push({ id, reason: 'Foto de evidência obrigatória ausente' });
+          continue;
+        }
 
         const nextDue = addDays(new Date(), record.schedule?.interval_days || 30).toISOString();
 
-        await supabase
+        const { error: recordError } = await supabase
           .from('maintenance_records')
           .update({
             status: 'approved',
@@ -587,23 +619,43 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
           } as never)
           .eq('id', id);
 
+        if (recordError) {
+          failed.push({ id, reason: recordError.message });
+          continue;
+        }
+
         if (record.schedule) {
-          await supabase
+          const { error: scheduleError } = await supabase
             .from('maintenance_schedules')
             .update({
               last_completed_at: new Date().toISOString(),
               next_due_at: nextDue,
             })
             .eq('id', record.schedule.id);
+
+          if (scheduleError) {
+            failed.push({ id, reason: scheduleError.message });
+            continue;
+          }
         }
-        results.push(id);
+        approved.push(id);
       }
-      return results;
+      return { approved, failed };
     },
-    onSuccess: (ids) => {
+    onSuccess: ({ approved, failed }) => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
-      toast.success(`${ids.length} manutenções aprovadas em lote`);
+      if (approved.length > 0) {
+        toast.success(`${approved.length} manutenções aprovadas em lote`);
+      }
+      if (failed.length > 0) {
+        toast.error(`${failed.length} manutenções não puderam ser aprovadas`, {
+          description: failed.map(f => f.reason).slice(0, 3).join('; '),
+        });
+      }
+    },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao aprovar manutenções em lote', TPM_ERROR_CONTEXT.records);
     },
   });
 

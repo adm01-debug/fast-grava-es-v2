@@ -22,8 +22,14 @@ const BASE_LOCKOUT_MINUTES = 1; // First lockout: 1 minute
 
 interface LockoutRequest {
   email: string;
-  ip_address?: string;
   action: 'check' | 'record_failure' | 'record_success';
+}
+
+function getClientIp(req: Request): string | null {
+  const forwardedFor = req.headers.get('x-forwarded-for');
+  if (forwardedFor) return forwardedFor.split(',')[0].trim();
+  const realIp = req.headers.get('x-real-ip');
+  return realIp ? realIp.trim() : null;
 }
 
 interface LockoutRecord {
@@ -53,7 +59,10 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { email, ip_address, action }: LockoutRequest = await req.json();
+    const { email, action }: LockoutRequest = await req.json();
+    // Server-derived — a client-supplied IP would let an attacker spoof/rotate
+    // to evade IP-based lockout, or frame another IP as the failing source.
+    const ip_address = getClientIp(req);
 
     if (!email || !action) {
       return new Response(
@@ -63,6 +72,25 @@ serve(async (req) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+
+    // record_success must prove the caller actually holds a session for this
+    // email — otherwise anyone could call action=record_success for any
+    // email to reset their own (or a stranger's) failed-attempt counter and
+    // brute-force indefinitely without ever having valid credentials.
+    if (action === 'record_success') {
+      const authHeader = req.headers.get('Authorization');
+      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+      const userClient = authHeader
+        ? createClient(supabaseUrl, supabaseAnonKey, { global: { headers: { Authorization: authHeader } } })
+        : null;
+      const { data: { user } } = userClient ? await userClient.auth.getUser() : { data: { user: null } };
+      if (!user || user.email?.toLowerCase().trim() !== normalizedEmail) {
+        return new Response(
+          JSON.stringify({ error: 'Não autorizado' }),
+          { status: 401, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
+        );
+      }
+    }
 
     // Get current lockout status for email
     const { data: emailLockout, error: emailError } = await supabase

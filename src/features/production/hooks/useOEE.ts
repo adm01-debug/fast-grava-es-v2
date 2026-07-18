@@ -229,7 +229,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           }
         }
         estimated += sanitizeNumber(job.estimated_duration || 60);
-        produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
+        // Null produced_quantity means "not recorded", not "fully produced as
+        // ordered" — falling back to job.quantity fabricated 100% output with
+        // zero loss for finished jobs whose production was never logged.
+        produced += sanitizeNumber(job.produced_quantity ?? 0);
         lost += sanitizeNumber(job.lost_pieces);
       }
       const planned = Math.max(machineDays * plannedMinPerDay, estimated);
@@ -334,34 +337,18 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       });
       const m = calculateMetrics(studioJobs, Math.max(studioJobs.length, 1), PLANNED_MINUTES_PER_DAY);
 
-      // Derive health score from actual OEE data
-      let healthScore = Math.round(Math.max(0, Math.min(100, m.oee)));
+      // Derive health score from actual OEE data. There is no real
+      // consumable/wear-level data source (no sensor/inventory feed for
+      // lamp/ink/optics wear per studio) — previously this was overwritten
+      // with hardcoded per-studio literals presented as live status, which
+      // never changed regardless of actual machine condition. Left empty
+      // rather than fabricated; wire to a real source (inventory_items /
+      // machine_health_metrics) when one exists.
+      const healthScore = Math.round(Math.max(0, Math.min(100, m.oee)));
       let maintenanceStatus: StudioOEE['maintenanceStatus'] = 'optimal';
       if (healthScore < 60) maintenanceStatus = 'critical';
       else if (healthScore < 80) maintenanceStatus = 'warning';
-      let consumables: StudioOEE['consumables'] = [];
-
-      if (studio.id === 'personalizacao_uv') {
-        healthScore = 78;
-        maintenanceStatus = 'warning';
-        consumables = [
-          { name: 'Lâmpada UV', level: 45 },
-          { name: 'Tintas CMYK', level: 68 },
-          { name: 'Verniz High-Gloss', level: 12 }
-        ];
-      } else if (studio.id === 'laser') {
-        healthScore = 92;
-        consumables = [
-          { name: 'Tubo de Laser CO2', level: 85 },
-          { name: 'Ópticas/Lentes', level: 90 }
-        ];
-      } else if (studio.id.includes('serigrafia')) {
-        healthScore = 88;
-        consumables = [
-          { name: 'Emulsão', level: 75 },
-          { name: 'Rodo de Impressão', level: 60 }
-        ];
-      }
+      const consumables: StudioOEE['consumables'] = [];
 
       return {
         studioId: studio.id,
@@ -397,7 +384,7 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
 
     const byMaterial = Array.from(materialJobsMap.entries()).map(([material, matJobs]) => {
       const m = calculateMetrics(matJobs, Math.max(matJobs.length, 1), PLANNED_MINUTES_PER_DAY);
-      const totalPieces = matJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
+      const totalPieces = matJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? 0), 0);
       return {
         material,
         oee: Math.round(m.oee * 10) / 10,

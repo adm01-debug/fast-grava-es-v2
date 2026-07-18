@@ -209,9 +209,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const ipAddress = await AuthService.getClientIP();
-    const lockoutStatus = await AuthService.checkLockout(email, ipAddress);
-    
+    const lockoutStatus = await AuthService.checkLockout(email);
+
     if (lockoutStatus.locked) {
       const lockoutError = new LockoutError(
         lockoutStatus.message || 'Conta temporariamente bloqueada',
@@ -222,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const data = await AuthService.signIn(email, password);
-      await AuthService.recordLoginAttempt(email, true, ipAddress);
+      await AuthService.recordLoginAttempt(email, true);
 
       if (data.user) {
         // NÃO chamamos setSession/setUser/fetchUserData aqui — onAuthStateChange
@@ -258,7 +257,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return { error: null };
     } catch (error: unknown) {
-      const result = await AuthService.recordLoginAttempt(email, false, ipAddress);
+      const result = await AuthService.recordLoginAttempt(email, false);
 
       if (result.locked) {
         const lockoutError = new LockoutError(

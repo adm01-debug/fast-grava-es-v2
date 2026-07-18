@@ -1,3 +1,13 @@
+import { sanitizeCsvCell } from '@/lib/csvSafety';
+
+// RFC-4180 quoted field: sanitize for formula injection first, then double
+// any embedded quotes and wrap. The previous `"${value}"` interpolation
+// never escaped embedded `"` characters, so a value containing one (e.g. a
+// reason/item name with a quote) corrupted the row's column boundaries.
+function csvField(value: string): string {
+  return `"${sanitizeCsvCell(value).replace(/"/g, '""')}"`;
+}
+
 export interface InventoryMovementExportRow {
   id: string;
   created_at: string | null;
@@ -37,14 +47,14 @@ export function exportInventoryMovementsToCSV(movements: InventoryMovementExport
 
       return [
         m.id,
-        `"${date}"`,
-        `"${itemName}"`,
+        csvField(date),
+        csvField(itemName),
         type,
         m.quantity,
-        `"${userName}"`,
-        `"${m.from_location || ''}"`,
-        `"${m.to_location || ''}"`,
-        `"${m.reason || ''}"`
+        csvField(userName),
+        csvField(m.from_location || ''),
+        csvField(m.to_location || ''),
+        csvField(m.reason || '')
       ].join(',');
     })
   ].join('\n');

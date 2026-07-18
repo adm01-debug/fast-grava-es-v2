@@ -3,6 +3,7 @@ import type { Database } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
 import { jobSchema, JobStatus, JobPriority } from '../types/job.schema';
 import { assertTransition } from './jobStateMachine';
+import { edgeFunctionFetch } from '@/lib/edgeFunctionFetch';
 
 export type { JobStatus, JobPriority };
 
@@ -98,17 +99,10 @@ export const jobsService = {
 
   async syncToBitrix24(jobId: string, status: JobStatus) {
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      if (supabaseUrl) {
-        fetch(`${supabaseUrl}/functions/v1/bitrix24-sync?action=push`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ jobId, status })
-        }).catch(() => { /* fire and forget */ });
-      }
+      edgeFunctionFetch('bitrix24-sync?action=push', {
+        method: 'POST',
+        body: JSON.stringify({ jobId, status })
+      }).catch(() => { /* fire and forget */ });
     } catch (e) {
       // Ignore errors in fire-and-forget sync
     }

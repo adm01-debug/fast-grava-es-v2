@@ -1,5 +1,18 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireCronSecret } from "../_shared/cronAuth.ts";
+import { escapeHtml } from "../_shared/htmlEscape.ts";
+
+function safeImageUrl(url: unknown): string | null {
+  if (typeof url !== 'string') return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return null;
+    return escapeHtml(url);
+  } catch {
+    return null;
+  }
+}
 
 const ALLOWED_ORIGINS = [
   Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
@@ -21,6 +34,11 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
+
+  // Triggered only by the Supabase DB webhook on loss-risk-alert INSERT —
+  // requires the shared secret configured on that webhook's headers.
+  const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) });
+  if (unauthorized) return unauthorized;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -94,9 +112,12 @@ serve(async (req) => {
 
     // 4. Send email via Resend
     if (resendApiKey) {
-      const evidenceHtml = alert.evidence_urls && alert.evidence_urls.length > 0
+      const safeEvidenceUrls = Array.isArray(alert.evidence_urls)
+        ? alert.evidence_urls.map(safeImageUrl).filter((u: string | null): u is string => u !== null)
+        : [];
+      const evidenceHtml = safeEvidenceUrls.length > 0
         ? `<p><strong>Evidências:</strong></p><div style="display: flex; gap: 10px; margin-top: 10px;">
-           ${alert.evidence_urls.map((url: string) => `<img src="${url}" style="width: 150px; height: 150px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" />`).join('')}
+           ${safeEvidenceUrls.map((url: string) => `<img src="${url}" style="width: 150px; height: 150px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" />`).join('')}
            </div>`
         : '<p><em>Nenhuma foto de evidência anexada.</em></p>';
 
@@ -106,12 +127,12 @@ serve(async (req) => {
           <p>Olá,</p>
           <p>Um novo alerta de risco crítico foi registrado durante a execução de uma manutenção TPM:</p>
           <div style="background: #fef2f2; padding: 15px; border-radius: 6px; margin: 20px 0;">
-            <p><strong>Máquina:</strong> ${machine?.name} (${machine?.code})</p>
-            <p><strong>Evento:</strong> ${alert.description}</p>
-            <p><strong>Valor Registrado:</strong> ${alert.actual_value}</p>
-            <p><strong>Range Esperado:</strong> ${alert.expected_range}</p>
-            <p><strong>Horário da Ocorrência:</strong> ${new Date(alert.created_at).toLocaleString('pt-BR')}</p>
-            <p><strong>Operador:</strong> ${execution.performed_by_name || 'N/A'}</p>
+            <p><strong>Máquina:</strong> ${escapeHtml(machine?.name)} (${escapeHtml(machine?.code)})</p>
+            <p><strong>Evento:</strong> ${escapeHtml(alert.description)}</p>
+            <p><strong>Valor Registrado:</strong> ${escapeHtml(alert.actual_value)}</p>
+            <p><strong>Range Esperado:</strong> ${escapeHtml(alert.expected_range)}</p>
+            <p><strong>Horário da Ocorrência:</strong> ${escapeHtml(new Date(alert.created_at).toLocaleString('pt-BR'))}</p>
+            <p><strong>Operador:</strong> ${escapeHtml(execution.performed_by_name || 'N/A')}</p>
           </div>
           ${evidenceHtml}
           <div style="margin-top: 25px;">

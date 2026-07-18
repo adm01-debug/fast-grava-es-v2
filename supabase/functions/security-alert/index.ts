@@ -24,7 +24,9 @@ Deno.serve(async (req) => {
 
   // Writes to the security_events audit table with the service-role key, so
   // gate it behind CRON_SECRET when configured (prevents forged audit records).
-  const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) });
+  // Writes to security_events (the audit trail) — fail closed so forged
+  // records can't be planted just because CRON_SECRET isn't configured yet.
+  const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) });
   if (unauthorized) return unauthorized;
 
   try {

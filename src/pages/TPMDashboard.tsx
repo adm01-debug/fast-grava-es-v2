@@ -370,6 +370,7 @@ export default function TPMDashboard() {
           schedule={selectedSchedule}
           recordId={currentRecordId}
           onComplete={handleCompleteMaintenance}
+          isSubmitting={completeMaintenance.isPending}
         />
       </div>
     </MainLayout>

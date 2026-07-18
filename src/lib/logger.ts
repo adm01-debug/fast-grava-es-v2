@@ -93,15 +93,17 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
 }
 
 function enqueuePersist(level: LogLevel, message: string, context: string | undefined, data: unknown): void {
+  const rawStack = data instanceof Error ? data.stack ?? null : (data !== undefined ? safeStringify(data) : null);
+  const rawData = data instanceof Error ? { name: data.name, message: data.message } : data;
   persistQueue.push({
-    message,
-    stack: data instanceof Error ? data.stack ?? null : (data !== undefined ? safeStringify(data) : null),
+    message: redactString(message),
+    stack: rawStack ? redactString(rawStack) : null,
     component_name: context || 'global',
-    url: typeof window !== 'undefined' ? window.location.href : '',
+    url: typeof window !== 'undefined' ? redactUrl(window.location.href) : '',
     metadata: {
       level,
       severity: SEVERITY_MAP[level],
-      data: data instanceof Error ? { name: data.name, message: data.message } : (data as never),
+      data: redactDeep(rawData) as never,
     },
   });
   // Bound memory: drop the oldest entries if the DB is unreachable for a while.
@@ -118,6 +120,47 @@ function safeStringify(value: unknown): string {
   } catch {
     return String(value);
   }
+}
+
+// --- PII redaction ----------------------------------------------------------
+// This module's own contract ("Never logs PII") was not actually enforced:
+// error.message/stack can embed literal values (e.g. a Postgres unique-
+// constraint violation echoes the offending column value back in the
+// message), and `data`/`url` were persisted to error_logs and forwarded to
+// the alert webhook completely unredacted. Scrub emails and JWT-shaped
+// tokens from any string before it is persisted or sent externally, and
+// strip query strings from URLs (which can carry tokens/emails/ids).
+const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+const JWT_RE = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/g;
+
+function redactString(value: string): string {
+  return value.replace(EMAIL_RE, '[REDACTED_EMAIL]').replace(JWT_RE, '[REDACTED_TOKEN]');
+}
+
+function redactUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    // Not a full URL (e.g. relative path) — still strip anything after '?'/'#'.
+    return url.split(/[?#]/)[0];
+  }
+}
+
+/** Recursively redacts PII-shaped strings anywhere in a value before it is
+ * persisted/forwarded. Depth-limited to avoid pathological input. */
+function redactDeep(value: unknown, depth = 0): unknown {
+  if (depth > 5) return '[REDACTED_DEPTH_LIMIT]';
+  if (typeof value === 'string') return redactString(value);
+  if (Array.isArray(value)) return value.map((v) => redactDeep(v, depth + 1));
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      out[k] = redactDeep(v, depth + 1);
+    }
+    return out;
+  }
+  return value;
 }
 
 function formatEntry(entry: LogEntry): string {
@@ -188,8 +231,8 @@ export const logger = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'CRITICAL_ERROR',
-          message,
-          error: error instanceof Error ? error.message : String(error),
+          message: redactString(message),
+          error: redactString(error instanceof Error ? error.message : String(error)),
           context,
           timestamp: entry.timestamp,
           system: 'FAST_GRAVAÇÕES_PROD'
