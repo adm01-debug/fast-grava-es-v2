@@ -266,7 +266,8 @@ Deno.serve(async (req) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${supabaseKey}`
           },
-          body: JSON.stringify(pushPayload)
+          body: JSON.stringify(pushPayload),
+          signal: AbortSignal.timeout(10_000),
         });
 
         if (pushResponse.ok) {
