@@ -56,7 +56,14 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const rankingType = body.ranking_type || "weekly";
+    const rankingType: string = body.ranking_type || "weekly";
+    const ALLOWED_RANKING_TYPES = ["daily", "weekly", "monthly"];
+    if (!ALLOWED_RANKING_TYPES.includes(rankingType)) {
+      return new Response(JSON.stringify({ error: "ranking_type inválido. Use: daily, weekly ou monthly" }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
     console.log(`Calculating ${rankingType} rankings...`);
 

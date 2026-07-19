@@ -47,7 +47,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const deviceInfo: DeviceInfo = await req.json();
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
+      return new Response(JSON.stringify({ error: 'Corpo da requisição inválido' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    const deviceInfo: DeviceInfo = rawBody as DeviceInfo;
     // Trust the token, not the body, for identity fields. Do NOT fall back to
     // the body email when the token has none — that would re-open forged
     // alert recipients.
@@ -269,12 +276,13 @@ Deno.serve(async (req) => {
           }
         };
 
-        // Chamar a edge function de push notification
+        // Chamar a edge function de push notification usando o JWT do usuário
+        // (não o service role key, que não é aceito pelo endpoint que valida JWT).
         const pushResponse = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseKey}`
+            'Authorization': authHeader,
           },
           body: JSON.stringify(pushPayload),
           signal: AbortSignal.timeout(10_000),
