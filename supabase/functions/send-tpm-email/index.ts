@@ -115,8 +115,8 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ success: true, notified: subscriberEmails.length }), { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
-  } catch (error: any) {
-    console.error('[send-tpm-email] Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
+  } catch (error: unknown) {
+    console.error('[send-tpm-email] Error:', error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
   }
 });

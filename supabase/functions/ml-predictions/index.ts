@@ -258,9 +258,8 @@ Responda APENAS com JSON no formato:
     });
 
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("ML Predictions error:", errorMessage);
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    console.error("ML Predictions error:", error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });

@@ -156,9 +156,9 @@ serve(async (req) => {
       status: 200,
     })
 
-  } catch (error) {
-    console.error('Unexpected error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: unknown) {
+    console.error('Unexpected error:', error instanceof Error ? error.message : String(error))
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       status: 500,
     })
