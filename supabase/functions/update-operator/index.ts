@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    console.log('Updating operator:', operator_id, { full_name, phone })
+    console.log('Updating operator:', operator_id)
 
     // Update profile
     const { error: updateError } = await supabaseAdmin
