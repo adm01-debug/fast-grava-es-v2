@@ -57,11 +57,11 @@ Deno.serve(async (req) => {
       }
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Health check error:', error instanceof Error ? error.message : String(error));
     return new Response(
       JSON.stringify({
         status: "unhealthy",
-        error: message,
+        error: "Health check failed",
         timestamp: new Date().toISOString(),
         fallback: true,
       }),
