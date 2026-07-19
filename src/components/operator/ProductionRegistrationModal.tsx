@@ -14,6 +14,7 @@ import { DbJob } from '@/features/jobs';
 import { canTransition } from '@/features/jobs/services/jobStateMachine';
 import { JobStatus } from '@/types/scheduling';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { validateFileMagicBytes } from '@/lib/file-validation';
 import { safeParseInt, safeParseFloat } from '@/lib/utils';
 import {
@@ -236,8 +237,7 @@ export function ProductionRegistrationModal({
       toast.success('Produção finalizada com sucesso!');
       onOpenChange(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro desconhecido';
-      toast.error(`Erro ao salvar registro de produção: ${message}`);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao salvar registro de produção');
     } finally {
       setIsSaving(false);
     }

@@ -17,6 +17,7 @@ import {
   List
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { edgeFunctionFetch } from '@/lib/edgeFunctionFetch';
 
 interface FieldMappingData {
@@ -76,8 +77,7 @@ export const Bitrix24FieldMapping = () => {
         toast.error(`Erro de conexão: ${data.error}`);
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro desconhecido';
-      toast.error(`Falha na conexão: ${message}`);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Falha na conexão com Bitrix24');
     } finally {
       setIsTestingConnection(false);
     }

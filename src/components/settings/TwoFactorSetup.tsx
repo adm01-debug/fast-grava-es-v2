@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { showErrorToast } from '@/lib/errorHandling';
 import { Shield, ShieldCheck, ShieldOff, Loader2, Copy, QrCode, Key, AlertTriangle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -64,8 +65,7 @@ export function TwoFactorSetup() {
         setShowEnrollDialog(true);
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao configurar 2FA';
-      toast.error(message);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao configurar 2FA');
     } finally {
       setIsEnrolling(false);
     }
@@ -106,8 +106,7 @@ export function TwoFactorSetup() {
       setVerifyCode('');
       fetchMfaFactors();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Código inválido';
-      toast.error(message);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao verificar código 2FA');
     } finally {
       setIsEnrolling(false);
     }
@@ -156,8 +155,7 @@ export function TwoFactorSetup() {
       setDisableCode('');
       fetchMfaFactors();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Código inválido';
-      toast.error(message);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao desativar 2FA');
     } finally {
       setIsDisabling(false);
     }
