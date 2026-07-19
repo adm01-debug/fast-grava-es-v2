@@ -8,6 +8,7 @@ import { useNotifications } from '@/features/notifications';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 const typeColors: Record<string, string> = {
   info: 'bg-blue-500', success: 'bg-green-500', warning: 'bg-yellow-500', error: 'bg-red-500', urgent: 'bg-red-600',
@@ -15,6 +16,15 @@ const typeColors: Record<string, string> = {
 
 export function NotificationCenter() {
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
+  const navigate = useNavigate();
+
+  const handleNotificationClick = (actionUrl: string | null | undefined) => {
+    if (!actionUrl) return;
+    // Only allow same-origin relative paths to prevent open redirect
+    if (actionUrl.startsWith('/') && !actionUrl.startsWith('//')) {
+      navigate(actionUrl);
+    }
+  };
 
   return (
     <Popover>
@@ -74,8 +84,8 @@ export function NotificationCenter() {
                         "p-4 hover:bg-accent/40 cursor-pointer transition-colors relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                         !n.is_read && "bg-primary/[0.03]"
                       )}
-                      onClick={() => { markAsRead(n.id); if (n.action_url) window.location.href = n.action_url; }}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); markAsRead(n.id); if (n.action_url) window.location.href = n.action_url; } }}
+                      onClick={() => { markAsRead(n.id); handleNotificationClick(n.action_url); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); markAsRead(n.id); handleNotificationClick(n.action_url); } }}
                     >
                       {!n.is_read && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
                       <div className="flex items-start gap-3">

@@ -95,7 +95,7 @@ export function useNotificationPreferences() {
 
   const persist = useCallback((prefs: NotificationPreferences) => {
     setPreferences(prefs);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch { /* quota exceeded or private browsing */ }
   }, []);
 
   const updateCategory = useCallback(

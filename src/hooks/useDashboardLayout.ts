@@ -95,7 +95,7 @@ export function useDashboardLayout() {
           }
         }
       } catch (err) {
-        // Silent fail for non-critical layout loading
+        logger.warn('Falha ao carregar layout do dashboard', err, 'useDashboardLayout');
       }
     };
 

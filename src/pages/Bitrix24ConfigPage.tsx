@@ -72,7 +72,7 @@ const Bitrix24ConfigPage = () => {
   const fetchMappings = async () => {
     setIsLoading(true);
     try { const result = await callBitrixSync('list-mappings'); setAllMappings(result.mappings || []); }
-    catch (error) { /* Error handled silently in UI */ }
+    catch (error) { toast({ title: 'Erro ao carregar mapeamentos', description: error instanceof Error ? error.message : 'Erro desconhecido', variant: 'destructive' }); }
     finally { setIsLoading(false); }
   };
 

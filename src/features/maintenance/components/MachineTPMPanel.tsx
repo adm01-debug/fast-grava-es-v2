@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Wrench, Calendar, History, Plus, AlertTriangle, CheckCircle2, Clock, Settings, Layout } from 'lucide-react';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
+import { useNavigate } from 'react-router-dom';
 import { format, isPast, isToday, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,6 +41,7 @@ interface TPMAlert {
 
 export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSchedule }: MachineTPMPanelProps) {
   const { schedules, records, alerts } = useTPM();
+  const navigate = useNavigate();
 
   const machineSchedules = (schedules as TPMSchedule[]).filter((s) => s.machine_id === machineId);
   const machineRecords = (records as TPMRecord[]).filter((r) => r.machine_id === machineId).slice(0, 10);
@@ -182,7 +184,7 @@ export function MachineTPMPanel({ machineId, onStartMaintenance, onOpenCreateSch
       </Card>
 
       <div className="flex justify-end">
-        <Button variant="link" size="sm" className="text-xs gap-1" onClick={() => window.location.href = '/tpm'}>
+        <Button variant="link" size="sm" className="text-xs gap-1" onClick={() => navigate('/tpm')}>
           Ver Painel TPM Completo <Clock className="h-3 w-3" />
         </Button>
       </div>

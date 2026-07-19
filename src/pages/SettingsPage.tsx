@@ -25,26 +25,38 @@ function usePersistedSettings() {
   const storageKey = `app-settings-${user?.id || 'guest'}`;
   const [settings, setSettings] = useState(() => {
     if (typeof window === 'undefined') return { notifications: true, sounds: true, autoRefresh: true };
-    const stored = localStorage.getItem(storageKey);
-    return stored ? JSON.parse(stored) : { notifications: true, sounds: true, autoRefresh: true };
+    try {
+      const stored = localStorage.getItem(storageKey);
+      return stored ? JSON.parse(stored) : { notifications: true, sounds: true, autoRefresh: true };
+    } catch {
+      return { notifications: true, sounds: true, autoRefresh: true };
+    }
   });
-  useEffect(() => { localStorage.setItem(storageKey, JSON.stringify(settings)); }, [settings, storageKey]);
+  useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify(settings)); } catch { /* quota exceeded */ } }, [settings, storageKey]);
   return [settings, setSettings] as const;
 }
 
 function useAlertThresholds() {
   const [thresholds, setThresholds] = useState(() => {
-    const stored = localStorage.getItem('alert-thresholds');
-    return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 };
+    try {
+      const stored = localStorage.getItem('alert-thresholds');
+      return stored ? JSON.parse(stored) : { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 };
+    } catch {
+      return { lowBuffer: 30, criticalBuffer: 10, delayedJobMinutes: 60, oeeWarning: 70, oeeCritical: 50, energyPeakKw: 100, bottleneckRiskMinutes: 480, estimatedLoadLimitPercentage: 90 };
+    }
   });
 
   const [entityThresholds, setEntityThresholds] = useState<Record<string, number>>(() => {
-    const stored = localStorage.getItem('entity-thresholds');
-    return stored ? JSON.parse(stored) : {};
+    try {
+      const stored = localStorage.getItem('entity-thresholds');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
   });
 
-  useEffect(() => { localStorage.setItem('alert-thresholds', JSON.stringify(thresholds)); }, [thresholds]);
-  useEffect(() => { localStorage.setItem('entity-thresholds', JSON.stringify(entityThresholds)); }, [entityThresholds]);
+  useEffect(() => { try { localStorage.setItem('alert-thresholds', JSON.stringify(thresholds)); } catch { /* quota exceeded */ } }, [thresholds]);
+  useEffect(() => { try { localStorage.setItem('entity-thresholds', JSON.stringify(entityThresholds)); } catch { /* quota exceeded */ } }, [entityThresholds]);
 
   return [thresholds, setThresholds, entityThresholds, setEntityThresholds] as const;
 }

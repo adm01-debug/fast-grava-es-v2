@@ -66,19 +66,24 @@ export default function KanbanBoard() {
 
   // Filters (initialized from localStorage)
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTechnique, setSelectedTechnique] = useState(() => localStorage.getItem('kanban-filter-technique') || 'all');
-  const [selectedPriority, setSelectedPriority] = useState(() => localStorage.getItem('kanban-filter-priority') || 'all');
-  const [selectedMachine, setSelectedMachine] = useState(() => localStorage.getItem('kanban-filter-machine') || 'all');
-  const [viewMode, setViewMode] = useState<ViewMode>(() => (localStorage.getItem('kanban-view-mode') as ViewMode) || 'expanded');
-  const [swimlanesMode, setSwimlanesMode] = useState<SwimlanesMode>(() => (localStorage.getItem('kanban-swimlanes-mode') as SwimlanesMode) || 'none');
+  const safeGetItem = (key: string, fallback: string): string => {
+    try { return localStorage.getItem(key) || fallback; } catch { return fallback; }
+  };
+  const [selectedTechnique, setSelectedTechnique] = useState(() => safeGetItem('kanban-filter-technique', 'all'));
+  const [selectedPriority, setSelectedPriority] = useState(() => safeGetItem('kanban-filter-priority', 'all'));
+  const [selectedMachine, setSelectedMachine] = useState(() => safeGetItem('kanban-filter-machine', 'all'));
+  const [viewMode, setViewMode] = useState<ViewMode>(() => safeGetItem('kanban-view-mode', 'expanded') as ViewMode);
+  const [swimlanesMode, setSwimlanesMode] = useState<SwimlanesMode>(() => safeGetItem('kanban-swimlanes-mode', 'none') as SwimlanesMode);
 
   // Persist filters on change
   useEffect(() => {
-    localStorage.setItem('kanban-filter-technique', selectedTechnique);
-    localStorage.setItem('kanban-filter-priority', selectedPriority);
-    localStorage.setItem('kanban-filter-machine', selectedMachine);
-    localStorage.setItem('kanban-view-mode', viewMode);
-    localStorage.setItem('kanban-swimlanes-mode', swimlanesMode);
+    try {
+      localStorage.setItem('kanban-filter-technique', selectedTechnique);
+      localStorage.setItem('kanban-filter-priority', selectedPriority);
+      localStorage.setItem('kanban-filter-machine', selectedMachine);
+      localStorage.setItem('kanban-view-mode', viewMode);
+      localStorage.setItem('kanban-swimlanes-mode', swimlanesMode);
+    } catch { /* quota exceeded or private browsing */ }
   }, [selectedTechnique, selectedPriority, selectedMachine, viewMode, swimlanesMode]);
 
   // Selection

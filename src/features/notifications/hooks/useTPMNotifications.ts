@@ -35,7 +35,7 @@ const getPreferences = (): TPMNotificationPreferences => {
 export const saveTPMNotificationPreferences = (prefs: Partial<TPMNotificationPreferences>) => {
   const current = getPreferences();
   const updated = { ...current, ...prefs };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); } catch { /* quota exceeded or private browsing */ }
   return updated;
 };
 

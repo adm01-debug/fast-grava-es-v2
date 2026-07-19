@@ -52,7 +52,7 @@ export function useAutoTheme() {
   const setConfig = (newConfig: Partial<AutoThemeConfig>) => {
     const updated = { ...config, ...newConfig };
     setConfigState(updated);
-    localStorage.setItem(AUTO_THEME_KEY, JSON.stringify(updated));
+    try { localStorage.setItem(AUTO_THEME_KEY, JSON.stringify(updated)); } catch { /* quota exceeded or private browsing */ }
   };
 
   const toggleAutoTheme = () => {
