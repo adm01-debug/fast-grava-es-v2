@@ -6,10 +6,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { subDays, isAfter, parseISO } from 'date-fns';
 import { useMemo } from 'react';
 import { useAuth } from '@/features/auth';
-import { logger } from '@/lib/logger';
 
 type DbInventoryItem = Database['public']['Tables']['inventory_items']['Row'];
 type DbInventoryMovement = Database['public']['Tables']['inventory_movements']['Row'];
@@ -74,10 +74,7 @@ export function useInventory() {
       toast.success('IA Recalibrada');
     },
     onError: (error: unknown) => {
-      logger.error('Erro ao recalibrar inteligência de inventário', error, 'useInventory');
-      toast.error('Erro ao recalibrar IA', {
-        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.',
-      });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao recalibrar IA');
     },
   });
 
@@ -124,10 +121,7 @@ export function useInventory() {
       toast.success('Movimentação registrada');
     },
     onError: (error: unknown) => {
-      logger.error('Erro ao registrar movimentação de estoque', error, 'useInventory');
-      toast.error('Erro ao registrar movimentação', {
-        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.'
-      });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao registrar movimentação');
     },
   });
 
@@ -146,10 +140,7 @@ export function useInventory() {
       toast.success('Movimentação desfeita');
     },
     onError: (error: unknown) => {
-      logger.error('Erro ao desfazer movimentação de estoque', error, 'useInventory');
-      toast.error('Erro ao desfazer movimentação', {
-        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.'
-      });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao desfazer movimentação');
     },
   });
 
@@ -186,10 +177,7 @@ export function useInventory() {
       toast.success('Transferência concluída');
     },
     onError: (error: unknown) => {
-      logger.error('Erro ao transferir itens de estoque', error, 'useInventory');
-      toast.error('Erro ao transferir itens', {
-        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.'
-      });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao transferir itens');
     },
   });
 

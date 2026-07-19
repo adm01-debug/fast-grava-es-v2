@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { toast } from "sonner";
+import { showErrorToast } from "@/lib/errorHandling";
 import { edgeFunctionFetch } from "@/lib/edgeFunctionFetch";
 
 interface Message {
@@ -127,7 +128,7 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
     try {
       await streamChat(updatedMessages);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Erro ao processar mensagem");
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao processar mensagem');
       // Remove the failed assistant message if any
       setMessages(prev => {
         if (prev[prev.length - 1]?.role === "assistant" && !prev[prev.length - 1].content) {
