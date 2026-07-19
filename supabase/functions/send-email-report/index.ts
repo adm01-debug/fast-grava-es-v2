@@ -52,16 +52,76 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReportRequest = await req.json();
-    console.log('[send-email-report] Request:', body);
-
-    // Validate required fields
-    if (!body.recipients || body.recipients.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'Recipients required' }),
-        { status: 400, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
-      );
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
     }
+
+    const VALID_REPORT_TYPES = ['daily', 'weekly', 'monthly', 'custom'] as const;
+    const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(T[\d:.Z+-]+)?$/;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    const { report_type, recipients, start_date, end_date, technique_ids, machine_ids } = rawBody as Record<string, unknown>;
+
+    if (!VALID_REPORT_TYPES.includes(report_type as typeof VALID_REPORT_TYPES[number])) {
+      return new Response(JSON.stringify({ error: 'Invalid report_type' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (!Array.isArray(recipients) || recipients.length === 0 || !recipients.every(r => typeof r === 'string' && EMAIL_RE.test(r))) {
+      return new Response(JSON.stringify({ error: 'recipients must be a non-empty array of valid email addresses' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (typeof start_date !== 'string' || !ISO_DATE_RE.test(start_date)) {
+      return new Response(JSON.stringify({ error: 'start_date must be a valid ISO date string' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (typeof end_date !== 'string' || !ISO_DATE_RE.test(end_date)) {
+      return new Response(JSON.stringify({ error: 'end_date must be a valid ISO date string' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (new Date(start_date) > new Date(end_date)) {
+      return new Response(JSON.stringify({ error: 'start_date must not be after end_date' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (technique_ids !== undefined && !(Array.isArray(technique_ids) && technique_ids.every(id => typeof id === 'string' && UUID_RE.test(id)))) {
+      return new Response(JSON.stringify({ error: 'technique_ids must be an array of UUIDs' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    if (machine_ids !== undefined && !(Array.isArray(machine_ids) && machine_ids.every(id => typeof id === 'string' && UUID_RE.test(id)))) {
+      return new Response(JSON.stringify({ error: 'machine_ids must be an array of UUIDs' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+
+    const body: ReportRequest = {
+      report_type: report_type as ReportRequest['report_type'],
+      recipients: recipients as string[],
+      start_date: start_date as string,
+      end_date: end_date as string,
+      include_charts: typeof rawBody.include_charts === 'boolean' ? rawBody.include_charts : undefined,
+      include_details: typeof rawBody.include_details === 'boolean' ? rawBody.include_details : undefined,
+      technique_ids: technique_ids as string[] | undefined,
+      machine_ids: machine_ids as string[] | undefined,
+    };
+
+    console.log('[send-email-report] Request:', { report_type: body.report_type, recipients_count: body.recipients.length, start_date, end_date });
 
     // Fetch report data
     let query = supabase
