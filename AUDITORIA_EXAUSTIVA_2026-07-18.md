@@ -128,7 +128,7 @@ alto raio de impacto que merece revisão humana dedicada:
 
 ---
 
-## Parte F — Verificação final
+## Parte F — Verificação final (primeira onda)
 
 ```
 npx tsc --noEmit -p tsconfig.app.json    → 0 erros
@@ -139,3 +139,39 @@ npx vite build                           → sucesso (~69s), mesmo aviso pré-ex
 
 Nenhuma migração SQL foi aplicada a um banco ao vivo; nenhuma alteração foi
 enviada a produção além do que este PR contém.
+
+---
+
+## Parte G — Segunda onda: remediação do backlog (mesmo PR)
+
+Após a primeira entrega, itens documentados na Parte E foram trabalhados
+(sem nova varredura completa), pulando explicitamente o que seria arriscado
+aplicar às cegas (ex.: RLS exigindo AAL2 em todas as tabelas sensíveis —
+bloquearia qualquer usuário sem MFA configurado; decisão de produto, não
+de código).
+
+| Item | Resultado |
+|------|-----------|
+| `BatchApprovalPreviewModal` sem validação de foto obrigatória | Corrigido — preview agora consulta `maintenance_item_responses` + `maintenance_checklist_items` escopado aos registros selecionados, com estado de "verificando" para não deixar confirmar antes da checagem resolver |
+| CORS duplicado em ~30 edge functions | Centralizado em `_shared/cors.ts` para os 15 functions já tocados na primeira onda (contexto profundo, baixo risco); demais ~15 ficam de fora — sem type-checker Deno neste ambiente, editar às cegas seria desproporcional para um hardening cosmético. Removidas 2 origens de preview do Lovable do módulo compartilhado que não apareciam em nenhum array por-função ativo |
+| `deploy.yml` sem ordenação migração↔functions | Corrigido — `apply-migrations` agora roda antes de `deploy-edge-functions`. Gate completo contra `ci.yml` **não** adicionado: o E2E do `ci.yml` está com hang pré-existente confirmado no próprio histórico do `main` (últimos ~10 runs `failure`/`cancelled`, ~2h15min cada) — amarrar o deploy a isso travaria toda entrega em produção até esse problema (fora do escopo desta auditoria) ser resolvido separadamente |
+| Toasts duplicados de conexão (3 providers) | Parcialmente corrigido — `OfflineProvider` não dispara mais toast (mantém apenas o estado usado por `OfflineBanner`/`ConnectionStatus`); `useOfflineSync` continua sendo a fonte real. Consolidação arquitetural completa dos 3 subsistemas segue como item maior, precisa de teste visual |
+| `npm audit`: 11 vulnerabilidades | `npm audit fix` (sem `--force`): **11 → 3**. As 3 restantes exigem downgrade major de `exceljs` (`3.4.0`, breaking) — não aplicado sem poder validar contra a suíte E2E completa |
+| Chunk `lib-mermaid` de 2.75MB | Verificado, não é bug: só é importado por `TechnicalArtifacts.tsx` → `ChatMessage.tsx`, alcançado exclusivamente via `TechnicalAssistantPage`, que já é `React.lazy()` nas rotas. O chunk só baixa ao navegar para `/technical-assistant` |
+| Cobertura de testes | 3 arquivos novos (12 testes) cobrindo os fixes de maior risco desta sessão: `csvSafety.test.ts` (sanitização anti-fórmula), `logger.test.ts` estendido (redação de e-mail/token/querystring), `oeeCalculations.test.ts` (regressão do bug `produced_quantity`) |
+
+### Verificação final (segunda onda)
+```
+npx tsc --noEmit -p tsconfig.app.json    → 0 erros
+npx eslint . --max-warnings 9999         → 0 erros, exit 0
+npx vitest run                           → 473/473 testes passando (37 arquivos, +12 novos)
+npx vite build                           → sucesso
+```
+
+### Ainda em aberto (não executado)
+- RLS com verificação de AAL2 (decisão de produto — depende de quantos usuários já têm MFA ativo)
+- Consolidação arquitetural completa dos 3 subsistemas offline/rede
+- Centralização de CORS nos ~15 edge functions restantes
+- `npm ci` quebrado (lockfile fora de sync + registro privado inacessível)
+- Cobertura de testes ainda muito abaixo do desejável (~21-23%)
+- `deploy.yml` não gateado pelo `ci.yml` completo — bloqueado pelo hang de E2E pré-existente no `main`, que é o item de maior prioridade real do backlog de infraestrutura agora
