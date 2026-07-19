@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
+import { escapeHtml } from "../_shared/htmlEscape.ts";
 
 interface ReportRequest {
   report_type: 'daily' | 'weekly' | 'monthly' | 'custom';
@@ -283,7 +284,7 @@ Deno.serve(async (req) => {
           <tbody>
             ${Object.entries(byTechnique).map(([name, data]: [string, any]) => `
               <tr>
-                <td>${name}</td>
+                <td>${escapeHtml(name)}</td>
                 <td>${data.jobs}</td>
                 <td>${data.produced.toLocaleString('pt-BR')}</td>
                 <td>${data.lost.toLocaleString('pt-BR')}</td>
@@ -309,9 +310,9 @@ Deno.serve(async (req) => {
           <tbody>
             ${jobs.slice(0, 10).map(job => `
               <tr>
-                <td>${job.order_number}</td>
-                <td>${job.client}</td>
-                <td>${job.status}</td>
+                <td>${escapeHtml(job.order_number)}</td>
+                <td>${escapeHtml(job.client)}</td>
+                <td>${escapeHtml(job.status)}</td>
                 <td>${job.quantity}</td>
               </tr>
             `).join('')}

@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts';
+import { escapeHtml } from '../_shared/htmlEscape.ts';
 
 interface DeviceInfo {
   user_id: string;
@@ -144,7 +145,12 @@ Deno.serve(async (req) => {
           const browserInfo = deviceInfo.browser_name || 'Navegador desconhecido';
           const osInfo = deviceInfo.os_name || 'Sistema operacional desconhecido';
           const deviceTypeInfo = deviceInfo.device_type || 'desktop';
-          const loginTime = new Date().toLocaleString('pt-BR', { 
+          // Escape caller-supplied fields before interpolating into HTML email body.
+          const safeName = escapeHtml(deviceInfo.user_name || '');
+          const safeBrowser = escapeHtml(browserInfo);
+          const safeOs = escapeHtml(osInfo);
+          const safeIp = escapeHtml(deviceInfo.ip_address || 'Não disponível');
+          const loginTime = new Date().toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             dateStyle: 'full',
             timeStyle: 'medium'
@@ -173,7 +179,7 @@ Deno.serve(async (req) => {
                   <!-- Content -->
                   <div style="padding: 30px;">
                     <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-top: 0;">
-                      Olá${deviceInfo.user_name ? ` ${deviceInfo.user_name}` : ''},
+                      Olá${safeName ? ` ${safeName}` : ''},
                     </p>
                     
                     <p style="color: #374151; font-size: 16px; line-height: 1.6;">
@@ -192,11 +198,11 @@ Deno.serve(async (req) => {
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Navegador:</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${browserInfo}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${safeBrowser}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Sistema:</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${osInfo}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${safeOs}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Tipo:</td>
@@ -204,7 +210,7 @@ Deno.serve(async (req) => {
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Endereço IP:</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${deviceInfo.ip_address || 'Não disponível'}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${safeIp}</td>
                         </tr>
                       </table>
                     </div>
