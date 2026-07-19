@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { TechnicalSheet } from '@/hooks/technical-sheets/technicalSheetsTypes';
 import { Button } from '@/components/ui/button';
+import { sanitizeUrl } from '@/lib/sanitize';
 
 interface JobInstructionsTabProps {
   techniqueId: string;
@@ -202,7 +203,7 @@ export function JobInstructionsTab({ techniqueId, productCategoryId }: JobInstru
                       size="icon"
                       variant="ghost"
                       className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => window.open(doc.file_url, '_blank')}
+                      onClick={() => window.open(sanitizeUrl(doc.file_url), '_blank')}
                     >
                       <Download className="h-4 w-4" />
                     </Button>
