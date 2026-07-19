@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FactoryFloorMap } from '@/components/digital-twin/FactoryFloorMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
