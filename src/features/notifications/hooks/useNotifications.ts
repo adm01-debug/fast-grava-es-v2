@@ -129,10 +129,11 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
+    let mounted = true;
 
     const setupRealtime = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user || !mounted) return;
 
       // Ensure we don't have multiple channels
       if (channel) return;
@@ -145,10 +146,11 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
         toast.info(notif.title, { description: notif.body });
       }).subscribe();
     };
-    
+
     setupRealtime();
 
     return () => {
+      mounted = false;
       if (channel) {
         supabase.removeChannel(channel);
         channel = null;
