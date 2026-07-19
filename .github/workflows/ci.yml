@@ -286,7 +286,9 @@ jobs:
       - name: Run E2E tests
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:8080
-        run: npm run test:e2e -- --reporter=html --reporter=list
+        # CI: chromium only + 2 workers to fit within the time budget.
+        # mobile-chrome and full parallelism are covered by local dev runs.
+        run: npm run test:e2e -- --project=chromium --workers=2 --reporter=html --reporter=list
         # Removed continue-on-error: true to fail the build if E2E tests fail
 
 
