@@ -97,6 +97,7 @@ serve(async (req: Request): Promise<Response> => {
         quantity,
         lost_pieces,
         machine_id,
+        operator_id,
         actual_end_time
       `)
       .eq("status", "finished")
@@ -128,9 +129,9 @@ serve(async (req: Request): Promise<Response> => {
     const operatorStats: Record<string, RankingResult> = {};
 
     (jobs || []).forEach((job) => {
-      // Only attribute production to a real operator. Falling back to the
-      // machine id would fabricate phantom "operators" in the rankings.
-      const operatorId = machineToOperator[job.machine_id];
+      // Prefer the job's own operator_id; fall back to the machine-assignment
+      // map for legacy jobs recorded before operator_id was captured directly.
+      const operatorId = job.operator_id || machineToOperator[job.machine_id];
       if (!operatorId) return;
 
       if (!operatorStats[operatorId]) {
