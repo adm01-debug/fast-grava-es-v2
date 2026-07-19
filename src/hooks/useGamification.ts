@@ -247,7 +247,7 @@ export function useGamification(period: 'daily' | 'weekly' | 'monthly' = 'weekly
       queryClient.invalidateQueries({ queryKey: ['user-points-balance'] });
       toast.success('Resgate solicitado com sucesso! Aguardando aprovação.');
     },
-    onError: (err: Error) => toast.error(`Erro no resgate: ${err.message}`),
+    onError: () => toast.error('Erro ao solicitar resgate. Tente novamente.'),
   });
 
   return {

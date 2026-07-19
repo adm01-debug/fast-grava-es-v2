@@ -121,8 +121,8 @@ export function useProductionLosses(jobId?: string, filters?: { shift?: string; 
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       toast.success('Perda registrada com sucesso');
     },
-    onError: (error: Error) => {
-      toast.error('Erro ao registrar perda: ' + error.message);
+    onError: () => {
+      toast.error('Erro ao registrar perda. Tente novamente.');
     }
   });
 
