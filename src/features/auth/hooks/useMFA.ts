@@ -96,9 +96,18 @@ export function useMFA() {
     }
   };
 
-  const cancelEnrollment = () => {
+  const cancelEnrollment = useCallback(async () => {
+    if (enrollmentData) {
+      // Remove the unverified factor from Supabase so orphaned TOTP entries
+      // don't accumulate when the user repeatedly starts and cancels enrollment.
+      try {
+        await supabase.auth.mfa.unenroll({ factorId: enrollmentData.id });
+      } catch (err) {
+        logger.warn('Falha ao remover fator MFA ao cancelar', { error: err }, 'useMFA');
+      }
+    }
     setEnrollmentData(null);
-  };
+  }, [enrollmentData]);
 
   const unenroll = async (factorId: string) => {
     try {
