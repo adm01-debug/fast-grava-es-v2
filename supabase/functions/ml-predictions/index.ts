@@ -34,6 +34,26 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Only coordinators, managers, and admins can trigger AI-powered predictions
+    // (prevents operators from draining the API credit budget).
+    const { data: roleRows, error: roleError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+    if (roleError) {
+      return new Response(JSON.stringify({ error: "Falha ao verificar permissão" }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    if (!(roleRows ?? []).some((r: { role: string }) => ["coordinator", "manager", "admin"].includes(r.role))) {
+      return new Response(JSON.stringify({ error: "Sem permissão para gerar previsões" }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json().catch(() => ({}));
     const validationResult = mlPredictionPayloadSchema.safeParse(body);
 

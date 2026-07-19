@@ -86,17 +86,18 @@ serve(async (req) => {
           status: 'success',
           sent_at: new Date().toISOString()
         })
-      } catch (e) {
+      } catch (e: unknown) {
+        console.error('Error processing TPM notification item:', item.id, e)
         const nextRetry = new Date()
         nextRetry.setMinutes(nextRetry.getMinutes() + Math.pow(2, item.retry_count + 1)) // Exponential backoff
 
         await supabase
           .from('tpm_notification_queue')
-          .update({ 
+          .update({
             status: 'failed',
             retry_count: item.retry_count + 1,
             next_retry_at: nextRetry.toISOString(),
-            error_log: e.message
+            error_log: e instanceof Error ? e.message : String(e)
           })
           .eq('id', item.id)
       }
