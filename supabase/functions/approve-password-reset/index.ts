@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
         })
       }
 
-      console.log(`Password reset email sent to ${resetRequest.user_email} after approval by ${reviewerProfile?.full_name}`)
+      console.log('Password reset email sent after approval')
     }
 
     return new Response(JSON.stringify({ 

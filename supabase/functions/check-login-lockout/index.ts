@@ -122,7 +122,7 @@ serve(async (req) => {
           const remainingSeconds = Math.ceil((lockedUntil.getTime() - now.getTime()) / 1000);
           const remainingMinutes = Math.ceil(remainingSeconds / 60);
 
-          console.log(`Account ${normalizedEmail} is locked until ${lockedUntil.toISOString()}`);
+          console.log(`Account locked until ${lockedUntil.toISOString()}`);
 
           return new Response(
             JSON.stringify({
@@ -205,7 +205,7 @@ serve(async (req) => {
         updateData.lockout_count = currentLockoutCount + 1;
         updateData.failed_attempts = 0; // Reset attempts after lockout
 
-        console.log(`Locking account ${normalizedEmail} for ${lockoutMinutes} minutes (lockout #${currentLockoutCount + 1})`);
+        console.log(`Locking account for ${lockoutMinutes} minutes (lockout #${currentLockoutCount + 1})`);
 
         // Log security event
         await supabase.from('security_events').insert({
@@ -317,7 +317,7 @@ serve(async (req) => {
           .eq('identifier_type', 'ip');
       }
 
-      console.log(`Reset lockout for ${normalizedEmail} after successful login`);
+      console.log('Reset lockout after successful login');
 
       return new Response(
         JSON.stringify({ reset: true }),
