@@ -56,7 +56,7 @@ serve(async (req) => {
     // Server-derived — never trust a client-supplied IP for an allowlist decision.
     const ip_address = getClientIp(req);
 
-    console.log(`[validate-login-ip] Action: ${action}, Email: ${user_email}, IP: ${ip_address}`);
+    console.log(`[validate-login-ip] Action: ${action}, IP: ${ip_address}`);
 
     // Check if IP allowlist is configured and validate
     let ipBlocked = false;

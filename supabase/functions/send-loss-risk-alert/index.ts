@@ -34,7 +34,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const payload = await req.json();
     
-    console.log('[send-loss-risk-alert] Payload received:', payload);
+    console.log('[send-loss-risk-alert] Payload received:', payload?.event_type, 'execution_id:', payload?.record?.execution_id);
     
     const { record, event_type } = payload;
     
