@@ -11,6 +11,7 @@ import { useBitrix24Sync } from '@/features/admin';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { sanitizeUrl } from '@/lib/sanitize';
 
 export const Bitrix24SyncPanel = () => {
   const {
@@ -43,7 +44,7 @@ export const Bitrix24SyncPanel = () => {
 
   const handleReauthorize = () => {
     if (oauthStatus?.authorizationUrl) {
-      window.open(oauthStatus.authorizationUrl, '_blank');
+      window.open(sanitizeUrl(oauthStatus.authorizationUrl), '_blank');
     }
   };
 

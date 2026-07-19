@@ -36,6 +36,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { format, subDays, startOfDay, endOfDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
@@ -165,7 +166,7 @@ export default function ReportBuilderPage() {
       queryClient.invalidateQueries({ queryKey: ['saved-report-templates'] });
     },
     onError: (error) => {
-      toast.error('Erro ao salvar template: ' + error.message);
+      showErrorToast(error, 'Erro ao salvar template');
     }
   });
 

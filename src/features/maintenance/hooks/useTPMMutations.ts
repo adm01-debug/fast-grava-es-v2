@@ -81,6 +81,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
       toast.success('Manutenção iniciada');
     },
     onError: (error) => {
@@ -274,7 +275,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         }
 
         if (alertsToInsert.length > 0) {
-          await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
+          const { error: alertInsertError } = await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
+          if (alertInsertError) throw alertInsertError;
         }
       }
 
@@ -328,10 +330,13 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       record_id: string;
       approver_id: string;
     }) => {
-      // Validação de requisitos mínimos (fotos e assinaturas)
+      // Single fetch for both validation data (responses/photos) and schedule
+      // data — two separate fetches previously created a TOCTOU window where
+      // a concurrent delete or double-approve could slip through after the first
+      // validation check passed.
       const { data: record, error: fetchErr } = await supabase
         .from('maintenance_records')
-        .select('*, responses:maintenance_item_responses(*, checklist_item:maintenance_checklist_items(requires_photo))')
+        .select('*, responses:maintenance_item_responses(*, checklist_item:maintenance_checklist_items(requires_photo)), schedule:maintenance_schedules(*)')
         .eq('id', data.record_id)
         .single();
 
@@ -352,16 +357,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
       }
 
-      const { data: recordData, error: recordFetchError } = await supabase
-        .from('maintenance_records')
-        .select('*, schedule:maintenance_schedules(*)')
-        .eq('id', data.record_id)
-        .maybeSingle();
-
-      if (recordFetchError || !recordData) {
-        throw new Error('Registro não encontrado');
-      }
-
+      const recordData = record;
       const scheduleData = (recordData as { schedule?: { id: string; interval_days?: number } | null }).schedule ?? null;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
 
@@ -393,12 +389,18 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         if (scheduleError) throw scheduleError;
       }
 
-      // Resolve alerts
-      await supabase
-        .from('maintenance_alerts')
-        .update({ is_resolved: true, resolved_at: new Date().toISOString() })
-        .eq('schedule_id', recordData.schedule_id)
-        .eq('is_resolved', false);
+      // Resolve alerts — non-fatal: the record is already approved; log but
+      // do not throw so a missing schedule_id does not roll back the approval.
+      if (recordData.schedule_id) {
+        const { error: resolveError } = await supabase
+          .from('maintenance_alerts')
+          .update({ is_resolved: true, resolved_at: new Date().toISOString() })
+          .eq('schedule_id', recordData.schedule_id)
+          .eq('is_resolved', false);
+        if (resolveError) {
+          logger.error('Falha ao resolver alertas de manutenção após aprovação', resolveError, 'useTPMMutations');
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
@@ -543,6 +545,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         toast.success('Diagnóstico concluído: Nenhum novo risco detectado.');
       }
     },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao gerar alertas de manutenção', TPM_ERROR_CONTEXT.alerts);
+    },
   });
 
   // Resolve alert
@@ -559,6 +564,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
+    },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao resolver alerta', TPM_ERROR_CONTEXT.alerts);
     },
   });
 

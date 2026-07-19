@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Save, Mail, MessageCircle, Info, Rocket, Eye, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { cn } from '@/lib/utils';
 
 interface Template {
@@ -48,6 +49,9 @@ export function TPMNotificationTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-notification-templates'] });
       toast.success('Rascunho salvo com sucesso');
+    },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro ao salvar rascunho');
     }
   });
 
@@ -76,6 +80,9 @@ export function TPMNotificationTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-notification-templates'] });
       toast.success('Template publicado e ativo para uso!');
+    },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro ao publicar template');
     }
   });
 

@@ -36,19 +36,14 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
   const { data: alerts = [], isLoading, refetch } = useQuery({
     queryKey: ['efficiency-alert-history', limit, offset],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('efficiency_alert_history')
-          .select('*')
-          .order('detected_at', { ascending: false })
-          .range(offset, offset + limit - 1);
+      const { data, error } = await supabase
+        .from('efficiency_alert_history')
+        .select('*')
+        .order('detected_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-        if (error) throw error;
-        return data as EfficiencyAlertHistory[];
-      } catch (error) {
-        const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.fetch);
-        throw error;
-      }
+      if (error) throw createAppError(error, EFFICIENCY_ALERTS_CONTEXT.fetch);
+      return data as EfficiencyAlertHistory[];
     },
     staleTime: STALE_TIMES.DYNAMIC,
     ...defaultQueryOptions,
@@ -58,17 +53,12 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
   const { data: totalCount = 0 } = useQuery({
     queryKey: ['efficiency-alert-history-count'],
     queryFn: async () => {
-      try {
-        const { count, error } = await supabase
-          .from('efficiency_alert_history')
-          .select('*', { count: 'exact', head: true });
+      const { count, error } = await supabase
+        .from('efficiency_alert_history')
+        .select('*', { count: 'exact', head: true });
 
-        if (error) throw error;
-        return count ?? 0;
-      } catch (error) {
-        const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.count);
-        throw error;
-      }
+      if (error) throw createAppError(error, EFFICIENCY_ALERTS_CONTEXT.count);
+      return count ?? 0;
     },
     staleTime: STALE_TIMES.STATIC,
     ...defaultQueryOptions,
@@ -98,27 +88,22 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
 
   const recordAlert = useMutation({
     mutationFn: async (alert: Omit<EfficiencyAlertHistory, 'id' | 'created_at' | 'detected_at'>) => {
-      try {
-        const { data, error } = await supabase
-          .from('efficiency_alert_history')
-          .insert([{
-            alert_type: alert.alert_type,
-            severity: alert.severity,
-            title: alert.title,
-            description: alert.description,
-            technique_id: alert.technique_id,
-            machine_id: alert.machine_id,
-            metadata: (alert.metadata || {}) as Json
-          }])
-          .select()
-          .single();
+      const { data, error } = await supabase
+        .from('efficiency_alert_history')
+        .insert([{
+          alert_type: alert.alert_type,
+          severity: alert.severity,
+          title: alert.title,
+          description: alert.description,
+          technique_id: alert.technique_id,
+          machine_id: alert.machine_id,
+          metadata: (alert.metadata || {}) as Json
+        }])
+        .select()
+        .single();
 
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.record);
-        throw error;
-      }
+      if (error) throw createAppError(error, EFFICIENCY_ALERTS_CONTEXT.record);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['efficiency-alert-history'] });
@@ -134,26 +119,21 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
       alertId: string;
       resolution_notes?: string;
     }) => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
 
-        const { data, error } = await supabase
-          .from('efficiency_alert_history')
-          .update({
-            resolved_at: new Date().toISOString(),
-            resolved_by: user?.id,
-            resolution_notes
-          })
-          .eq('id', alertId)
-          .select()
-          .single();
+      const { data, error } = await supabase
+        .from('efficiency_alert_history')
+        .update({
+          resolved_at: new Date().toISOString(),
+          resolved_by: session?.user?.id,
+          resolution_notes
+        })
+        .eq('id', alertId)
+        .select()
+        .single();
 
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        const appError = createAppError(error, EFFICIENCY_ALERTS_CONTEXT.resolve);
-        throw error;
-      }
+      if (error) throw createAppError(error, EFFICIENCY_ALERTS_CONTEXT.resolve);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['efficiency-alert-history'] });

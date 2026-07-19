@@ -23,7 +23,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const payload = await req.json();
     
-    console.log('[send-tpm-email] Payload received:', payload);
+    console.log('[send-tpm-email] Payload received:', payload?.event_type, 'machine_id:', payload?.record?.machine_id);
     
     const { record, event_type } = payload;
     
@@ -63,10 +63,21 @@ serve(async (req) => {
       return new Response(JSON.stringify({ message: 'No matching subscribers for this alert' }), { status: 200 });
     }
 
-    // 3. Get subscriber emails
-    const { data: users } = await supabase.auth.admin.listUsers();
+    // 3. Get subscriber emails — must paginate: default listUsers() returns only 50 rows
+    const subscriberIds = new Set(filteredSubscribers.map(s => s.user_id));
+    const emailById = new Map<string, string>();
+    const perPage = 1000;
+    for (let page = 1; ; page++) {
+      const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers({ page, perPage });
+      if (usersError) throw usersError;
+      const users = usersData?.users ?? [];
+      for (const u of users) {
+        if (u.email && subscriberIds.has(u.id)) emailById.set(u.id, u.email);
+      }
+      if (users.length < perPage || emailById.size >= subscriberIds.size) break;
+    }
     const subscriberEmails = filteredSubscribers
-      .map(s => users.users.find(u => u.id === s.user_id)?.email)
+      .map(s => emailById.get(s.user_id))
       .filter((email): email is string => !!email);
 
     if (subscriberEmails.length === 0) {
@@ -96,6 +107,7 @@ serve(async (req) => {
 
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
+        signal: AbortSignal.timeout(10_000),
         headers: {
           'Authorization': `Bearer ${resendApiKey}`,
           'Content-Type': 'application/json',
@@ -115,8 +127,8 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ success: true, notified: subscriberEmails.length }), { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
-  } catch (error: any) {
-    console.error('[send-tpm-email] Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
+  } catch (error: unknown) {
+    console.error('[send-tpm-email] Error:', error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
   }
 });

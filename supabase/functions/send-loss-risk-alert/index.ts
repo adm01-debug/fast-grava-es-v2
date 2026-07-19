@@ -34,7 +34,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const payload = await req.json();
     
-    console.log('[send-loss-risk-alert] Payload received:', payload);
+    console.log('[send-loss-risk-alert] Payload received:', payload?.event_type, 'execution_id:', payload?.record?.execution_id);
     
     const { record, event_type } = payload;
     
@@ -137,6 +137,7 @@ serve(async (req) => {
         const chunk = subscriberEmails.slice(i, i + RESEND_MAX_RECIPIENTS);
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
+          signal: AbortSignal.timeout(10_000),
           headers: {
             'Authorization': `Bearer ${resendApiKey}`,
             'Content-Type': 'application/json',
@@ -167,8 +168,8 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ success: true, notified: subscriberEmails.length }), { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
-  } catch (error: any) {
-    console.error('[send-loss-risk-alert] Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
+  } catch (error: unknown) {
+    console.error('[send-loss-risk-alert] Error:', error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
   }
 });

@@ -30,7 +30,8 @@ export function ChecklistManager() {
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
-  const [localItems, setLocalItems] = useState<Partial<MaintenanceChecklistItem>[]>([]);
+  type LocalChecklistItem = Partial<MaintenanceChecklistItem> & { _key?: string };
+  const [localItems, setLocalItems] = useState<LocalChecklistItem[]>([]);
 
   // Get unique techniques from machines
   const techniques = useMemo(() => {
@@ -62,6 +63,7 @@ export function ChecklistManager() {
     setLocalItems([
       ...localItems,
       {
+        _key: crypto.randomUUID(),
         description: '',
         is_critical: false,
         requires_photo: false,
@@ -292,7 +294,7 @@ export function ChecklistManager() {
             ) : (
               <div className="space-y-3">
                 {localItems.map((item, index) => (
-                  <div key={index} className="p-4 rounded-lg bg-secondary/20 border border-border/50 space-y-3">
+                  <div key={item.id ?? item._key} className="p-4 rounded-lg bg-secondary/20 border border-border/50 space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="flex-1">
                         <Input
@@ -309,33 +311,33 @@ export function ChecklistManager() {
                     <div className="flex flex-wrap gap-4 pt-2">
                       <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
                         <Checkbox
-                          id={`critical-${index}`}
+                          id={`critical-${item.id ?? item._key}`}
                           checked={item.is_critical}
                           onCheckedChange={(checked) => updateItem(index, { is_critical: !!checked })}
                         />
-                        <Label htmlFor={`critical-${index}`} className="text-xs font-semibold text-destructive flex items-center gap-1 cursor-pointer">
+                        <Label htmlFor={`critical-${item.id ?? item._key}`} className="text-xs font-semibold text-destructive flex items-center gap-1 cursor-pointer">
                           <AlertTriangle className="h-3 w-3" /> Item Crítico
                         </Label>
                       </div>
 
                       <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
                         <Checkbox
-                          id={`photo-${index}`}
+                          id={`photo-${item.id ?? item._key}`}
                           checked={item.requires_photo}
                           onCheckedChange={(checked) => updateItem(index, { requires_photo: !!checked })}
                         />
-                        <Label htmlFor={`photo-${index}`} className="text-xs font-semibold text-primary flex items-center gap-1 cursor-pointer">
+                        <Label htmlFor={`photo-${item.id ?? item._key}`} className="text-xs font-semibold text-primary flex items-center gap-1 cursor-pointer">
                           <Camera className="h-3 w-3" /> Exige Foto
                         </Label>
                       </div>
 
                       <div className="flex items-center space-x-2 bg-secondary/30 p-2 rounded-md border border-border/50">
                         <Checkbox
-                          id={`measure-${index}`}
+                          id={`measure-${item.id ?? item._key}`}
                           checked={item.requires_measurement}
                           onCheckedChange={(checked) => updateItem(index, { requires_measurement: !!checked })}
                         />
-                        <Label htmlFor={`measure-${index}`} className="text-xs font-semibold text-blue-500 flex items-center gap-1 cursor-pointer">
+                        <Label htmlFor={`measure-${item.id ?? item._key}`} className="text-xs font-semibold text-blue-500 flex items-center gap-1 cursor-pointer">
                           <Activity className="h-3 w-3" /> Exige Medição
                         </Label>
                       </div>

@@ -76,6 +76,21 @@ export async function emitTelemetry(
 }
 
 /**
+ * Validates a columns string to prevent FK path traversal.
+ * Only simple comma-separated identifiers are allowed — no spaces, no nested
+ * selects, no FK relationship expansion (e.g. "*, related_table(*)").
+ */
+const COLUMNS_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_]*(,[a-zA-Z_][a-zA-Z0-9_]*)*$/;
+
+export function validateColumns(columns: unknown): string | null {
+  if (!columns || columns === "*") return "*";
+  if (typeof columns !== "string") return null;
+  const trimmed = columns.trim();
+  if (!COLUMNS_PATTERN.test(trimmed)) return null;
+  return trimmed;
+}
+
+/**
  * Defense-in-depth allowlist. Even admins must not use this bridge to
  * hit auth/storage internals or arbitrary security-definer functions.
  * Extend cautiously — every entry bypasses RLS.
@@ -129,21 +144,21 @@ export function validateBridgeRequest(body: any): {
   }
   const validActions = ["select", "insert", "update", "delete", "rpc", "upsert"];
   if (!validActions.includes(body.action)) {
-    return { valid: false, error: `Invalid action: ${body.action}. Allowed: ${validActions.join(", ")}` };
+    return { valid: false, error: `Ação inválida. Permitidas: ${validActions.join(", ")}` };
   }
   if (body.action === "rpc") {
     if (!body.rpc || typeof body.rpc !== "string") {
       return { valid: false, error: "RPC action requires a 'rpc' field" };
     }
     if (!ALLOWED_RPCS.has(body.rpc)) {
-      return { valid: false, error: `RPC '${body.rpc}' is not in the allowlist` };
+      return { valid: false, error: "RPC não permitida" };
     }
   } else {
     if (!body.table || typeof body.table !== "string") {
       return { valid: false, error: "Non-RPC actions require a 'table' field" };
     }
     if (!ALLOWED_TABLES.has(body.table)) {
-      return { valid: false, error: `Table '${body.table}' is not in the allowlist` };
+      return { valid: false, error: "Tabela não permitida" };
     }
   }
   return {
@@ -251,7 +266,14 @@ Deno.serve(async (req: Request) => {
         const query = supabase.from(table!);
         switch (action) {
           case "select": {
-            const q = query.select(params?.columns as string || "*");
+            const cols = validateColumns(params?.columns);
+            if (cols === null) {
+              return new Response(
+                JSON.stringify({ error: "Invalid 'columns' parameter: only simple comma-separated identifiers are allowed" }),
+                { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+              );
+            }
+            const q = query.select(cols);
             if (params?.limit) q.limit(params.limit as number);
             if (params?.offset) q.range(params.offset as number, (params.offset as number) + ((params.limit as number) || 100) - 1);
             const { data, error } = await q;
@@ -316,8 +338,11 @@ Deno.serve(async (req: Request) => {
     }
 
     if (errorMessage) {
+      // Log the detailed error server-side; return only a generic message to the caller
+      // to prevent DB internals (table names, column names, constraint names) from leaking.
+      console.error("[external-db-bridge] Operation error:", errorMessage);
       return new Response(
-        JSON.stringify({ error: errorMessage, telemetry: { severity: telemetry.severity, duration_ms: telemetry.duration_ms } }),
+        JSON.stringify({ error: "Operation failed", telemetry: { severity: telemetry.severity, duration_ms: telemetry.duration_ms } }),
         { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
@@ -334,8 +359,8 @@ Deno.serve(async (req: Request) => {
       { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: msg }), {
+    console.error("[external-db-bridge] Unhandled exception:", err instanceof Error ? err.message : String(err));
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });

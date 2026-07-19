@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '../index';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { createAppError } from '@/lib/errorHandling';
 
 interface MFAFactor {
   id: string;
@@ -29,8 +30,8 @@ interface MFAEnrollmentData {
   friendly_name?: string;
 }
 
-function toErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
+function toSafeErrorMessage(error: unknown): string {
+  return createAppError(error instanceof Error ? error : new Error(String(error))).message;
 }
 
 export function useMFA() {
@@ -70,7 +71,7 @@ export function useMFA() {
       setEnrollmentData(data as MFAEnrollmentData);
       return data;
     } catch (error: unknown) {
-      toast.error('Erro ao iniciar cadastro MFA', { description: toErrorMessage(error) });
+      toast.error('Erro ao iniciar cadastro MFA', { description: toSafeErrorMessage(error) });
     } finally {
       setIsEnrolling(false);
     }
@@ -90,15 +91,24 @@ export function useMFA() {
       toast.success('MFA ativado com sucesso!');
       return data;
     } catch (error: unknown) {
-      toast.error('Código inválido', { description: toErrorMessage(error) });
+      toast.error('Código inválido', { description: toSafeErrorMessage(error) });
     } finally {
       setIsVerifying(false);
     }
   };
 
-  const cancelEnrollment = () => {
+  const cancelEnrollment = useCallback(async () => {
+    if (enrollmentData) {
+      // Remove the unverified factor from Supabase so orphaned TOTP entries
+      // don't accumulate when the user repeatedly starts and cancels enrollment.
+      try {
+        await supabase.auth.mfa.unenroll({ factorId: enrollmentData.id });
+      } catch (err) {
+        logger.warn('Falha ao remover fator MFA ao cancelar', { error: err }, 'useMFA');
+      }
+    }
     setEnrollmentData(null);
-  };
+  }, [enrollmentData]);
 
   const unenroll = async (factorId: string) => {
     try {
@@ -108,7 +118,7 @@ export function useMFA() {
       toast.success('MFA desativado');
       return true;
     } catch (error: unknown) {
-      toast.error('Erro ao desativar MFA', { description: toErrorMessage(error) });
+      toast.error('Erro ao desativar MFA', { description: toSafeErrorMessage(error) });
       return false;
     }
   };

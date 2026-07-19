@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { useAuth } from '@/features/auth';
 
 export type BusinessConfigValue = string | number | boolean | null | BusinessConfigValue[] | { [key: string]: BusinessConfigValue };
@@ -55,7 +56,7 @@ export function useBusinessConfig() {
       toast.success('Configuração atualizada com sucesso');
     },
     onError: (error: Error) => {
-      toast.error('Erro ao atualizar configuração: ' + (error.message || 'Erro desconhecido'));
+      showErrorToast(error, 'Erro ao atualizar configuração');
     }
   });
 

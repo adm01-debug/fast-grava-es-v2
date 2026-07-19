@@ -41,14 +41,22 @@ Deno.serve(async (req) => {
       },
     })
 
-    // Check if requesting user is coordinator or manager
-    const { data: roleData } = await supabaseAdmin
+    // Check if requesting user is coordinator or manager. Use list (no .single())
+    // because a user may have multiple active roles.
+    const { data: roleRows, error: roleCheckError } = await supabaseAdmin
       .from('user_roles')
       .select('role')
       .eq('user_id', requestingUser.id)
-      .single()
+      .eq('is_active', true)
 
-    if (!roleData || (roleData.role !== 'coordinator' && roleData.role !== 'manager')) {
+    if (roleCheckError) {
+      return new Response(JSON.stringify({ error: 'Falha ao verificar permissão' }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!(roleRows ?? []).some((r: { role: string }) => ['coordinator', 'manager'].includes(r.role))) {
       return new Response(JSON.stringify({ error: 'Apenas coordenadores e gerentes podem aprovar solicitações' }), {
         status: 403,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
@@ -156,7 +164,7 @@ Deno.serve(async (req) => {
         })
       }
 
-      console.log(`Password reset email sent to ${resetRequest.user_email} after approval by ${reviewerProfile?.full_name}`)
+      console.log('Password reset email sent after approval')
     }
 
     return new Response(JSON.stringify({ 

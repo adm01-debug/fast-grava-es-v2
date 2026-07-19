@@ -71,7 +71,14 @@ serve(async (req) => {
       });
     }
 
-    const { table, filters, columns } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return new Response(JSON.stringify({ error: "Corpo da requisição inválido" }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    const { table, filters, columns } = body as Record<string, unknown>;
 
     // Validate table name against allowlist
     if (!table || !ALLOWED_TABLES.includes(table)) {
@@ -102,7 +109,15 @@ serve(async (req) => {
     let query = adminClient.from(table).select(columns?.join(",") || "*").limit(EXPORT_ROW_LIMIT);
 
     if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
+      const filterEntries = Object.entries(filters);
+      const invalidKey = filterEntries.find(([key]) => !COLUMN_RE.test(key));
+      if (invalidKey) {
+        return new Response(JSON.stringify({ error: "Chave de filtro inválida" }), {
+          status: 400,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+      filterEntries.forEach(([key, value]) => {
         query = query.eq(key, value);
       });
     }
@@ -143,8 +158,8 @@ serve(async (req) => {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
+    console.error('Excel export error:', error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });

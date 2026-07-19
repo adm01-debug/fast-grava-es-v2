@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { createAppError } from '@/lib/errorHandling';
+import { createAppError, showErrorToast } from '@/lib/errorHandling';
 
 export interface DashboardPreset {
   id: string;
@@ -56,7 +56,7 @@ export function useDashboardPresets(dashboardId: string) {
     },
     onError: (error: unknown) => {
       const appError = createAppError(error, { dashboardId, operation: 'savePreset' });
-      toast.error('Erro ao salvar filtro: ' + appError.message);
+      showErrorToast(appError, 'Erro ao salvar filtro');
     }
   });
 
@@ -72,6 +72,9 @@ export function useDashboardPresets(dashboardId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-presets', dashboardId] });
       toast.success('Filtro excluído');
+    },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro ao excluir filtro');
     }
   });
 

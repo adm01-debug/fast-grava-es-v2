@@ -54,20 +54,24 @@ export function GlobalSearch({
       return;
     }
 
+    let mounted = true;
     const performSearch = async () => {
       setIsLoading(true);
       try {
         const searchResults = await onSearch(debouncedQuery);
+        if (!mounted) return;
         setResults(searchResults);
         setSelectedIndex(-1);
       } catch (error) {
+        if (!mounted) return;
         setResults([]);
       } finally {
-        setIsLoading(false);
+        if (mounted) setIsLoading(false);
       }
     };
 
     performSearch();
+    return () => { mounted = false; };
   }, [debouncedQuery, onSearch]);
 
   // Keyboard navigation

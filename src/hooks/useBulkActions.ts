@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import type { Database } from '@/integrations/supabase/types';
 
 type TableName = keyof Database['public']['Tables'];
@@ -83,6 +84,9 @@ export function useBulkActions<T extends { id: string }>(tableName: TableName) {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setProgress(null);
     },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro na atualização em lote');
+    },
   });
 
   const bulkDeleteMutation = useMutation({
@@ -126,6 +130,9 @@ export function useBulkActions<T extends { id: string }>(tableName: TableName) {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       deselectAll();
       setProgress(null);
+    },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro na exclusão em lote');
     },
   });
 

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Clock, Calendar, AlertTriangle, Plus, Trash2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 
@@ -62,6 +63,9 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-severity-configs', machineId] });
       toast.success('Configuração salva');
+    },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro ao salvar configuração');
     }
   });
 
@@ -76,6 +80,9 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-severity-configs', machineId] });
       toast.success('Configuração removida');
+    },
+    onError: (error: Error) => {
+      showErrorToast(error, 'Erro ao remover configuração');
     }
   });
 

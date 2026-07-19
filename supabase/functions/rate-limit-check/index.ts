@@ -40,13 +40,28 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
     // Accept `endpoint` from the body; ignore any client-supplied user_id/user_email.
     const { endpoint } = body;
 
     if (!endpoint || typeof endpoint !== 'string') {
       return new Response(
         JSON.stringify({ error: 'endpoint is required' }),
+        { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Validate endpoint format before storing in DB: max 255 printable ASCII chars,
+    // no control characters. Rejects attempts to inject nulls or long blobs.
+    if (endpoint.length > 255 || /[^\x20-\x7e]/u.test(endpoint)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid endpoint format' }),
         { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, status: 400 }
       );
     }

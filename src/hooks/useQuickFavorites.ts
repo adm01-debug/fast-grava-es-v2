@@ -213,6 +213,9 @@ export function useQuickFavorites() {
     onSuccess: (newFavorites) => {
       queryClient.setQueryData(['user-favorites', user?.id], newFavorites);
     },
+    onError: () => {
+      toast({ title: 'Erro ao salvar favoritos', description: 'Não foi possível salvar seus atalhos.', variant: 'destructive' });
+    },
   });
 
   const addFavorite = useCallback((shortcut: QuickFavorite) => {

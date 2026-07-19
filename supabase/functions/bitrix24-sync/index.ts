@@ -113,7 +113,7 @@ async function refreshAccessToken(refreshToken: string, supabase: any): Promise<
       refresh_token: refreshToken
     });
 
-    const response = await fetch(refreshUrl, { method: 'POST' });
+    const response = await fetch(refreshUrl, { method: 'POST', signal: AbortSignal.timeout(15_000) });
     const responseText = await response.text();
     
     let data;
@@ -197,7 +197,7 @@ async function exchangeCodeForTokens(code: string, redirectUri: string, supabase
       redirect_uri: redirectUri
     });
 
-    const response = await fetch(tokenUrl, { method: 'POST' });
+    const response = await fetch(tokenUrl, { method: 'POST', signal: AbortSignal.timeout(15_000) });
     const data = await response.json();
     
     if (!response.ok || data.error) {
@@ -447,6 +447,7 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
       
       const response = await fetch(url, {
         method: 'POST',
+        signal: AbortSignal.timeout(15_000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
       });
@@ -483,6 +484,7 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
       
       const response = await fetch(url, {
         method: 'POST',
+        signal: AbortSignal.timeout(15_000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
       });
@@ -588,9 +590,9 @@ async function pullFromBitrix(supabase: any, categoryId?: string) {
       }
 
       synced.push(orderNumber);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Error syncing deal ${deal.ID}:`, error);
-      errors.push(`${deal.ID}: ${error.message}`);
+      errors.push(`${deal.ID}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -889,8 +891,26 @@ serve(async (req) => {
 
       case 'push': {
         // Push status update to Bitrix24
-        const body = await req.json();
-        result = await pushToBitrix(body.jobId, body.status, supabase);
+        const body = await req.json().catch(() => ({}));
+        const { jobId, status: newStatus } = body as Record<string, unknown>;
+
+        const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const VALID_STATUSES = ['queue', 'ready', 'scheduled', 'production', 'finished', 'cancelled'];
+
+        if (typeof jobId !== 'string' || !UUID_RE.test(jobId)) {
+          return new Response(JSON.stringify({ error: 'jobId inválido' }), {
+            status: 400,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
+        }
+        if (typeof newStatus !== 'string' || !VALID_STATUSES.includes(newStatus)) {
+          return new Response(JSON.stringify({ error: 'status inválido' }), {
+            status: 400,
+            headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+          });
+        }
+
+        result = await pushToBitrix(jobId, newStatus, supabase);
 
         if (!result.skipped && result.success !== undefined) {
           await logSyncHistory(
@@ -1013,7 +1033,8 @@ serve(async (req) => {
           });
 
         if (saveError) {
-          result = { error: saveError.message };
+          console.error('Error saving mapping:', saveError);
+          result = { error: 'Erro ao salvar mapeamento' };
         } else {
           clearMappingCache();
           result = { success: true, message: 'Mapeamento salvo com sucesso' };
@@ -1043,7 +1064,8 @@ serve(async (req) => {
         const { error: deleteError } = await deleteQuery;
 
         if (deleteError) {
-          result = { error: deleteError.message };
+          console.error('Error deleting mapping:', deleteError);
+          result = { error: 'Erro ao remover mapeamento' };
         } else {
           clearMappingCache();
           result = { success: true, message: 'Mapeamento removido com sucesso' };
@@ -1061,7 +1083,8 @@ serve(async (req) => {
           .order('priority', { ascending: true });
 
         if (listError) {
-          result = { error: listError.message };
+          console.error('Error listing mappings:', listError);
+          result = { error: 'Erro ao listar mapeamentos' };
         } else {
           result = { mappings: allMappings };
         }
@@ -1164,9 +1187,11 @@ serve(async (req) => {
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Bitrix24 sync error:', error);
-    
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : undefined;
+
     // Log error to history
     if (action && ['pull', 'push', 'webhook'].includes(action)) {
       await logSyncHistory(
@@ -1175,17 +1200,17 @@ serve(async (req) => {
         'error',
         0,
         1,
-        error.message,
-        { stack: error.stack },
+        errMsg,
+        { stack: errStack },
         triggeredBy
       );
     }
 
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500, 
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } 
+      JSON.stringify({ error: 'Internal server error' }),
+      {
+        status: 500,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
       }
     );
   }

@@ -48,14 +48,22 @@ serve(async (req: Request): Promise<Response> => {
       }
     } else {
       // A missing Authorization header no longer implies "trusted cron" —
-      // require the shared cron secret instead of blindly running the
-      // destructive delete+rewrite of operator_rankings/achievements below.
-      const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) });
+      // require the shared cron secret. failClosed=true because this function
+      // does a destructive delete+rewrite of operator_rankings/achievements,
+      // so an unconfigured deployment must never run it unauthenticated.
+      const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) });
       if (unauthorized) return unauthorized;
     }
 
     const body = await req.json().catch(() => ({}));
-    const rankingType = body.ranking_type || "weekly";
+    const rankingType: string = body.ranking_type || "weekly";
+    const ALLOWED_RANKING_TYPES = ["daily", "weekly", "monthly"];
+    if (!ALLOWED_RANKING_TYPES.includes(rankingType)) {
+      return new Response(JSON.stringify({ error: "ranking_type inválido. Use: daily, weekly ou monthly" }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
     console.log(`Calculating ${rankingType} rankings...`);
 
@@ -89,6 +97,7 @@ serve(async (req: Request): Promise<Response> => {
         quantity,
         lost_pieces,
         machine_id,
+        operator_id,
         actual_end_time
       `)
       .eq("status", "finished")
@@ -120,9 +129,9 @@ serve(async (req: Request): Promise<Response> => {
     const operatorStats: Record<string, RankingResult> = {};
 
     (jobs || []).forEach((job) => {
-      // Only attribute production to a real operator. Falling back to the
-      // machine id would fabricate phantom "operators" in the rankings.
-      const operatorId = machineToOperator[job.machine_id];
+      // Prefer the job's own operator_id; fall back to the machine-assignment
+      // map for legacy jobs recorded before operator_id was captured directly.
+      const operatorId = job.operator_id || machineToOperator[job.machine_id];
       if (!operatorId) return;
 
       if (!operatorStats[operatorId]) {
@@ -179,25 +188,36 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log(`Calculated ${rankings.length} rankings`);
 
-    // Delete old rankings for this period and type
-    await supabase
+    // Upsert new rankings first so the table is never left empty.
+    // The UNIQUE constraint on (operator_id, ranking_type, period_start) makes
+    // this safe for concurrent runs — the second upsert simply overwrites.
+    if (rankings.length > 0) {
+      const { error: upsertError } = await supabase
+        .from("operator_rankings")
+        .upsert(rankings, { onConflict: "operator_id,ranking_type,period_start" });
+
+      if (upsertError) {
+        console.error("Error upserting rankings:", upsertError);
+        throw upsertError;
+      }
+    }
+
+    // Remove stale entries from previous runs: period rows whose operator_id is
+    // no longer in the newly calculated set (operator had no qualifying jobs).
+    // Using a post-upsert delete means the window with no data never occurs.
+    let staleDelete = supabase
       .from("operator_rankings")
       .delete()
       .eq("ranking_type", rankingType)
       .gte("period_start", periodStart.toISOString())
       .lt("period_end", periodEnd.toISOString());
-
-    // Insert new rankings
     if (rankings.length > 0) {
-      const { error: insertError } = await supabase
-        .from("operator_rankings")
-        .insert(rankings);
-
-      if (insertError) {
-        console.error("Error inserting rankings:", insertError);
-        throw insertError;
-      }
+      staleDelete = staleDelete.not(
+        "operator_id", "in",
+        `(${rankings.map((r) => r.operator_id).join(",")})`,
+      );
     }
+    await staleDelete;
 
     // Award achievements for top performers
     const achievements = [];
@@ -293,10 +313,9 @@ serve(async (req: Request): Promise<Response> => {
       }
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Error calculating rankings:", error);
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts';
+import { escapeHtml } from '../_shared/htmlEscape.ts';
 
 interface DeviceInfo {
   user_id: string;
@@ -46,12 +47,23 @@ Deno.serve(async (req) => {
       });
     }
 
-    const deviceInfo: DeviceInfo = await req.json();
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
+      return new Response(JSON.stringify({ error: 'Corpo da requisição inválido' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      });
+    }
+    const deviceInfo: DeviceInfo = rawBody as DeviceInfo;
     // Trust the token, not the body, for identity fields. Do NOT fall back to
     // the body email when the token has none — that would re-open forged
     // alert recipients.
     deviceInfo.user_id = authUser.id;
     deviceInfo.user_email = authUser.email ?? '';
+    // Derive IP from the request, not the caller-supplied body, to prevent
+    // a malicious caller from injecting a forged IP into DB rows and alert emails.
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    deviceInfo.ip_address = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
 
     console.log('Checking device for user:', deviceInfo.user_id);
     console.log('Device fingerprint:', deviceInfo.device_fingerprint);
@@ -140,7 +152,12 @@ Deno.serve(async (req) => {
           const browserInfo = deviceInfo.browser_name || 'Navegador desconhecido';
           const osInfo = deviceInfo.os_name || 'Sistema operacional desconhecido';
           const deviceTypeInfo = deviceInfo.device_type || 'desktop';
-          const loginTime = new Date().toLocaleString('pt-BR', { 
+          // Escape caller-supplied fields before interpolating into HTML email body.
+          const safeName = escapeHtml(deviceInfo.user_name || '');
+          const safeBrowser = escapeHtml(browserInfo);
+          const safeOs = escapeHtml(osInfo);
+          const safeIp = escapeHtml(deviceInfo.ip_address || 'Não disponível');
+          const loginTime = new Date().toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             dateStyle: 'full',
             timeStyle: 'medium'
@@ -169,7 +186,7 @@ Deno.serve(async (req) => {
                   <!-- Content -->
                   <div style="padding: 30px;">
                     <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-top: 0;">
-                      Olá${deviceInfo.user_name ? ` ${deviceInfo.user_name}` : ''},
+                      Olá${safeName ? ` ${safeName}` : ''},
                     </p>
                     
                     <p style="color: #374151; font-size: 16px; line-height: 1.6;">
@@ -188,11 +205,11 @@ Deno.serve(async (req) => {
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Navegador:</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${browserInfo}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${safeBrowser}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Sistema:</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${osInfo}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${safeOs}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Tipo:</td>
@@ -200,7 +217,7 @@ Deno.serve(async (req) => {
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78716c; font-size: 14px;">Endereço IP:</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${deviceInfo.ip_address || 'Não disponível'}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">${safeIp}</td>
                         </tr>
                       </table>
                     </div>
@@ -259,14 +276,16 @@ Deno.serve(async (req) => {
           }
         };
 
-        // Chamar a edge function de push notification
+        // Chamar a edge function de push notification usando o JWT do usuário
+        // (não o service role key, que não é aceito pelo endpoint que valida JWT).
         const pushResponse = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseKey}`
+            'Authorization': authHeader,
           },
-          body: JSON.stringify(pushPayload)
+          body: JSON.stringify(pushPayload),
+          signal: AbortSignal.timeout(10_000),
         });
 
         if (pushResponse.ok) {
@@ -292,13 +311,12 @@ Deno.serve(async (req) => {
     );
 
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('Error in new-device-alert:', message);
+    console.error('Error in new-device-alert:', err instanceof Error ? err.message : String(err));
     return new Response(
-      JSON.stringify({ error: message }),
-      { 
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, 
-        status: 500 
+      JSON.stringify({ error: 'Internal server error' }),
+      {
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        status: 500
       }
     );
   }

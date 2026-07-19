@@ -61,7 +61,14 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { email, password, full_name, phone } = await req.json()
+    const rawBody = await req.json().catch(() => null)
+    if (!rawBody || typeof rawBody !== 'object') {
+      return new Response(JSON.stringify({ error: 'Corpo da requisição inválido' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
+    const { email, password, full_name, phone } = rawBody
 
     if (!email || !password || !full_name) {
       return new Response(JSON.stringify({ error: 'Email, senha e nome são obrigatórios' }), {
@@ -95,8 +102,8 @@ Deno.serve(async (req) => {
     })
 
     if (createError) {
-      console.error('Error creating user:', createError)
-      return new Response(JSON.stringify({ error: createError.message }), {
+      console.error('Error creating user:', createError.message)
+      return new Response(JSON.stringify({ error: 'Erro ao criar usuário' }), {
         status: 400,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })

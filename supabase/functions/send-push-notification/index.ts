@@ -19,6 +19,41 @@ interface PushSubscription {
 
 type PushResult = "sent" | "expired" | "failed";
 
+/**
+ * Validates that a push endpoint URL is a legitimate HTTPS URL pointing to an
+ * external push service — not a private IP, loopback, or link-local address.
+ * Without this check, a malicious user could insert a fake subscription row
+ * pointing to an internal service and cause the edge function to SSRF it.
+ */
+function isValidPushEndpoint(endpoint: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    return false;
+  }
+
+  if (url.protocol !== "https:") return false;
+
+  const h = url.hostname;
+
+  if (h === "localhost" || h === "::1") return false;
+  if (h.endsWith(".local") || h.endsWith(".internal") || h.endsWith(".localhost")) return false;
+
+  const v4 = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    if (a === 0 || a === 10 || a === 127) return false;
+    if (a === 172 && b >= 16 && b <= 31) return false;
+    if (a === 192 && b === 168) return false;
+    if (a === 169 && b === 254) return false;
+    if (a === 100 && b >= 64 && b <= 127) return false;
+    if (a >= 224) return false; // multicast / reserved
+  }
+
+  return true;
+}
+
 // Web Push implementation using fetch API.
 // Returns "expired" ONLY for 404/410 (the push service says the subscription is
 // gone). Any other failure (transient 5xx/429, VAPID/key errors, network) is
@@ -73,9 +108,16 @@ async function sendWebPush(
 
     const token = `${unsignedToken}.${base64UrlEncode(new Uint8Array(signature))}`;
 
+    // Guard against SSRF: reject non-HTTPS endpoints and private/loopback addresses.
+    if (!isValidPushEndpoint(subscription.endpoint)) {
+      console.error(`[send-push-notification] Rejected invalid endpoint: ${subscription.endpoint.substring(0, 60)}`);
+      return "failed";
+    }
+
     // Send push notification
     const response = await fetch(subscription.endpoint, {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         "Content-Type": "application/octet-stream",
         "Content-Encoding": "aes128gcm",
@@ -92,7 +134,8 @@ async function sendWebPush(
       console.log(`Subscription expired: ${subscription.endpoint.substring(0, 50)}...`);
       return "expired";
     } else {
-      console.error(`Push failed with status ${response.status}: ${await response.text()}`);
+      const errorBody = (await response.text()).substring(0, 200);
+      console.error(`Push failed with status ${response.status}: ${errorBody}`);
       return "failed";
     }
   } catch (error) {
@@ -134,16 +177,29 @@ Deno.serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = await req.json();
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody || typeof rawBody !== "object") {
+      return new Response(
+        JSON.stringify({ error: "Invalid request body" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = rawBody;
 
     // Only coordinators/admins can broadcast; operators can only notify themselves
     if (broadcast || (user_id && user_id !== callerUser.id)) {
-      const { data: roleData } = await supabase
+      const { data: roleRows, error: roleCheckError } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", callerUser.id)
-        .single();
-      if (!["coordinator", "admin"].includes(roleData?.role ?? "")) {
+        .eq("is_active", true);
+      if (roleCheckError) {
+        return new Response(
+          JSON.stringify({ error: "Falha ao verificar permissão" }),
+          { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+      if (!(roleRows ?? []).some((r: { role: string }) => ["coordinator", "admin"].includes(r.role))) {
         return new Response(
           JSON.stringify({ error: "Sem permissão para enviar notificações a outros usuários" }),
           { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
@@ -269,10 +325,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Error in send-push-notification:", error);
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

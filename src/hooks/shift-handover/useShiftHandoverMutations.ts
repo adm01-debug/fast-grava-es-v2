@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { useAuth } from '@/features/auth';
 import type { ShiftHandover, ShiftPendingTask, ShiftOccurrence } from './shiftHandoverTypes';
 import { getCurrentShiftType } from './shiftHandoverTypes';
@@ -22,7 +23,7 @@ export function useShiftHandoverMutations() {
       return handover;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-handovers'] }); toast.success('Passagem de turno iniciada'); },
-    onError: (error) => { toast.error('Erro ao iniciar passagem: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao iniciar passagem'); }
   });
 
   const updateHandover = useMutation({
@@ -33,7 +34,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-handovers'] }); queryClient.invalidateQueries({ queryKey: ['shift-handover'] }); toast.success('Passagem atualizada'); },
-    onError: (error) => { toast.error('Erro ao atualizar: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao atualizar'); }
   });
 
   const completeHandover = useMutation({
@@ -42,7 +43,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-handovers'] }); queryClient.invalidateQueries({ queryKey: ['shift-handover'] }); toast.success('Passagem finalizada, aguardando aceite'); },
-    onError: (error) => { toast.error('Erro ao finalizar: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao finalizar'); }
   });
 
   const acceptHandover = useMutation({
@@ -65,7 +66,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-handovers'] }); queryClient.invalidateQueries({ queryKey: ['shift-handover'] }); toast.success('Passagem de turno aceita'); },
-    onError: (error) => { toast.error('Erro ao aceitar: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao aceitar'); }
   });
 
   const updateChecklistItem = useMutation({
@@ -73,7 +74,8 @@ export function useShiftHandoverMutations() {
       const { error } = await supabase.from('shift_handover_checklist').update({ is_checked, checked_at: is_checked ? new Date().toISOString() : null, notes: notes || null }).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-checklist'] }); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-checklist'] }); },
+    onError: (error: Error) => { showErrorToast(error, 'Erro ao atualizar checklist'); }
   });
 
   const addPendingTask = useMutation({
@@ -82,7 +84,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-pending-tasks'] }); toast.success('Pendência adicionada'); },
-    onError: (error) => { toast.error('Erro ao adicionar pendência: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao adicionar pendência'); }
   });
 
   const updatePendingTask = useMutation({
@@ -95,7 +97,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-pending-tasks'] }); toast.success('Pendência atualizada'); },
-    onError: (error) => { toast.error('Erro ao atualizar: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao atualizar'); }
   });
 
   const addOccurrence = useMutation({
@@ -104,7 +106,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-occurrences'] }); toast.success('Ocorrência registrada'); },
-    onError: (error) => { toast.error('Erro ao registrar ocorrência: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao registrar ocorrência'); }
   });
 
   const resolveOccurrence = useMutation({
@@ -114,7 +116,7 @@ export function useShiftHandoverMutations() {
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-occurrences'] }); toast.success('Ocorrência resolvida'); },
-    onError: (error) => { toast.error('Erro ao resolver: ' + error.message); }
+    onError: (error) => { showErrorToast(error, 'Erro ao resolver'); }
   });
 
   return {

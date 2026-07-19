@@ -182,6 +182,12 @@ class OfflineStorageManager {
     });
   }
 
+  async clearAll(): Promise<void> {
+    const db = await this.ensureDb();
+    const storeNames = Array.from(db.objectStoreNames);
+    await Promise.allSettled(storeNames.map((name) => this.clear(name)));
+  }
+
   async getByIndex<T>(storeName: string, indexName: string, value: IDBValidKey): Promise<T[]> {
     const db = await this.ensureDb();
     return new Promise((resolve, reject) => {

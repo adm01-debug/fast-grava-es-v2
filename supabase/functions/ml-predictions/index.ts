@@ -34,6 +34,26 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Only coordinators, managers, and admins can trigger AI-powered predictions
+    // (prevents operators from draining the API credit budget).
+    const { data: roleRows, error: roleError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+    if (roleError) {
+      return new Response(JSON.stringify({ error: "Falha ao verificar permissão" }), {
+        status: 500,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    if (!(roleRows ?? []).some((r: { role: string }) => ["coordinator", "manager", "admin"].includes(r.role))) {
+      return new Response(JSON.stringify({ error: "Sem permissão para gerar previsões" }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json().catch(() => ({}));
     const validationResult = mlPredictionPayloadSchema.safeParse(body);
 
@@ -67,10 +87,15 @@ Deno.serve(async (req) => {
     const maintenanceSchedules = maintenanceRes.data || [];
     const maintenanceRecords = recordsRes.data || [];
 
-    // Filter to specific machine if provided
-    const targetMachines = machine_id 
-      ? machines.filter(m => m.id === machine_id) 
+    // Filter to specific machine if provided. Cap batch size so serial AI calls
+    // (each up to 25 s) don't exceed the edge function timeout. Callers should
+    // paginate by passing machine_id for large deployments.
+    const MAX_BATCH_SIZE = 10;
+    const filteredMachines = machine_id
+      ? machines.filter(m => m.id === machine_id)
       : machines;
+    const targetMachines = filteredMachines.slice(0, MAX_BATCH_SIZE);
+    const batchTruncated = filteredMachines.length > MAX_BATCH_SIZE;
 
     const predictions = [];
 
@@ -116,6 +141,7 @@ Deno.serve(async (req) => {
       // Call Lovable AI for prediction
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
+        signal: AbortSignal.timeout(25_000),
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
@@ -249,18 +275,21 @@ Responda APENAS com JSON no formato:
 
     console.log(`Generated ${predictions.length} predictions`);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    return new Response(JSON.stringify({
+      success: true,
       predictions_generated: predictions.length,
-      predictions 
+      predictions,
+      ...(batchTruncated && {
+        warning: `Batch limited to ${MAX_BATCH_SIZE} machines. Pass machine_id to target a specific machine.`,
+        total_machines: filteredMachines.length,
+      }),
     }), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
 
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("ML Predictions error:", errorMessage);
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    console.error("ML Predictions error:", error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });

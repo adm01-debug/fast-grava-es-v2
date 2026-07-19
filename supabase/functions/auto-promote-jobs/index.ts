@@ -45,7 +45,9 @@ serve(async (req) => {
         })
       }
     } else {
-      const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) })
+      // failClosed: this function mutates job statuses across the board;
+      // must not run unauthenticated on an unconfigured deployment.
+      const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) })
       if (unauthorized) return unauthorized
     }
 
@@ -109,11 +111,15 @@ serve(async (req) => {
           if (jobIds.length > 0) {
             const { error: updateError } = await supabaseClient
               .from('jobs')
-              .update({ 
+              .update({
                 status: 'ready',
                 updated_at: new Date().toISOString()
               })
               .in('id', jobIds)
+              // Guard: only promote jobs still in 'queue' — without this, a job
+              // that moved to 'production' between the fetch and this update would
+              // be silently regressed back to 'ready'.
+              .eq('status', 'queue')
 
             if (updateError) {
               console.error(`Error promoting jobs for ${technique.name}:`, updateError)
@@ -156,9 +162,9 @@ serve(async (req) => {
       status: 200,
     })
 
-  } catch (error) {
-    console.error('Unexpected error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: unknown) {
+    console.error('Unexpected error:', error instanceof Error ? error.message : String(error))
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       status: 500,
     })

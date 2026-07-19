@@ -61,7 +61,14 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { operator_id, full_name, phone } = await req.json()
+    const rawBody = await req.json().catch(() => null)
+    if (!rawBody || typeof rawBody !== 'object') {
+      return new Response(JSON.stringify({ error: 'Corpo da requisição inválido' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
+    const { operator_id, full_name, phone } = rawBody
 
     if (!operator_id) {
       return new Response(JSON.stringify({ error: 'ID do operador é obrigatório' }), {
@@ -77,7 +84,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    console.log('Updating operator:', operator_id, { full_name, phone })
+    console.log('Updating operator:', operator_id)
 
     // Update profile
     const { error: updateError } = await supabaseAdmin
@@ -90,8 +97,8 @@ Deno.serve(async (req) => {
       .eq('id', operator_id)
 
     if (updateError) {
-      console.error('Error updating profile:', updateError)
-      return new Response(JSON.stringify({ error: updateError.message }), {
+      console.error('Error updating profile:', updateError.message)
+      return new Response(JSON.stringify({ error: 'Erro ao atualizar operador' }), {
         status: 400,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })

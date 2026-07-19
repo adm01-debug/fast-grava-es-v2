@@ -76,7 +76,7 @@ export function useWeeklyDragDrop({ onUpdate, allJobs }: UseWeeklyDragDropProps)
       if (error) {
         // Check for the trigger error we just added
         if (error.message?.includes('Conflito de agendamento')) {
-          toast.error(error.message);
+          toast.error('Conflito de agendamento: máquina já possui job neste horário.');
           return;
         }
         throw error;

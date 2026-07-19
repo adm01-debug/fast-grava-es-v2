@@ -3,7 +3,7 @@
    (URL params, localStorage, timers, subscriptions Supabase realtime,
    matchMedia, event listeners DOM, deep-linking) e não são estado
    derivado. A cascata é intencional para refletir mudanças externas. */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +45,8 @@ export default function AuthPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [isSendingReset, setIsSendingReset] = useState(false);
+  const [resetCooldownSec, setResetCooldownSec] = useState(0);
+  const resetCooldownUntilRef = useRef(0);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
 
@@ -111,12 +113,49 @@ export default function AuthPage() {
   const handleGoogleLogin = async () => { setSocialLoading('google'); try { const result = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin }); if (result.error) toast.error('Erro ao conectar com Google'); } catch { toast.error('Erro ao iniciar login social'); } finally { setSocialLoading(null); } };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault(); if (!forgotEmail.trim()) { toast.error(t('validation.required')); return; }
+    e.preventDefault();
+    if (!forgotEmail.trim()) { toast.error(t('validation.required')); return; }
     try { z.string().email().parse(forgotEmail); } catch { toast.error(t('auth.invalidEmail')); return; }
+
+    // Client-side cooldown: prevent burst-submitting before the server round-trip completes
+    const now = Date.now();
+    if (now < resetCooldownUntilRef.current) {
+      toast.info(`Aguarde ${resetCooldownSec}s antes de enviar outra solicitação.`);
+      return;
+    }
+
     setIsSendingReset(true);
-    const { error } = await supabase.from('password_reset_requests').insert({ user_email: forgotEmail.trim().toLowerCase(), requested_by_name: null, status: 'pending' });
-    if (error) { toast.error('Erro ao enviar solicitação. Tente novamente.'); setIsSendingReset(false); return; }
-    toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.')); setShowForgotPassword(false); setForgotEmail(''); setIsSendingReset(false);
+    const { error } = await supabase.from('password_reset_requests').insert({
+      user_email: forgotEmail.trim().toLowerCase(),
+      requested_by_name: null,
+      status: 'pending',
+    });
+
+    if (error) {
+      // Postgres unique-violation code 23505 means a pending request already exists
+      // (enforced by the partial unique index on user_email WHERE status='pending')
+      if ((error as { code?: string }).code === '23505') {
+        toast.info('Já existe uma solicitação pendente para este e-mail. Aguarde a aprovação do gestor.');
+      } else {
+        toast.error('Erro ao enviar solicitação. Tente novamente.');
+      }
+      setIsSendingReset(false);
+      return;
+    }
+
+    // Arm 60-second cooldown to throttle repeated requests
+    const until = Date.now() + 60_000;
+    resetCooldownUntilRef.current = until;
+    setResetCooldownSec(60);
+    const tick = setInterval(() => {
+      const rem = Math.ceil((resetCooldownUntilRef.current - Date.now()) / 1000);
+      if (rem <= 0) { clearInterval(tick); setResetCooldownSec(0); } else { setResetCooldownSec(rem); }
+    }, 1000);
+
+    toast.success(t('auth.resetRequestSent', 'Solicitação enviada! Aguarde aprovação do gestor.'));
+    setShowForgotPassword(false);
+    setForgotEmail('');
+    setIsSendingReset(false);
   };
 
 
@@ -220,7 +259,7 @@ export default function AuthPage() {
           <form onSubmit={handleForgotPassword} className="space-y-4">
             {/* eslint-disable-next-line jsx-a11y/no-autofocus -- foco no input do dialog de recuperação é UX esperada */}
             <div className="space-y-2"><Label htmlFor="forgot-email">{t('auth.email')}</Label><Input id="forgot-email" type="email" placeholder={t('auth.email')} value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} disabled={isSendingReset} autoFocus /><p className="text-xs text-muted-foreground">{t('auth.resetApprovalNote', 'Sua solicitação será analisada por um gestor antes do envio do e-mail de redefinição.')}</p></div>
-            <div className="flex gap-2 justify-end"><Button type="button" variant="outline" onClick={() => setShowForgotPassword(false)} disabled={isSendingReset}>{t('common.cancel')}</Button><Button type="submit" disabled={isSendingReset}>{isSendingReset ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('common.loading')}</> : t('auth.sendRequest', 'Enviar Solicitação')}</Button></div>
+            <div className="flex gap-2 justify-end"><Button type="button" variant="outline" onClick={() => setShowForgotPassword(false)} disabled={isSendingReset}>{t('common.cancel')}</Button><Button type="submit" disabled={isSendingReset || resetCooldownSec > 0}>{isSendingReset ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{t('common.loading')}</> : resetCooldownSec > 0 ? `Aguarde ${resetCooldownSec}s` : t('auth.sendRequest', 'Enviar Solicitação')}</Button></div>
           </form>
         </DialogContent>
       </Dialog>

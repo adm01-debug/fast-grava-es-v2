@@ -56,7 +56,7 @@ serve(async (req) => {
     // Server-derived — never trust a client-supplied IP for an allowlist decision.
     const ip_address = getClientIp(req);
 
-    console.log(`[validate-login-ip] Action: ${action}, Email: ${user_email}, IP: ${ip_address}`);
+    console.log(`[validate-login-ip] Action: ${action}, IP: ${ip_address}`);
 
     // Check if IP allowlist is configured and validate
     let ipBlocked = false;
@@ -155,10 +155,9 @@ serve(async (req) => {
     );
 
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[validate-login-ip] Error:', error);
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'Internal server error' }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },

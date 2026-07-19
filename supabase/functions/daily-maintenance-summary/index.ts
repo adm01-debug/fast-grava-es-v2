@@ -219,12 +219,11 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     console.error('Error generating daily summary:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { 
+      JSON.stringify({ error: 'Internal server error' }),
+      {
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-        status: 500 
+        status: 500
       }
     );
   }

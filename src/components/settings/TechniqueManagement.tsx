@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { Edit2, Plus, Trash2, Hammer, Clock, Zap, Printer, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSchedulingData } from '@/features/jobs';
@@ -60,8 +61,7 @@ export function TechniqueManagement() {
       toast.success('Técnica salva com sucesso');
     },
     onError: (error: unknown) => {
-      const msg = error instanceof Error ? error.message : String(error);
-      toast.error(`Erro ao salvar técnica: ${msg}`);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao salvar técnica');
     }
   });
 
@@ -75,8 +75,7 @@ export function TechniqueManagement() {
       toast.success('Técnica excluída');
     },
     onError: (error: unknown) => {
-      const msg = error instanceof Error ? error.message : String(error);
-      toast.error(`Erro ao excluir técnica: ${msg}`);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao excluir técnica');
     }
   });
 

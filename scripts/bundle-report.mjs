@@ -41,8 +41,8 @@ function walk(dir, files = []) {
 /** Map filename like "vendor-react-DhJk2Wq8.js" → logical chunk name "vendor-react" */
 function chunkNameFromFile(name) {
   const base = basename(name).replace(/\.(js|css|mjs)$/i, '');
-  // Vite hash: trailing "-" + 8+ alnum chars (no hyphen) at end of name
-  return base.replace(/-[A-Za-z0-9_]{8,}$/, '');
+  // Vite hash: trailing "-" + exactly 8 base64-url chars (a-z A-Z 0-9 _ -)
+  return base.replace(/-[A-Za-z0-9_-]{8}$/, '');
 }
 
 const files = walk(DIST)
