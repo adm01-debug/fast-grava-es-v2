@@ -24,6 +24,7 @@ export interface OperatorEvolutionData {
 interface FinishedJob {
   id: string;
   machine_id: string | null;
+  operator_id: string | null;
   quantity: number;
   produced_quantity: number | null;
   lost_pieces: number | null;
@@ -57,7 +58,7 @@ export function useOperatorEvolution(days: number = 30) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('jobs')
-        .select('id, machine_id, quantity, produced_quantity, lost_pieces, estimated_duration, actual_start_time, actual_end_time')
+        .select('id, machine_id, operator_id, quantity, produced_quantity, lost_pieces, estimated_duration, actual_start_time, actual_end_time')
         .eq('status', 'finished')
         .gte('actual_end_time', startDate.toISOString());
 
@@ -121,10 +122,13 @@ export function useOperatorEvolution(days: number = 30) {
         .filter(ma => ma.operator_id === operator.user_id)
         .map(ma => ma.machine_id);
 
-      // Get jobs for this operator's machines
-      const operatorJobs = finishedJobs.filter(j =>
-        j.machine_id && operatorMachineIds.includes(j.machine_id)
-      );
+      // Attribute by operator_id when recorded; fall back to machine assignment
+      // only for legacy jobs where operator_id was never set. Machine-only
+      // attribution double-counts jobs on shared machines.
+      const operatorJobs = finishedJobs.filter(j => {
+        if (j.operator_id) return j.operator_id === operator.user_id;
+        return j.machine_id !== null && operatorMachineIds.includes(j.machine_id);
+      });
 
       // Calculate daily metrics
       const dailyData: DailyEfficiencyData[] = dateRange.map(date => {
