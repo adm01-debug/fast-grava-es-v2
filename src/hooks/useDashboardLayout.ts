@@ -110,7 +110,7 @@ export function useDashboardLayout() {
 
     setIsSaving(true);
     const storageKey = `${STORAGE_KEY}-${user.id}`;
-    localStorage.setItem(storageKey, JSON.stringify(newWidgets));
+    try { localStorage.setItem(storageKey, JSON.stringify(newWidgets)); } catch { /* quota exceeded */ }
 
     try {
       const { error } = await supabase

@@ -41,7 +41,7 @@ export function useFavorites() {
 
   const saveFavorites = (items: FavoriteItem[]) => {
     setFavorites(items);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch { /* quota exceeded */ }
   };
 
   const addFavorite = (item: Omit<FavoriteItem, "id">) => {

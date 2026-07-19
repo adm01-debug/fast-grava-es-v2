@@ -360,10 +360,10 @@ export function KanbanAIAdvisor() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowSettings(false)}>Cancelar</Button>
             <Button onClick={() => {
-              localStorage.setItem('alert-thresholds', JSON.stringify({
+              try { localStorage.setItem('alert-thresholds', JSON.stringify({
                 bottleneckHigh: thresholds.bottleneckHigh,
                 bottleneckRiskMinutes: thresholds.bottleneckMedium // Sync with DroppableColumn key
-              }));
+              })); } catch { /* quota exceeded */ }
               toast.success("Configurações de alerta salvas!");
               setShowSettings(false);
               window.location.reload();
