@@ -398,7 +398,7 @@ Deno.serve(async (req) => {
   } catch (error: any) {
     console.error('[send-email-report] Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
     );
   }
