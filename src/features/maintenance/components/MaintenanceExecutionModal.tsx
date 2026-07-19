@@ -127,7 +127,7 @@ export function MaintenanceExecutionModal({
     notes?: string;
     photo_url?: string;
   }>>({});
-  const [parts, setParts] = useState<Array<{ name: string; code: string; quantity: number }>>([]);
+  const [parts, setParts] = useState<Array<{ _key: string; name: string; code: string; quantity: number }>>([]);
   const [signature, setSignature] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -257,7 +257,7 @@ export function MaintenanceExecutionModal({
   };
 
   const handleAddPart = () => {
-    setParts([...parts, { name: '', code: '', quantity: 1 }]);
+    setParts([...parts, { _key: crypto.randomUUID(), name: '', code: '', quantity: 1 }]);
   };
 
   const handleRemovePart = (index: number) => {
