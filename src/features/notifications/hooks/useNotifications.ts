@@ -94,6 +94,10 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: (error) => {
+      logger.error('Erro ao marcar notificação como lida', error, 'useNotifications');
+      toast.error('Erro ao marcar notificação como lida');
+    },
   });
 
   const markAllAsRead = useMutation({
@@ -111,6 +115,10 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Todas as notificações marcadas como lidas');
     },
+    onError: (error) => {
+      logger.error('Erro ao marcar todas as notificações como lidas', error, 'useNotifications');
+      toast.error('Erro ao marcar notificações como lidas');
+    },
   });
 
   const deleteNotification = useMutation({
@@ -125,6 +133,10 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: (error) => {
+      logger.error('Erro ao excluir notificação', error, 'useNotifications');
+      toast.error('Erro ao excluir notificação');
+    },
   });
 
   useEffect(() => {

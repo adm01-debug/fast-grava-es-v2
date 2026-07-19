@@ -111,6 +111,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-steps', variables.technical_sheet_id] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao adicionar etapa', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -127,6 +130,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-steps'] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao atualizar etapa', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -141,6 +147,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-steps'] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao remover etapa', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -163,6 +172,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-materials', variables.technical_sheet_id] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao adicionar material', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -177,6 +189,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-materials'] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao remover material', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -197,6 +212,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-tips', variables.technical_sheet_id] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao adicionar dica', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -211,6 +229,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-tips'] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao remover dica', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -235,6 +256,9 @@ export const useTechnicalSheetMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-sheet-favorites'] });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao atualizar favorito', description: error.message, variant: 'destructive' });
     }
   });
 

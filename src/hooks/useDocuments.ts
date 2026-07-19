@@ -238,6 +238,9 @@ export const useDocuments = (technicalSheetId?: string) => {
       queryClient.invalidateQueries({ queryKey: ['technical-documents'] });
       toast({ title: 'Documento aprovado!' });
     },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao aprovar documento', description: error.message, variant: 'destructive' });
+    },
   });
 
   // Reject document
@@ -263,6 +266,9 @@ export const useDocuments = (technicalSheetId?: string) => {
       queryClient.invalidateQueries({ queryKey: ['technical-documents'] });
       toast({ title: 'Documento rejeitado' });
     },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao rejeitar documento', description: error.message, variant: 'destructive' });
+    },
   });
 
   // Delete document
@@ -278,6 +284,9 @@ export const useDocuments = (technicalSheetId?: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['technical-documents'] });
       toast({ title: 'Documento removido!' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro ao remover documento', description: error.message, variant: 'destructive' });
     },
   });
 
