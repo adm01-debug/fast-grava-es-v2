@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/immutability, react-hooks/exhaustive-deps -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
 import { useEffect, useState, ReactNode, useCallback, useRef, useMemo } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { toast } from 'sonner';
 import { AuthService } from '../services/authService';
 import { logger } from '@/lib/logger';
+import { offlineStorage } from '@/lib/offlineStorage';
 import {
   AuthContext,
   type AuthContextType,
@@ -51,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const { checkDevice } = useDeviceDetection();
   
   const lastActivityRef = useRef<Date>(new Date());
@@ -289,6 +292,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setProfile(null);
     setRole(null);
+    // Wipe React Query cache so a subsequent login never sees another user's data.
+    queryClient.clear();
+    // Best-effort: clear offline IndexedDB data (user-specific jobs, pending actions, etc.)
+    offlineStorage.clearAll().catch((err) => {
+      logger.warn('Failed to clear offline storage on sign out', err, 'AuthProvider');
+    });
   };
 
   // Memoizado: evita re-render em cascata de todos os consumidores quando
