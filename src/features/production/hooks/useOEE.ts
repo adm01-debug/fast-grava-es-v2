@@ -2,8 +2,11 @@ import { useMemo } from 'react';
 import { useSchedulingData } from '@/features/jobs';
 import { useBusinessConfig } from '@/features/admin';
 import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { logger } from '@/lib/logger';
 import { calculateRealOEE } from '@/features/production/services/oeeCalculations';
+
+const SP_TIMEZONE = 'America/Sao_Paulo';
 
 // Data validation helpers
 function isValidDate(dateStr: string | null | undefined): dateStr is string {
@@ -291,7 +294,9 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const shiftJobs = periodJobs.filter(job => {
         const timeToUse = job.actual_start_time || job.start_time;
         if (!timeToUse) return false;
-        const hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
+        const hour = timeToUse.includes('T')
+          ? toZonedTime(new Date(timeToUse), SP_TIMEZONE).getHours()
+          : parseInt(timeToUse.split(':')[0], 10);
         if (sId === '1' && (hour >= 7 && hour < 15)) return true;
         if (sId === '2' && (hour >= 15 && hour < 23)) return true;
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;

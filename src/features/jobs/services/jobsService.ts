@@ -98,14 +98,12 @@ export const jobsService = {
   },
 
   async syncToBitrix24(jobId: string, status: JobStatus) {
-    try {
-      edgeFunctionFetch('bitrix24-sync?action=push', {
-        method: 'POST',
-        body: JSON.stringify({ jobId, status })
-      }).catch(() => { /* fire and forget */ });
-    } catch (e) {
-      // Ignore errors in fire-and-forget sync
-    }
+    edgeFunctionFetch('bitrix24-sync?action=push', {
+      method: 'POST',
+      body: JSON.stringify({ jobId, status }),
+    }).catch((err: unknown) => {
+      logger.warn('Bitrix24 sync failed (non-critical)', { jobId, status, error: String(err) }, 'jobsService');
+    });
   },
 
   async delete(id: string): Promise<void> {

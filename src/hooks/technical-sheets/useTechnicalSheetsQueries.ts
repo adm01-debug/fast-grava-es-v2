@@ -36,7 +36,7 @@ export const useTechnicalSheets = () => {
         return data as unknown as TechnicalSheet[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheets);
-        throw error;
+        throw appError;
       }
     },
     staleTime: STALE_TIMES.STATIC,
@@ -73,7 +73,7 @@ export const useTechnicalSheets = () => {
         return data as ProductCategory[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.categories);
-        throw error;
+        throw appError;
       }
     },
     staleTime: STALE_TIMES.STATIC,
@@ -93,7 +93,7 @@ export const useTechnicalSheets = () => {
         return data as Material[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.materials);
-        throw error;
+        throw appError;
       }
     },
     staleTime: STALE_TIMES.STATIC,
@@ -132,7 +132,7 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as unknown as TechnicalSheet;
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.sheetDetails);
-        throw error;
+        throw appError;
       }
     },
     enabled: !!sheetId,
@@ -155,7 +155,7 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as TechnicalSheetStep[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.steps);
-        throw error;
+        throw appError;
       }
     },
     enabled: !!sheetId,
@@ -177,7 +177,7 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as TechnicalSheetMaterial[];
       } catch (error) {
         const appError = createAppError(error, { entity: 'technical_sheet_materials', operation: 'fetch' });
-        throw error;
+        throw appError;
       }
     },
     enabled: !!sheetId,
@@ -199,7 +199,7 @@ export const useTechnicalSheetDetails = (sheetId: string | null) => {
         return data as TechnicalSheetTip[];
       } catch (error) {
         const appError = createAppError(error, SHEETS_ERROR_CONTEXT.tips);
-        throw error;
+        throw appError;
       }
     },
     enabled: !!sheetId,
