@@ -167,6 +167,9 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
       queryClient.invalidateQueries({ queryKey: ['abc-cost-pools'] });
       toast.success('Orçamento atualizado');
     },
+    onError: (error: Error) => {
+      toast.error('Erro ao atualizar orçamento: ' + error.message);
+    },
   });
 
   return {

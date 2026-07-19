@@ -158,6 +158,9 @@ export function useMLPredictions() {
       queryClient.invalidateQueries({ queryKey: ['ml-predictions'] });
       toast.success('Previsão reconhecida');
     },
+    onError: (error: Error) => {
+      toast.error('Erro ao reconhecer previsão: ' + error.message);
+    },
   });
 
   // Calculate statistics

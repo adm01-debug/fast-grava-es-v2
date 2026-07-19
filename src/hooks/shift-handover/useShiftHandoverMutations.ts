@@ -73,7 +73,8 @@ export function useShiftHandoverMutations() {
       const { error } = await supabase.from('shift_handover_checklist').update({ is_checked, checked_at: is_checked ? new Date().toISOString() : null, notes: notes || null }).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-checklist'] }); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['shift-checklist'] }); },
+    onError: (error: Error) => { toast.error('Erro ao atualizar checklist: ' + error.message); }
   });
 
   const addPendingTask = useMutation({

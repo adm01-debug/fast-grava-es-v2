@@ -48,6 +48,9 @@ export function TPMNotificationQueue() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-notification-queue'] });
       toast.success('Notificação reenfileirada para tentativa');
+    },
+    onError: (error: Error) => {
+      toast.error('Erro ao retentar notificação: ' + error.message);
     }
   });
 

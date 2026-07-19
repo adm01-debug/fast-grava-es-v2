@@ -62,6 +62,9 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-severity-configs', machineId] });
       toast.success('Configuração salva');
+    },
+    onError: (error: Error) => {
+      toast.error('Erro ao salvar configuração: ' + error.message);
     }
   });
 
@@ -76,6 +79,9 @@ export function TPMSeverityConfigs({ machineId }: TPMSeverityConfigsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-severity-configs', machineId] });
       toast.success('Configuração removida');
+    },
+    onError: (error: Error) => {
+      toast.error('Erro ao remover configuração: ' + error.message);
     }
   });
 

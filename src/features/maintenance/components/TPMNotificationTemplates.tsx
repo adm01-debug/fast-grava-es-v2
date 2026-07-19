@@ -48,6 +48,9 @@ export function TPMNotificationTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-notification-templates'] });
       toast.success('Rascunho salvo com sucesso');
+    },
+    onError: (error: Error) => {
+      toast.error('Erro ao salvar rascunho: ' + error.message);
     }
   });
 
@@ -76,6 +79,9 @@ export function TPMNotificationTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tpm-notification-templates'] });
       toast.success('Template publicado e ativo para uso!');
+    },
+    onError: (error: Error) => {
+      toast.error('Erro ao publicar template: ' + error.message);
     }
   });
 

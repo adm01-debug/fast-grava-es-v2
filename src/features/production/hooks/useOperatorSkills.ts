@@ -71,6 +71,9 @@ export function useOperatorSkills(operatorId?: string) {
       queryClient.invalidateQueries({ queryKey: ['operator-skills'] });
       toast.success('Competência removida');
     },
+    onError: (error: Error) => {
+      toast.error('Erro ao remover competência: ' + error.message);
+    },
   });
 
   return {

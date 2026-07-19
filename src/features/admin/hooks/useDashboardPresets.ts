@@ -72,6 +72,9 @@ export function useDashboardPresets(dashboardId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-presets', dashboardId] });
       toast.success('Filtro excluído');
+    },
+    onError: (error: Error) => {
+      toast.error('Erro ao excluir filtro: ' + error.message);
     }
   });
 

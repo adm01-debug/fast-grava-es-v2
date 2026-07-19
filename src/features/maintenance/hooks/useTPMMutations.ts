@@ -565,6 +565,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
     },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao resolver alerta', TPM_ERROR_CONTEXT.alerts);
+    },
   });
 
   // Approve batch mutation. Must enforce the same minimum-evidence

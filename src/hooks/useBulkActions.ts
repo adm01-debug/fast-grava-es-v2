@@ -83,6 +83,9 @@ export function useBulkActions<T extends { id: string }>(tableName: TableName) {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setProgress(null);
     },
+    onError: (error: Error) => {
+      toast.error('Erro na atualização em lote: ' + error.message);
+    },
   });
 
   const bulkDeleteMutation = useMutation({
@@ -126,6 +129,9 @@ export function useBulkActions<T extends { id: string }>(tableName: TableName) {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       deselectAll();
       setProgress(null);
+    },
+    onError: (error: Error) => {
+      toast.error('Erro na exclusão em lote: ' + error.message);
     },
   });
 
