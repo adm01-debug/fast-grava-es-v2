@@ -645,6 +645,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     onSuccess: ({ approved, failed }) => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
       if (approved.length > 0) {
         toast.success(`${approved.length} manutenções aprovadas em lote`);
       }
