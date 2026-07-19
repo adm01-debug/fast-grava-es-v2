@@ -102,7 +102,15 @@ serve(async (req) => {
     let query = adminClient.from(table).select(columns?.join(",") || "*").limit(EXPORT_ROW_LIMIT);
 
     if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
+      const filterEntries = Object.entries(filters);
+      const invalidKey = filterEntries.find(([key]) => !COLUMN_RE.test(key));
+      if (invalidKey) {
+        return new Response(JSON.stringify({ error: "Chave de filtro inválida" }), {
+          status: 400,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+      filterEntries.forEach(([key, value]) => {
         query = query.eq(key, value);
       });
     }
