@@ -34,11 +34,27 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { type, data, options } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return new Response(JSON.stringify({ error: "Invalid request body" }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    const { type, data, options } = body;
+
+    const ALLOWED_TYPES = ["job-report", "quality-report", "maintenance-report"] as const;
+    type AllowedType = typeof ALLOWED_TYPES[number];
+    if (!ALLOWED_TYPES.includes(type)) {
+      return new Response(JSON.stringify({ error: "Tipo de relatório inválido" }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
     let textContent: Uint8Array;
 
-    switch (type) {
+    switch (type as AllowedType) {
       case "job-report":
         textContent = await generateJobReport(data, options);
         break;
@@ -48,11 +64,9 @@ Deno.serve(async (req) => {
       case "maintenance-report":
         textContent = await generateMaintenanceReport(data, options);
         break;
-      default:
-        throw new Error(`Unknown report type: ${type}`);
     }
 
-    return new Response(textContent.buffer as ArrayBuffer, {
+    return new Response(textContent!.buffer as ArrayBuffer, {
       headers: {
         ...getCorsHeaders(req),
         // Honesto: o corpo é texto UTF-8, não um PDF binário.
@@ -62,8 +76,8 @@ Deno.serve(async (req) => {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
+    console.error("Error in pdf-generator:", error instanceof Error ? error.message : error);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
