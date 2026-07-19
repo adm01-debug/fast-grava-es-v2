@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './AuthProvider';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,9 +31,12 @@ vi.mock('@/hooks/useDeviceDetection', () => ({
   }),
 }));
 
+let queryClient: QueryClient;
+
 describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     
     // Default setup for onAuthStateChange
     (supabase.auth.onAuthStateChange as any).mockImplementation((cb: any) => {
@@ -63,7 +67,9 @@ describe('AuthContext', () => {
 
   it('should initialize with loading state', async () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <AuthProvider>{children}</AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
     );
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -88,7 +94,9 @@ describe('AuthContext', () => {
     });
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <AuthProvider>{children}</AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
     );
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -106,7 +114,9 @@ describe('AuthContext', () => {
 
   it('should sign out successfully', async () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <AuthProvider>{children}</AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
     );
 
     const { result } = renderHook(() => useAuth(), { wrapper });
