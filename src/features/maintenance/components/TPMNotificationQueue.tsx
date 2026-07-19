@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
@@ -50,7 +51,7 @@ export function TPMNotificationQueue() {
       toast.success('Notificação reenfileirada para tentativa');
     },
     onError: (error: Error) => {
-      toast.error('Erro ao retentar notificação: ' + error.message);
+      showErrorToast(error, 'Erro ao retentar notificação');
     }
   });
 
