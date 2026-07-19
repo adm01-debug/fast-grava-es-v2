@@ -353,7 +353,7 @@ Deno.serve(async (req) => {
 
           if (!response.ok) {
             const error = await response.text();
-            throw new Error(`Failed to send to ${recipient}: ${error}`);
+            throw new Error(`Email send failed: ${error}`);
           }
 
           return { recipient, status: 'sent' };
