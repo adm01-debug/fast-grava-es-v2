@@ -3,7 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
+    <!-- Security Headers -->
+    <!-- script-src 'unsafe-inline': covers JSON-LD and Vite modulepreload polyfill -->
+    <!-- script-src 'unsafe-eval': required by Mermaid (uses new Function internally) -->
+    <!-- style-src 'unsafe-inline': Tailwind/Framer-Motion inject inline styles at runtime -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.ingest.sentry.io https://*.ingest.us.sentry.io; worker-src 'self' blob:; frame-src 'none'; base-uri 'self'; form-action 'self'; object-src 'none';" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <!-- Primary Meta Tags -->
     <title>FAST GRAVAÇÕES | Qualidade + Velocidade</title>
     <meta name="title" content="FAST GRAVAÇÕES | Qualidade + Velocidade" />
