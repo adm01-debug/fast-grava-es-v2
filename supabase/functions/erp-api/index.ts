@@ -8,21 +8,7 @@ import {
   validateContract,
 } from "../_shared/contracts.ts";
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 function jsonResponse(req: Request, data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {

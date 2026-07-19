@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useMemo, useRef, createContext, useContext, ReactNode } from 'react';
-import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
 /**
@@ -79,16 +78,16 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   const [isSyncing, setIsSyncing] = useState(false);
   const [pendingActions, setPendingActions] = useLocalStorage<PendingAction[]>('pending-actions', []);
 
+  // No toast here: OfflineSyncProvider (useOfflineSync) already toasts on
+  // these same browser online/offline events for its real pending-actions
+  // queue. Three independent providers (this one, OfflineSyncProvider, and
+  // NetworkStatusProvider) each listening+toasting on the same two events
+  // was showing users 2-3 stacked "conexão restaurada" toasts per network
+  // change. This provider keeps tracking isOnline/pendingActions (consumed
+  // by OfflineBanner/ConnectionStatus below) without adding a duplicate.
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      toast.success('Conexão restaurada. Sincronizando dados...');
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      toast.error('Sem conexão. As alterações serão salvas localmente.');
-    };
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);

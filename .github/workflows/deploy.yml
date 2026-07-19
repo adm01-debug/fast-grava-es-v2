@@ -82,30 +82,14 @@ jobs:
           path: dist/
           retention-days: 7
 
-  deploy-edge-functions:
-    name: Deploy Edge Functions
-    runs-on: ubuntu-latest
-    needs: [security-scan, test]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Deploy all Edge Functions
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-        run: |
-          supabase functions deploy --project-ref $SUPABASE_PROJECT_ID
-
+  # Migrations apply before functions deploy — a function expecting a new
+  # column/table that hasn't landed yet would error on live traffic during
+  # the window between the two deploys. Previously these ran in parallel
+  # with no ordering between them.
   apply-migrations:
     name: Apply DB Migrations
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [security-scan, test]
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v6
@@ -122,3 +106,23 @@ jobs:
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           supabase db push --project-ref $SUPABASE_PROJECT_ID
+
+  deploy-edge-functions:
+    name: Deploy Edge Functions
+    runs-on: ubuntu-latest
+    needs: [security-scan, test, apply-migrations]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy all Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          supabase functions deploy --project-ref $SUPABASE_PROJECT_ID
