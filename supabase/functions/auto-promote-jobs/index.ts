@@ -111,11 +111,15 @@ serve(async (req) => {
           if (jobIds.length > 0) {
             const { error: updateError } = await supabaseClient
               .from('jobs')
-              .update({ 
+              .update({
                 status: 'ready',
                 updated_at: new Date().toISOString()
               })
               .in('id', jobIds)
+              // Guard: only promote jobs still in 'queue' — without this, a job
+              // that moved to 'production' between the fetch and this update would
+              // be silently regressed back to 'ready'.
+              .eq('status', 'queue')
 
             if (updateError) {
               console.error(`Error promoting jobs for ${technique.name}:`, updateError)

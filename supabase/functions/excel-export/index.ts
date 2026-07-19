@@ -71,7 +71,14 @@ serve(async (req) => {
       });
     }
 
-    const { table, filters, columns } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return new Response(JSON.stringify({ error: "Corpo da requisição inválido" }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    const { table, filters, columns } = body as Record<string, unknown>;
 
     // Validate table name against allowlist
     if (!table || !ALLOWED_TABLES.includes(table)) {

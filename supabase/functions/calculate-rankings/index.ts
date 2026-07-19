@@ -180,25 +180,36 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log(`Calculated ${rankings.length} rankings`);
 
-    // Delete old rankings for this period and type
-    await supabase
+    // Upsert new rankings first so the table is never left empty.
+    // The UNIQUE constraint on (operator_id, ranking_type, period_start) makes
+    // this safe for concurrent runs — the second upsert simply overwrites.
+    if (rankings.length > 0) {
+      const { error: upsertError } = await supabase
+        .from("operator_rankings")
+        .upsert(rankings, { onConflict: "operator_id,ranking_type,period_start" });
+
+      if (upsertError) {
+        console.error("Error upserting rankings:", upsertError);
+        throw upsertError;
+      }
+    }
+
+    // Remove stale entries from previous runs: period rows whose operator_id is
+    // no longer in the newly calculated set (operator had no qualifying jobs).
+    // Using a post-upsert delete means the window with no data never occurs.
+    let staleDelete = supabase
       .from("operator_rankings")
       .delete()
       .eq("ranking_type", rankingType)
       .gte("period_start", periodStart.toISOString())
       .lt("period_end", periodEnd.toISOString());
-
-    // Insert new rankings
     if (rankings.length > 0) {
-      const { error: insertError } = await supabase
-        .from("operator_rankings")
-        .insert(rankings);
-
-      if (insertError) {
-        console.error("Error inserting rankings:", insertError);
-        throw insertError;
-      }
+      staleDelete = staleDelete.not(
+        "operator_id", "in",
+        `(${rankings.map((r) => r.operator_id).join(",")})`,
+      );
     }
+    await staleDelete;
 
     // Award achievements for top performers
     const achievements = [];

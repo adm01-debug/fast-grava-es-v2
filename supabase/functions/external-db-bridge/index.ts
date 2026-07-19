@@ -144,21 +144,21 @@ export function validateBridgeRequest(body: any): {
   }
   const validActions = ["select", "insert", "update", "delete", "rpc", "upsert"];
   if (!validActions.includes(body.action)) {
-    return { valid: false, error: `Invalid action: ${body.action}. Allowed: ${validActions.join(", ")}` };
+    return { valid: false, error: `Ação inválida. Permitidas: ${validActions.join(", ")}` };
   }
   if (body.action === "rpc") {
     if (!body.rpc || typeof body.rpc !== "string") {
       return { valid: false, error: "RPC action requires a 'rpc' field" };
     }
     if (!ALLOWED_RPCS.has(body.rpc)) {
-      return { valid: false, error: `RPC '${body.rpc}' is not in the allowlist` };
+      return { valid: false, error: "RPC não permitida" };
     }
   } else {
     if (!body.table || typeof body.table !== "string") {
       return { valid: false, error: "Non-RPC actions require a 'table' field" };
     }
     if (!ALLOWED_TABLES.has(body.table)) {
-      return { valid: false, error: `Table '${body.table}' is not in the allowlist` };
+      return { valid: false, error: "Tabela não permitida" };
     }
   }
   return {
