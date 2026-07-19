@@ -73,6 +73,12 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
       toast.success('IA Recalibrada');
     },
+    onError: (error: unknown) => {
+      logger.error('Erro ao recalibrar inteligência de inventário', error, 'useInventory');
+      toast.error('Erro ao recalibrar IA', {
+        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.',
+      });
+    },
   });
 
   const movementsQuery = useInventoryMovements();
