@@ -81,6 +81,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
       toast.success('Manutenção iniciada');
     },
     onError: (error) => {
