@@ -139,12 +139,18 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Only coordinators/admins can broadcast; operators can only notify themselves
     if (broadcast || (user_id && user_id !== callerUser.id)) {
-      const { data: roleData } = await supabase
+      const { data: roleRows, error: roleCheckError } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", callerUser.id)
-        .single();
-      if (!["coordinator", "admin"].includes(roleData?.role ?? "")) {
+        .eq("is_active", true);
+      if (roleCheckError) {
+        return new Response(
+          JSON.stringify({ error: "Falha ao verificar permissão" }),
+          { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+      if (!(roleRows ?? []).some((r: { role: string }) => ["coordinator", "admin"].includes(r.role))) {
         return new Response(
           JSON.stringify({ error: "Sem permissão para enviar notificações a outros usuários" }),
           { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
