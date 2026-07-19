@@ -135,7 +135,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = await req.json();
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody || typeof rawBody !== "object") {
+      return new Response(
+        JSON.stringify({ error: "Invalid request body" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    const { user_id, title, body, icon, data, broadcast }: PushNotificationRequest = rawBody;
 
     // Only coordinators/admins can broadcast; operators can only notify themselves
     if (broadcast || (user_id && user_id !== callerUser.id)) {

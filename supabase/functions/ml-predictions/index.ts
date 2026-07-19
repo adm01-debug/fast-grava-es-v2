@@ -87,10 +87,15 @@ Deno.serve(async (req) => {
     const maintenanceSchedules = maintenanceRes.data || [];
     const maintenanceRecords = recordsRes.data || [];
 
-    // Filter to specific machine if provided
-    const targetMachines = machine_id 
-      ? machines.filter(m => m.id === machine_id) 
+    // Filter to specific machine if provided. Cap batch size so serial AI calls
+    // (each up to 25 s) don't exceed the edge function timeout. Callers should
+    // paginate by passing machine_id for large deployments.
+    const MAX_BATCH_SIZE = 10;
+    const filteredMachines = machine_id
+      ? machines.filter(m => m.id === machine_id)
       : machines;
+    const targetMachines = filteredMachines.slice(0, MAX_BATCH_SIZE);
+    const batchTruncated = filteredMachines.length > MAX_BATCH_SIZE;
 
     const predictions = [];
 
@@ -270,10 +275,14 @@ Responda APENAS com JSON no formato:
 
     console.log(`Generated ${predictions.length} predictions`);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    return new Response(JSON.stringify({
+      success: true,
       predictions_generated: predictions.length,
-      predictions 
+      predictions,
+      ...(batchTruncated && {
+        warning: `Batch limited to ${MAX_BATCH_SIZE} machines. Pass machine_id to target a specific machine.`,
+        total_machines: filteredMachines.length,
+      }),
     }), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });

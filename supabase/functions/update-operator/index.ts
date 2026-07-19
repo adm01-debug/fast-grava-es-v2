@@ -61,7 +61,14 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { operator_id, full_name, phone } = await req.json()
+    const rawBody = await req.json().catch(() => null)
+    if (!rawBody || typeof rawBody !== 'object') {
+      return new Response(JSON.stringify({ error: 'Corpo da requisição inválido' }), {
+        status: 400,
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+      })
+    }
+    const { operator_id, full_name, phone } = rawBody
 
     if (!operator_id) {
       return new Response(JSON.stringify({ error: 'ID do operador é obrigatório' }), {
