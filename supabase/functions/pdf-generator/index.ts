@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
 
 // NOTE — esta função NÃO gera PDFs binários hoje: ela monta um relatório em
 // texto plano. Para não induzir clientes ao erro (Content-Type application/pdf
@@ -7,24 +7,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 // de PDF real deve ser implementada com `pdf-lib` ou similar; até lá o texto
 // pode ser convertido para PDF do lado do cliente via jspdf, se necessário.
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
-
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: getCorsHeaders(req) });
+Deno.serve(async (req) => {
+  const preflight = handleCorsPreflight(req);
+  if (preflight) return preflight;
 
   try {
     // Auth check — endpoint retorna dados de produção (jobs/máquinas), não pode
@@ -41,10 +26,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } },
     );
-    const { data: claims, error: authErr } = await supabase.auth.getClaims(
-      authHeader.replace("Bearer ", ""),
-    );
-    if (authErr || !claims?.claims) {
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
+    if (authErr || !user) {
       return new Response(JSON.stringify({ error: "Invalid token" }), {
         status: 401,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

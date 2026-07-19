@@ -1,21 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
-
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts';
 
 interface DeviceInfo {
   user_id: string;
@@ -30,9 +15,8 @@ interface DeviceInfo {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: getCorsHeaders(req) });
-  }
+  const preflight = handleCorsPreflight(req);
+  if (preflight) return preflight;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
