@@ -255,7 +255,10 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       const completed = machineJobs.filter(j => j.status === 'finished');
       const totalPcs = machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
       const lostPcs = machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
-      const machineTotalAttempted = totalPcs + lostPcs;
+      // Use produced_quantity (not planned quantity) as the base for loss-rate so
+      // the denominator reflects pieces actually processed, not planned pieces.
+      const producedPcs = machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.produced_quantity ?? 0), 0);
+      const machineAttempted = producedPcs + lostPcs;
       return {
         machineId: machine.id,
         machineName: machine.name,
@@ -264,7 +267,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
         completedJobs: completed.length,
         totalPieces: totalPcs,
         lostPieces: lostPcs,
-        lossRate: machineTotalAttempted > 0 ? (lostPcs / machineTotalAttempted) * 100 : 0,
+        lossRate: machineAttempted > 0 ? (lostPcs / machineAttempted) * 100 : 0,
         avgDuration: machineJobs.length > 0
           ? machineJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / machineJobs.length
           : 0,
@@ -302,11 +305,12 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       const productJobs = validJobs.filter(j => j.product === productName);
       const totalPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
       const lostPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
+      const producedPcs = productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.produced_quantity ?? 0), 0);
       return {
         productName: productName,
         jobCount: productJobs.length,
         totalPieces: totalPcs,
-        lossRate: (totalPcs + lostPcs) > 0 ? (lostPcs / (totalPcs + lostPcs)) * 100 : 0,
+        lossRate: (producedPcs + lostPcs) > 0 ? (lostPcs / (producedPcs + lostPcs)) * 100 : 0,
         avgDuration: productJobs.length > 0 ? productJobs.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.estimated_duration), 0) / productJobs.length : 0,
       };
     }).sort((a, b) => b.totalPieces - a.totalPieces);
@@ -378,12 +382,10 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       };
     });
 
-    const totalAttemptedPieces = totalPieces + lostPieces;
-    const globalLossRate = totalAttemptedPieces > 0 ? (lostPieces / totalAttemptedPieces) * 100 : 0;
-
     return {
       totalJobs, completedJobs, inProgressJobs, delayedJobs, totalPieces, completedPieces, lostPieces,
-      lossRate: globalLossRate, averageOccupancy,
+      // currentStats.lossRate already uses produced_quantity + lost_pieces as the denominator
+      lossRate, averageOccupancy,
       productivityByMachine, productivityByTechnique, productivityByProduct, todayStats, performanceHistory, comparison, predictions, anomalies, targets,
       estimatedRevenue: completedPieces * 2.5, costOfLosses: lostPieces * 1.8,
     };
