@@ -76,7 +76,7 @@ export function useSchedulingData() {
         ...RETRY_CONFIG,
       },
       {
-        queryKey: QUERY_KEYS.JOBS,
+        queryKey: QUERY_KEYS.JOBS_RECENT,
         queryFn: async () => {
           try {
             const data = await jobsService.getAll({ recentOnly: true });
@@ -103,7 +103,7 @@ export function useSchedulingData() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS })
+        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT })
       )
       .on(
         'postgres_changes',

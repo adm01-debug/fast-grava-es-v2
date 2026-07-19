@@ -1,20 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature, x-api-key',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 // Conhecimento técnico por técnica
 const techniqueKnowledge: Record<string, string> = {
@@ -416,12 +403,38 @@ function detectTechnique(message: string): string[] {
   return techniques;
 }
 
+const MAX_MESSAGES = 40;
+const MAX_MESSAGE_CHARS = 8000;
+const MAX_CUSTOM_KNOWLEDGE_CHARS = 20000;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
 
   try {
+    // Every call fans out to a paid AI gateway request — require a real,
+    // signed-in user so this can't be hit anonymously for unbounded cost.
+    const authHeader = req.headers.get("Authorization");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!authHeader || !supabaseUrl || !supabaseAnonKey) {
+      return new Response(
+        JSON.stringify({ error: "Não autorizado" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user } } = await userClient.auth.getUser();
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Não autorizado" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+
     const body = await req.json().catch(() => null);
     const { messages, customKnowledge } = body ?? {};
 
@@ -429,6 +442,27 @@ serve(async (req) => {
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(
         JSON.stringify({ error: "'messages' must be a non-empty array" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    if (messages.length > MAX_MESSAGES) {
+      return new Response(
+        JSON.stringify({ error: `'messages' must contain at most ${MAX_MESSAGES} entries` }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    const oversizedMessage = messages.some(
+      (m: any) => typeof m?.content === "string" && m.content.length > MAX_MESSAGE_CHARS
+    );
+    if (oversizedMessage) {
+      return new Response(
+        JSON.stringify({ error: `Each message must be at most ${MAX_MESSAGE_CHARS} characters` }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    if (typeof customKnowledge === "string" && customKnowledge.length > MAX_CUSTOM_KNOWLEDGE_CHARS) {
+      return new Response(
+        JSON.stringify({ error: `'customKnowledge' must be at most ${MAX_CUSTOM_KNOWLEDGE_CHARS} characters` }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }

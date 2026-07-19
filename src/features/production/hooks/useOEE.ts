@@ -2,7 +2,11 @@ import { useMemo } from 'react';
 import { useSchedulingData } from '@/features/jobs';
 import { useBusinessConfig } from '@/features/admin';
 import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { logger } from '@/lib/logger';
+import { calculateRealOEE } from '@/features/production/services/oeeCalculations';
+
+const SP_TIMEZONE = 'America/Sao_Paulo';
 
 // Data validation helpers
 function isValidDate(dateStr: string | null | undefined): dateStr is string {
@@ -229,7 +233,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
           }
         }
         estimated += sanitizeNumber(job.estimated_duration || 60);
-        produced += sanitizeNumber(job.produced_quantity ?? job.quantity);
+        // Null produced_quantity means "not recorded", not "fully produced as
+        // ordered" — falling back to job.quantity fabricated 100% output with
+        // zero loss for finished jobs whose production was never logged.
+        produced += sanitizeNumber(job.produced_quantity ?? 0);
         lost += sanitizeNumber(job.lost_pieces);
       }
       const planned = Math.max(machineDays * plannedMinPerDay, estimated);
@@ -287,7 +294,9 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       const shiftJobs = periodJobs.filter(job => {
         const timeToUse = job.actual_start_time || job.start_time;
         if (!timeToUse) return false;
-        const hour = timeToUse.includes('T') ? new Date(timeToUse).getHours() : parseInt(timeToUse.split(':')[0], 10);
+        const hour = timeToUse.includes('T')
+          ? toZonedTime(new Date(timeToUse), SP_TIMEZONE).getHours()
+          : parseInt(timeToUse.split(':')[0], 10);
         if (sId === '1' && (hour >= 7 && hour < 15)) return true;
         if (sId === '2' && (hour >= 15 && hour < 23)) return true;
         if (sId === '3' && (hour < 7 || hour >= 23)) return true;
@@ -332,36 +341,23 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         const techName = techniqueNameById.get(j.technique_id) || '';
         return studio.techniques.some(pattern => techName.includes(pattern));
       });
-      const m = calculateMetrics(studioJobs, Math.max(studioJobs.length, 1), PLANNED_MINUTES_PER_DAY);
+      const daysWithStudioJobs = new Set(
+        studioJobs.filter(j => j.actual_end_time).map(j => startOfDay(parseISO(asStr(j.actual_end_time))).toISOString())
+      ).size || 1;
+      const m = calculateMetrics(studioJobs, daysWithStudioJobs, PLANNED_MINUTES_PER_DAY);
 
-      // Derive health score from actual OEE data
-      let healthScore = Math.round(Math.max(0, Math.min(100, m.oee)));
+      // Derive health score from actual OEE data. There is no real
+      // consumable/wear-level data source (no sensor/inventory feed for
+      // lamp/ink/optics wear per studio) — previously this was overwritten
+      // with hardcoded per-studio literals presented as live status, which
+      // never changed regardless of actual machine condition. Left empty
+      // rather than fabricated; wire to a real source (inventory_items /
+      // machine_health_metrics) when one exists.
+      const healthScore = Math.round(Math.max(0, Math.min(100, m.oee)));
       let maintenanceStatus: StudioOEE['maintenanceStatus'] = 'optimal';
       if (healthScore < 60) maintenanceStatus = 'critical';
       else if (healthScore < 80) maintenanceStatus = 'warning';
-      let consumables: StudioOEE['consumables'] = [];
-
-      if (studio.id === 'personalizacao_uv') {
-        healthScore = 78;
-        maintenanceStatus = 'warning';
-        consumables = [
-          { name: 'Lâmpada UV', level: 45 },
-          { name: 'Tintas CMYK', level: 68 },
-          { name: 'Verniz High-Gloss', level: 12 }
-        ];
-      } else if (studio.id === 'laser') {
-        healthScore = 92;
-        consumables = [
-          { name: 'Tubo de Laser CO2', level: 85 },
-          { name: 'Ópticas/Lentes', level: 90 }
-        ];
-      } else if (studio.id.includes('serigrafia')) {
-        healthScore = 88;
-        consumables = [
-          { name: 'Emulsão', level: 75 },
-          { name: 'Rodo de Impressão', level: 60 }
-        ];
-      }
+      const consumables: StudioOEE['consumables'] = [];
 
       return {
         studioId: studio.id,
@@ -396,8 +392,11 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     });
 
     const byMaterial = Array.from(materialJobsMap.entries()).map(([material, matJobs]) => {
-      const m = calculateMetrics(matJobs, Math.max(matJobs.length, 1), PLANNED_MINUTES_PER_DAY);
-      const totalPieces = matJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
+      const daysWithMatJobs = new Set(
+        matJobs.filter(j => j.actual_end_time).map(j => startOfDay(parseISO(asStr(j.actual_end_time))).toISOString())
+      ).size || 1;
+      const m = calculateMetrics(matJobs, daysWithMatJobs, PLANNED_MINUTES_PER_DAY);
+      const totalPieces = matJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? 0), 0);
       return {
         material,
         oee: Math.round(m.oee * 10) / 10,
@@ -408,11 +407,14 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       };
     });
 
-    const machinesWithData = byMachine.filter(m => m.totalJobs > 0);
-    const overallOEE = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.oee, 0) / machinesWithData.length : 0;
-    const overallAvailability = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.availability, 0) / machinesWithData.length : 0;
-    const overallPerformance = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.performance, 0) / machinesWithData.length : 0;
-    const overallQuality = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.quality, 0) / machinesWithData.length : 0;
+    // ISO 22400-2: aggregate raw production totals first, then compute ratios.
+    // An arithmetic mean of per-machine OEE ratios is mathematically incorrect
+    // (it weights idle machines equally with busy ones).
+    const globalOEE = calculateRealOEE(periodJobs);
+    const overallOEE = globalOEE.oee;
+    const overallAvailability = globalOEE.availability;
+    const overallPerformance = globalOEE.performance;
+    const overallQuality = globalOEE.quality;
 
     // Group periodJobs by date for efficient trend calculation
     const jobsByDate = new Map<string, typeof periodJobs>();

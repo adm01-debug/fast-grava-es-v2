@@ -28,6 +28,7 @@ import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { CalendarEmptyState } from '@/components/calendar/CalendarEmptyState';
 import { MobileFAB } from '@/components/calendar/MobileFAB';
 import { useSchedulingData } from '@/features/jobs';
+import { SectionErrorBoundary } from '@/components/ui/section-error-boundary';
 import { useCalendarFilters } from '@/hooks/useCalendarFilters';
 import { useCalendarHotkeys } from '@/hooks/useCalendarHotkeys';
 import { cn } from '@/lib/utils';
@@ -104,7 +105,7 @@ export default function MonthlyCalendar() {
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in-up calendar-print-area">
         <Breadcrumbs />
 
-        <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+        <SectionErrorBoundary compact><Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
           <CalendarHeader
             title="Calendário Mensal"
             subtitle="Visão panorâmica do mês com mapa de carga"
@@ -130,7 +131,7 @@ export default function MonthlyCalendar() {
               />
             }
           />
-        </Suspense>
+        </Suspense></SectionErrorBoundary>
 
         <Card className="bg-card border border-border/40 rounded-xl overflow-hidden">
           <CardHeader className="border-b border-border/40 pb-3">

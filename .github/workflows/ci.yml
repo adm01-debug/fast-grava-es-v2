@@ -17,15 +17,17 @@ jobs:
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Run ESLint
         run: npm run lint -- --max-warnings 9999
@@ -42,26 +44,32 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Dependency vulnerability audit
-        run: npm audit --audit-level=critical
+        # HIGH includes secrets in env var names, path traversal in dev tools etc.
+        # CRITICAL alone misses known HIGH vulnerabilities (e.g. vite path traversal).
+        run: npm audit --audit-level=high
 
       - name: Secret scanning (TruffleHog)
-        uses: trufflesecurity/trufflehog@main
+        # Pinned to v3 tag for supply-chain safety. Update periodically.
+        uses: trufflesecurity/trufflehog@v3.82.13
         with:
           path: ./
           base: ${{ github.event.before || 'HEAD~1' }}
           head: HEAD
-          extra_args: --only-verified
+          # Removed --only-verified: unverifiable secrets (expired keys, private
+          # endpoints like Bitrix24) would otherwise be silently ignored.
 
 # ──────────────────────────────────────────────────────────────────────────
 # Gate 3: Unit tests + coverage (blocks deploy if < thresholds)
@@ -69,16 +77,18 @@ jobs:
   unit-tests:
     name: Unit & Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Run unit tests with coverage
         run: npm run test:coverage -- --reporter=verbose --reporter=json --outputFile=test-results.json
@@ -112,16 +122,18 @@ jobs:
   simulation-tests:
     name: Simulation & Fuzz Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Run webhook simulation suite
         run: npx vitest run src/test/webhookSimulation.test.ts --reporter=verbose
@@ -150,21 +162,26 @@ jobs:
   build:
     name: Production Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [security, unit-tests, simulation-tests]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Build production bundle
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # client.ts reads VITE_SUPABASE_PUBLISHABLE_KEY, not _ANON_KEY (see
+          # CLAUDE.md's documented naming inconsistency) — the build was
+          # silently shipping createClient(url, undefined) without this.
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_ALERT_WEBHOOK_URL: ${{ secrets.VITE_ALERT_WEBHOOK_URL }}
         run: npm run build
 
@@ -195,6 +212,7 @@ jobs:
   bundle-diff:
     name: Bundle Diff vs main
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [build]
     if: github.event_name == 'pull_request'
     permissions:
@@ -202,7 +220,7 @@ jobs:
       actions: read
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Download current PR bundle report
         uses: actions/download-artifact@v4
@@ -242,17 +260,19 @@ jobs:
   e2e:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [build]
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

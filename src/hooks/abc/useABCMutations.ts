@@ -57,7 +57,8 @@ export function useABCMutations({ activities, activityRates, jobs, techniques }:
             driverQuantity = 1;
             break;
           case 'quantity':
-            driverQuantity = job.produced_quantity ?? job.quantity ?? 0;
+            // Null produced_quantity means "not recorded" — not "fully produced".
+            driverQuantity = job.produced_quantity ?? 0;
             break;
           case 'labor_hours':
             driverQuantity = durationHours * 1.2;

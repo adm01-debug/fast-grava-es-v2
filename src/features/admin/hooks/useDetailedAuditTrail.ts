@@ -36,12 +36,17 @@ export interface MachineEventAudit {
   };
 }
 
+// Narrow-cast to allow querying tables not yet in the generated Database types.
+const untypedClient = supabase as unknown as {
+  from: (t: string) => ReturnType<typeof supabase.from>;
+};
+
 export function useDetailedAuditTrail() {
   const jobAuditQuery = useQuery({
     queryKey: ['job-status-audit'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('job_status_audit' as never)
+      const { data, error } = await untypedClient
+        .from('job_status_audit')
         .select(`
           *,
           profiles:changed_by(full_name),
@@ -49,7 +54,7 @@ export function useDetailedAuditTrail() {
         `)
         .order('changed_at', { ascending: false })
         .limit(20);
-      
+
       if (error) throw error;
       return ((data ?? []) as unknown as JobStatusAudit[]);
     },
@@ -59,8 +64,8 @@ export function useDetailedAuditTrail() {
   const machineAuditQuery = useQuery({
     queryKey: ['machine-event-audit'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('machine_event_audit' as never)
+      const { data, error } = await untypedClient
+        .from('machine_event_audit')
         .select(`
           *,
           profiles:performed_by(full_name),
@@ -68,7 +73,7 @@ export function useDetailedAuditTrail() {
         `)
         .order('performed_at', { ascending: false })
         .limit(10);
-      
+
       if (error) throw error;
       return ((data ?? []) as unknown as MachineEventAudit[]);
     },

@@ -1,5 +1,5 @@
 import { Suspense, lazy, useMemo, ComponentType, useState, useEffect, useCallback } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
@@ -15,6 +15,7 @@ import { StatsCardSkeleton, ContentTransition } from '@/components/loading';
 import { DraggableWidget } from '@/components/dashboard/DraggableWidget';
 import { DashboardEditControls } from '@/components/dashboard/DashboardEditControls';
 import { SortableWidgetSection } from '@/components/dashboard/SortableWidgetSection';
+import { SectionErrorBoundary } from '@/components/ui/section-error-boundary';
 // ... DailySummaryCard lazy loaded below
 import { Badge } from '@/components/ui/badge';
 import { FavoritesDropdown, FavoriteButton } from '@/components/navigation/FavoritesManager';
@@ -176,9 +177,9 @@ const Index = () => {
         isEditMode={isEditMode}
         onToggleVisibility={() => handleToggleWidgetVisibility(widgetId)}
       >
-        <Suspense fallback={<WidgetSkeleton className={config.skeletonHeight} />}>
+        <SectionErrorBoundary compact><Suspense fallback={<WidgetSkeleton className={config.skeletonHeight} />}>
           <Component />
-        </Suspense>
+        </Suspense></SectionErrorBoundary>
       </DraggableWidget>
     );
   }, [isEditMode, handleToggleWidgetVisibility]);
@@ -263,9 +264,9 @@ const Index = () => {
         </div>
 
         <GamificationBanner />
-        <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg mb-4" />}>
+        <SectionErrorBoundary compact><Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg mb-4" />}>
           <BufferPromotionStatus />
-        </Suspense>
+        </Suspense></SectionErrorBoundary>
 
         {/* Edit Mode Indicator */}
         {isEditMode && (
@@ -381,10 +382,10 @@ const Index = () => {
 
                   {/* Right Column: Alerts & Side Widgets */}
                   <div className="lg:col-span-4 space-y-6">
-                    <Suspense fallback={<WidgetSkeleton className="h-40" />}>
+                    <SectionErrorBoundary compact><Suspense fallback={<WidgetSkeleton className="h-40" />}>
                       <AutoShiftSummary />
                       <InventoryAlertsWidget />
-                    </Suspense>
+                    </Suspense></SectionErrorBoundary>
 
                     <SortableWidgetSection
                       section="sidebar"
@@ -395,9 +396,9 @@ const Index = () => {
                       {sidebarWidgets.map(w => renderWidget(w.id))}
                     </SortableWidgetSection>
 
-                    <Suspense fallback={<WidgetSkeleton className="h-40" />}>
+                    <SectionErrorBoundary compact><Suspense fallback={<WidgetSkeleton className="h-40" />}>
                       <ActivityFeedWidget />
-                    </Suspense>
+                    </Suspense></SectionErrorBoundary>
                   </div>
                 </div>
 
@@ -474,9 +475,9 @@ const Index = () => {
           <TabsContent value="timeline" className="flex-1 mt-4 min-h-0">
             <ScrollArea className="h-full">
               <div className="pr-2">
-                <Suspense fallback={<WidgetSkeleton className="h-[600px]" />}>
+                <SectionErrorBoundary compact><Suspense fallback={<WidgetSkeleton className="h-[600px]" />}>
                   <CompactTimeline />
-                </Suspense>
+                </Suspense></SectionErrorBoundary>
               </div>
             </ScrollArea>
           </TabsContent>
@@ -516,9 +517,9 @@ const Index = () => {
           {/* Chat Tab */}
           <TabsContent value="chat" className="flex-1 mt-4 min-h-0">
             <div className="h-full">
-              <Suspense fallback={<div className="h-full bg-muted animate-pulse rounded-lg" />}>
+              <SectionErrorBoundary compact><Suspense fallback={<div className="h-full bg-muted animate-pulse rounded-lg" />}>
                 <QuickChat />
-              </Suspense>
+              </Suspense></SectionErrorBoundary>
             </div>
           </TabsContent>
 

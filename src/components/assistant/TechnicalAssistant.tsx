@@ -20,13 +20,12 @@ import {
   X
 } from "lucide-react";
 import { toast } from "sonner";
+import { edgeFunctionFetch } from "@/lib/edgeFunctionFetch";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/technical-assistant`;
 
 const techniqueSuggestions = [
   { label: "Fiber Laser", icon: Zap, question: "Quais são os parâmetros ideais para gravar aço inox com Fiber Laser?" },
@@ -55,12 +54,8 @@ export const TechnicalAssistant = ({ isOpen, onClose }: TechnicalAssistantProps)
   }, [messages]);
 
   const streamChat = async (userMessages: Message[]) => {
-    const resp = await fetch(CHAT_URL, {
+    const resp = await edgeFunctionFetch("technical-assistant", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
       body: JSON.stringify({ messages: userMessages }),
     });
 

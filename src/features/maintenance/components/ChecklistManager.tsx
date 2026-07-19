@@ -18,6 +18,12 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { MaintenanceChecklistItem } from '@/features/maintenance/hooks/types';
 
+// Radix Select forbids an empty-string item value (it's reserved to mean
+// "no selection" internally and throws at render). selectedTechniqueId=''
+// means "global (all machines)" throughout this component, so this sentinel
+// is only used at the Select boundary and mapped back to '' immediately.
+const GLOBAL_TECHNIQUE_VALUE = '__global__';
+
 export function ChecklistManager() {
   const { maintenanceTypes, checklists, machines } = useTPM();
   const queryClient = useQueryClient();
@@ -104,7 +110,46 @@ export function ChecklistManager() {
         if (error) throw error;
         checklistId = data.id;
       } else {
-        // Update version and potentially name
+        // Fetch old item IDs before any write so we can delete them safely
+        // after the new items are successfully inserted (INSERT-before-DELETE
+        // ensures the checklist is never left with zero items if the insert fails).
+        const { data: oldItems } = await supabase
+          .from('maintenance_checklist_items')
+          .select('id')
+          .eq('checklist_id', checklistId);
+        const oldItemIds = (oldItems ?? []).map((r: { id: string }) => r.id);
+
+        if (localItems.length > 0) {
+          const itemsToInsert = localItems.map((item, index) => ({
+            checklist_id: checklistId,
+            description: item.description || '',
+            is_critical: !!item.is_critical,
+            requires_photo: !!item.requires_photo,
+            requires_measurement: !!item.requires_measurement,
+            measurement_unit: item.measurement_unit || null,
+            min_value: item.min_value || null,
+            max_value: item.max_value || null,
+            item_order: index + 1,
+          }));
+
+          const { error: insertError } = await supabase
+            .from('maintenance_checklist_items')
+            .insert(itemsToInsert);
+
+          if (insertError) throw insertError;
+        }
+
+        // New items are safely stored — now remove the old ones by ID
+        if (oldItemIds.length > 0) {
+          const { error: deleteError } = await supabase
+            .from('maintenance_checklist_items')
+            .delete()
+            .in('id', oldItemIds);
+
+          if (deleteError) throw deleteError;
+        }
+
+        // Update version only after items are settled
         const { error: updateError } = await supabase
           .from('maintenance_checklists')
           .update({
@@ -114,17 +159,9 @@ export function ChecklistManager() {
           .eq('id', checklistId);
 
         if (updateError) throw updateError;
-
-        // Clean up old items
-        const { error: deleteError } = await supabase
-          .from('maintenance_checklist_items')
-          .delete()
-          .eq('checklist_id', checklistId);
-
-        if (deleteError) throw deleteError;
       }
 
-      if (localItems.length > 0) {
+      if (!currentChecklist && localItems.length > 0) {
         const itemsToInsert = localItems.map((item, index) => ({
           checklist_id: checklistId,
           description: item.description || '',
@@ -219,12 +256,15 @@ export function ChecklistManager() {
           </div>
           <div className="space-y-2">
             <Label>Tipo/Categoria de Máquina (Opcional)</Label>
-            <Select value={selectedTechniqueId} onValueChange={setSelectedTechniqueId}>
+            <Select
+              value={selectedTechniqueId || GLOBAL_TECHNIQUE_VALUE}
+              onValueChange={(v) => setSelectedTechniqueId(v === GLOBAL_TECHNIQUE_VALUE ? '' : v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Global (Toda as máquinas)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Global (Todas as máquinas)</SelectItem>
+                <SelectItem value={GLOBAL_TECHNIQUE_VALUE}>Global (Todas as máquinas)</SelectItem>
                 {techniques.map((tech) => (
                   <SelectItem key={tech} value={tech}>
                     {tech}

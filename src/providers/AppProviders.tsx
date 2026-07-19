@@ -1,4 +1,5 @@
 import { ReactNode, type ComponentType } from "react";
+import { HelmetProvider } from "react-helmet-async";
 import { ProviderComposer } from "./ProviderComposer";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter } from "react-router-dom";
@@ -107,15 +108,17 @@ function Observers() {
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ComposedProviders>
-            <Observers />
-            {children}
-          </ComposedProviders>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <ComposedProviders>
+              <Observers />
+              {children}
+            </ComposedProviders>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }

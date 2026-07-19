@@ -44,10 +44,12 @@ export function CommandPaletteAdvanced() {
   const { signOut } = useAuth();
 
   React.useEffect(() => {
-    const savedRecent = localStorage.getItem("command_recent");
-    const savedFavorites = localStorage.getItem("command_favorites");
-    if (savedRecent) setRecentCommands(JSON.parse(savedRecent));
-    if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+    try {
+      const savedRecent = localStorage.getItem("command_recent");
+      const savedFavorites = localStorage.getItem("command_favorites");
+      if (savedRecent) setRecentCommands(JSON.parse(savedRecent));
+      if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+    } catch { /* corrupted localStorage — start with empty state */ }
   }, []);
 
   React.useEffect(() => {
@@ -67,12 +69,12 @@ export function CommandPaletteAdvanced() {
   const addRecentCommand = (id: string) => {
     const updated = [id, ...recentCommands.filter(c => c !== id)].slice(0, 10);
     setRecentCommands(updated);
-    localStorage.setItem("command_recent", JSON.stringify(updated));
+    try { localStorage.setItem("command_recent", JSON.stringify(updated)); } catch { /* quota exceeded */ }
   };
   const toggleFavorite = (id: string) => {
     const updated = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
     setFavorites(updated);
-    localStorage.setItem("command_favorites", JSON.stringify(updated));
+    try { localStorage.setItem("command_favorites", JSON.stringify(updated)); } catch { /* quota exceeded */ }
   };
 
   const allCommands = React.useMemo(() => buildAllCommands({ navigateTo, executeAction, theme, setTheme, signOut, setOpen }), [theme, navigate, signOut, setTheme]);

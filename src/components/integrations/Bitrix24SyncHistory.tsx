@@ -9,6 +9,7 @@ import { formatDistanceToNow, format, subDays, parseISO, startOfDay, differenceI
 import { ptBR } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from '@/lib/recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { edgeFunctionFetch } from '@/lib/edgeFunctionFetch';
 
 interface SyncDetails {
   synced_ids?: string[];
@@ -39,16 +40,7 @@ export const Bitrix24SyncHistory = () => {
   const { data: history, isLoading } = useQuery({
     queryKey: ['bitrix24-sync-history'],
     queryFn: async () => {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/bitrix24-sync?action=history&limit=50`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          }
-        }
-      );
+      const response = await edgeFunctionFetch('bitrix24-sync?action=history&limit=50');
       const data = await response.json();
       return data.history as SyncHistoryItem[];
     },

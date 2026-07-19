@@ -1,31 +1,14 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-
 // STUB — esta função foi identificada como não implementada durante auditoria
 // (retornava os bytes originais sem otimizar). Enquanto uma implementação real
 // não estiver disponível (ex.: via `imagescript` ou `sharp` server-side), a
 // função responde 501 para que o cliente saiba que o serviço está indisponível
 // em vez de assumir que a otimização ocorreu.
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
+import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
 
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
-
-serve((req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: getCorsHeaders(req) });
-  }
+Deno.serve((req) => {
+  const preflight = handleCorsPreflight(req);
+  if (preflight) return preflight;
 
   return new Response(
     JSON.stringify({

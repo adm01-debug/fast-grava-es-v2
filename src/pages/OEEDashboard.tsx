@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { jsPDF } from 'jspdf';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +58,7 @@ import {
 import { useOEE, WORLD_CLASS_OEE, getOEEColor, useOEEAlerts, useProductionLosses } from '@/features/production';
 import { useOEEDashboardFilters } from '@/features/analytics/hooks/useOEEDashboardFilters';
 import { STUDIOS, INDUSTRY_BENCHMARKS } from '@/features/analytics/constants/oee';
+import { SectionErrorBoundary } from '@/components/ui/section-error-boundary';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
@@ -534,12 +535,12 @@ const OEEDashboard = memo(function OEEDashboard() {
         
         {/* Predictive Maintenance & Health Insights */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+          <SectionErrorBoundary compact><Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
             <PredictiveAlerts alerts={data.maintenanceAlerts} />
-          </Suspense>
-          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
+          </Suspense></SectionErrorBoundary>
+          <SectionErrorBoundary compact><Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-xl" />}>
             <OEERecommendations data={data} />
-          </Suspense>
+          </Suspense></SectionErrorBoundary>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4">
@@ -786,7 +787,7 @@ const OEEDashboard = memo(function OEEDashboard() {
 
               <div className="mt-8 space-y-6">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-center text-primary/60">Detalhamento por Unidade</p>
-                <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
+                <SectionErrorBoundary compact><Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
                   {machineId !== 'all' ? (
                     <OEECalculationAudit 
                       machine={data.byMachine.find(m => m.machineId === machineId) as (typeof data.byMachine)[number]} 
@@ -817,7 +818,7 @@ const OEEDashboard = memo(function OEEDashboard() {
                       }} 
                     />
                   )}
-                </Suspense>
+                </Suspense></SectionErrorBoundary>
               </div>
 
               <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-border/50">
@@ -875,9 +876,9 @@ const OEEDashboard = memo(function OEEDashboard() {
           </Card>
         )}
 
-        <Suspense fallback={<ChartSkeleton />}>
+        <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
           <HyperInsights />
-        </Suspense>
+        </Suspense></SectionErrorBoundary>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="bg-background/50 border border-primary/20 p-1 flex-wrap h-auto">
@@ -902,14 +903,14 @@ const OEEDashboard = memo(function OEEDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6 focus-visible:outline-none outline-none">
-            <Suspense fallback={<ChartSkeleton />}>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
               <StudioHealthMonitor studios={data.byStudio.filter(s => s.maintenanceStatus !== 'optimal') || []} />
-            </Suspense>
+            </Suspense></SectionErrorBoundary>
 
 
-            <Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
+            <SectionErrorBoundary compact><Suspense fallback={<div className="h-48 animate-pulse bg-muted rounded-xl" />}>
               <StudioEfficiencyGrid studios={data.byStudio || []} />
-            </Suspense>
+            </Suspense></SectionErrorBoundary>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <OEEGaugeCard 
@@ -952,17 +953,17 @@ const OEEDashboard = memo(function OEEDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                <div className="lg:col-span-2 space-y-6">
-                 <Suspense fallback={<ChartSkeleton />}>
+                 <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
                     <OEETrendChart data={data.trendData} worldClassBenchmark={data.worldClassBenchmark} />
-                 </Suspense>
+                 </Suspense></SectionErrorBoundary>
                  
-                 <Suspense fallback={<ChartSkeleton />}>
+                 <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
                     <OEEHeatmap data={data.heatmapData.length > 0 ? data.heatmapData : data.byMachine.map(m => ({
                       machineId: m.machineId,
                       machineName: m.machineName,
                       data: data.trendData
                     }))} />
-                 </Suspense>
+                 </Suspense></SectionErrorBoundary>
                </div>
                
                <div className="space-y-6">
@@ -1035,20 +1036,20 @@ const OEEDashboard = memo(function OEEDashboard() {
                </div>
             </div>
 
-            <Suspense fallback={<ChartSkeleton />}>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
                <OEERecommendations data={data} />
-            </Suspense>
+            </Suspense></SectionErrorBoundary>
 
 
           </TabsContent>
 
           <TabsContent value="studios" className="space-y-6 focus-visible:outline-none outline-none">
-            <Suspense fallback={<ChartSkeleton />}>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
               <StudioHealthMonitor studios={data.byStudio || []} />
-            </Suspense>
-            <Suspense fallback={<ChartSkeleton />}>
+            </Suspense></SectionErrorBoundary>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
               <StudioEfficiencyGrid studios={data.byStudio || []} />
-            </Suspense>
+            </Suspense></SectionErrorBoundary>
 
 
 
@@ -1129,9 +1130,9 @@ const OEEDashboard = memo(function OEEDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                 <Suspense fallback={<ChartSkeleton />}>
+                 <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
                     <MaterialEfficiencyChart materials={data.byMaterial || []} />
-                 </Suspense>
+                 </Suspense></SectionErrorBoundary>
               </div>
               <div className="space-y-6">
                  <Card className="bg-primary/5 border-primary/20 h-full flex flex-col justify-center items-center p-8 text-center relative overflow-hidden">
@@ -1210,26 +1211,26 @@ const OEEDashboard = memo(function OEEDashboard() {
           <TabsContent value="losses" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={lossFilters} /></Suspense>
-                <Suspense fallback={<ChartSkeleton />}><OEELossesChart availabilityLosses={data.availabilityLosses} performanceLosses={data.performanceLosses} qualityLosses={data.qualityLosses} overallOEE={data.overallOEE} /></Suspense>
+                <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}><OEELossDrilldown filters={lossFilters} /></Suspense></SectionErrorBoundary>
+                <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}><OEELossesChart availabilityLosses={data.availabilityLosses} performanceLosses={data.performanceLosses} qualityLosses={data.qualityLosses} overallOEE={data.overallOEE} /></Suspense></SectionErrorBoundary>
               </div>
               <div className="space-y-6">
-                <Suspense fallback={<ChartSkeleton />}><ParetoLossesChart losses={losses || []} /></Suspense>
+                <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}><ParetoLossesChart losses={losses || []} /></Suspense></SectionErrorBoundary>
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="machines" className="space-y-6">
-            <Suspense fallback={<ChartSkeleton />}>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
               <OEERankingGap machines={data.byMachine} techniques={data.byTechnique} targetOEE={currentBenchmark.target} />
-            </Suspense>
-            <Suspense fallback={<TableSkeleton />}><OEEMachineTable machines={data.byMachine} /></Suspense>
-            <Suspense fallback={<ChartSkeleton />}><OEETechniqueComparison techniques={data.byTechnique} worldClassBenchmark={data.worldClassBenchmark} /></Suspense>
+            </Suspense></SectionErrorBoundary>
+            <SectionErrorBoundary compact><Suspense fallback={<TableSkeleton />}><OEEMachineTable machines={data.byMachine} /></Suspense></SectionErrorBoundary>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}><OEETechniqueComparison techniques={data.byTechnique} worldClassBenchmark={data.worldClassBenchmark} /></Suspense></SectionErrorBoundary>
           </TabsContent>
 
           <TabsContent value="heatmap" className="space-y-6">
-            <Suspense fallback={<ChartSkeleton />}><OEETrendChart data={data.trendData} worldClassBenchmark={data.worldClassBenchmark} comparison={data.comparison} /></Suspense>
-            <Suspense fallback={<ChartSkeleton />}><OEEHeatmap data={data.heatmapData} /></Suspense>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}><OEETrendChart data={data.trendData} worldClassBenchmark={data.worldClassBenchmark} comparison={data.comparison} /></Suspense></SectionErrorBoundary>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}><OEEHeatmap data={data.heatmapData} /></Suspense></SectionErrorBoundary>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="bg-success/5 border-success/20"><CardContent className="pt-6"><h3 className="font-bold">Resíduos Evitados</h3><p className="text-3xl font-black text-success">{(data.overallQuality * 100).toFixed(0)} kg</p></CardContent></Card>
               <Card className="bg-indicator-info/5 border-indicator-info/20"><CardContent className="pt-6"><h3 className="font-bold">Otimização</h3><p className="text-3xl font-black text-indicator-info">{(data.overallPerformance * 1.2).toFixed(1)}%</p></CardContent></Card>
@@ -1238,9 +1239,9 @@ const OEEDashboard = memo(function OEEDashboard() {
           </TabsContent>
           
           <TabsContent value="shifts" className="space-y-6">
-            <Suspense fallback={<ChartSkeleton />}>
+            <SectionErrorBoundary compact><Suspense fallback={<ChartSkeleton />}>
               <OEEShiftComparison shifts={data.byShift || []} />
-            </Suspense>
+            </Suspense></SectionErrorBoundary>
           </TabsContent>
         </Tabs>
 

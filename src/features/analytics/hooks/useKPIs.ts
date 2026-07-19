@@ -201,7 +201,8 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       const rate = total > 0 ? (completed / total) * 100 : 0;
       const totalPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.quantity), 0);
       const lostPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.lost_pieces), 0);
-      const prodPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
+      // Null produced_quantity means "not recorded" — not "fully produced".
+      const prodPcs = jobList.reduce((sum: number, j: DbJob) => sum + sanitizeNumber(j.produced_quantity ?? 0), 0);
       const lRate = (prodPcs + lostPcs) > 0 ? (lostPcs / (prodPcs + lostPcs)) * 100 : 0;
 
       // Real occupancy calculation for comparison
@@ -237,7 +238,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
     const totalPieces = currentStats.totalPcs;
     const completedPieces = validJobs
       .filter(j => ['finished', 'production'].includes(j.status))
-      .reduce((sum, j) => sum + sanitizeNumber(j.produced_quantity ?? j.quantity), 0);
+      .reduce((sum, j) => sum + sanitizeNumber(j.produced_quantity ?? 0), 0);
     const lostPieces = currentStats.lostPcs;
     const lossRate = currentStats.lossRate;
 
@@ -310,15 +311,16 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       };
     }).sort((a, b) => b.totalPieces - a.totalPieces);
 
+    // Flat rolling-average forecast — no sinusoidal noise that would fabricate
+    // a meaningful pattern from a fixed mathematical function.
+    const dailyAvgPieces = totalPieces / (daysCount || 1);
     const predictions: KPIPrediction[] = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() + i + 1);
-      // Use logic-based variance instead of pure random for reliability
-      const dayFactor = 1 + (Math.sin(i) * 0.1); 
       return {
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        estimatedVolume: Math.round((totalPieces / (daysCount || 1)) * dayFactor),
-        estimatedLossRate: Math.max(0.5, lossRate * dayFactor),
+        estimatedVolume: Math.round(dailyAvgPieces),
+        estimatedLossRate: Math.max(0.5, lossRate),
         confidence: 0.9 - (i * 0.05)
       };
     });
@@ -371,7 +373,7 @@ export function useKPIs(period: KPIPeriod = 'all', customTargets?: Partial<KPITa
       return {
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         efficiency: dayJobs.length > 0 ? dayStats.occupancyRate : averageOccupancy,
-        productivity: dayJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? j.quantity), 0),
+        productivity: dayJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? 0), 0),
         lossRate: dayStats.lossRate,
       };
     });

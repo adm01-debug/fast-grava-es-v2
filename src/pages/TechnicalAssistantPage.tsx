@@ -18,8 +18,7 @@ import { ChatArea } from "@/components/technical-assistant/ChatArea";
 import { TechnicalTelemetryPanel } from "@/components/technical-assistant/TechnicalTelemetryPanel";
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/technical-assistant`;
+import { edgeFunctionFetch } from "@/lib/edgeFunctionFetch";
 
 const techniqueSuggestions = [
   { label: "Fiber Laser", icon: Zap, question: "Quais são os parâmetros ideais para gravar aço inox com Fiber Laser?" },
@@ -84,9 +83,8 @@ const TechnicalAssistantPage = () => {
   };
 
   const streamChat = async (userMessages: { role: string; content: string }[]) => {
-    const resp = await fetch(CHAT_URL, {
+    const resp = await edgeFunctionFetch("technical-assistant", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
       body: JSON.stringify({ messages: userMessages }),
     });
     if (!resp.ok || !resp.body) throw new Error("Falha ao conectar com o assistente");

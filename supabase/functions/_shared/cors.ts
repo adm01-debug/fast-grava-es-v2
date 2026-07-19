@@ -7,11 +7,15 @@
 //   if (preflight) return preflight;
 //   const cors = getCorsHeaders(req);
 
+// Kept in sync with what every per-function ALLOWED_ORIGINS array actually
+// allows today (APP_URL + the one active Lovable preview project domain).
+// Two additional preview domains (an old project preview + a "figma-fighter"
+// domain) previously lived only in this unused shared module and were never
+// part of any deployed function's allowlist — dropped rather than widening
+// every function's CORS exposure the moment they adopt this shared helper.
 const DEFAULT_ORIGINS = [
   Deno.env.get("APP_URL") || "https://fastgravacoes.com.br",
   "https://xxroejpvloldkmqdydar.lovableproject.com",
-  "https://id-preview--a1962793-4097-49e9-ad5f-19325edbf69a.lovable.app",
-  "https://figma-fighter.lovable.app",
 ].filter(Boolean) as string[];
 
 const EXTRA_ORIGINS = (Deno.env.get("EXTRA_ALLOWED_ORIGINS") ?? "")

@@ -16,6 +16,22 @@ export function usePriorityEscalation() {
   const { jobs } = useSchedulingData();
   const { add } = useNotificationsContext();
   const escalatedRef = useRef<Set<string>>(new Set());
+  const seededRef = useRef(false);
+
+  // Seed the escalated-set from the current jobs state on first data load so
+  // that jobs already at their target priority (set in a previous session) are
+  // skipped and don't fire duplicate notifications on page reload.
+  useEffect(() => {
+    if (seededRef.current || jobs.length === 0) return;
+    seededRef.current = true;
+    const today = new Date().toISOString().split('T')[0];
+    for (const job of jobs) {
+      const isOverdue = job.scheduled_date && job.scheduled_date < today;
+      const isDueToday = job.scheduled_date === today;
+      if (isOverdue && job.priority === 'urgent') escalatedRef.current.add(job.id);
+      if (isDueToday && job.status === 'queue' && job.priority === 'high') escalatedRef.current.add(job.id);
+    }
+  }, [jobs]);
 
   useEffect(() => {
     if (!user) return;

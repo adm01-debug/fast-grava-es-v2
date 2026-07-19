@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { format, differenceInDays } from 'date-fns';
 import { parseDateOnly } from '@/lib/dateUtils';
 import {

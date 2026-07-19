@@ -1,21 +1,8 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireCronSecret } from "../_shared/cronAuth.ts";
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 interface RankingResult {
   operator_id: string;
@@ -47,17 +34,24 @@ serve(async (req: Request): Promise<Response> => {
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
-      const { data: roleData } = await supabase
+      const { data: roleRows } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
-        .single();
-      if (!["coordinator", "admin"].includes(roleData?.role ?? "")) {
+        .eq("is_active", true);
+      const roles = (roleRows ?? []).map((r: { role: string }) => r.role);
+      if (!roles.some((role) => ["coordinator", "admin"].includes(role))) {
         return new Response(JSON.stringify({ error: "Sem permissão" }), {
           status: 403,
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
+    } else {
+      // A missing Authorization header no longer implies "trusted cron" —
+      // require the shared cron secret instead of blindly running the
+      // destructive delete+rewrite of operator_rankings/achievements below.
+      const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) });
+      if (unauthorized) return unauthorized;
     }
 
     const body = await req.json().catch(() => ({}));

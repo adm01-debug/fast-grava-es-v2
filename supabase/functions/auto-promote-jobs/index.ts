@@ -1,23 +1,10 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { requireCronSecret } from "../_shared/cronAuth.ts"
 
 const BUFFER_TARGET = 3
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -29,7 +16,10 @@ serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     const supabaseClient = createClient(supabaseUrl, serviceRoleKey)
 
-    // Allow cron invocations (no auth header) OR authenticated coordinator/admin calls
+    // Allow either a verified cron invocation (x-cron-secret) OR an
+    // authenticated coordinator/admin call. A missing Authorization header no
+    // longer implies "trusted cron" — that was bypassable by simply omitting
+    // the header, running job-state mutations unauthenticated.
     const authHeader = req.headers.get('Authorization')
     if (authHeader) {
       const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
@@ -42,17 +32,21 @@ serve(async (req) => {
           headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
         })
       }
-      const { data: roleData } = await supabaseClient
+      const { data: roleRows } = await supabaseClient
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .single()
-      if (!['coordinator', 'admin'].includes(roleData?.role ?? '')) {
+        .eq('is_active', true)
+      const roles = (roleRows ?? []).map((r: { role: string }) => r.role)
+      if (!roles.some((role) => ['coordinator', 'admin'].includes(role))) {
         return new Response(JSON.stringify({ error: 'Sem permissão' }), {
           status: 403,
           headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
         })
       }
+    } else {
+      const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) })
+      if (unauthorized) return unauthorized
     }
 
     console.log('Starting auto-promotion check...')

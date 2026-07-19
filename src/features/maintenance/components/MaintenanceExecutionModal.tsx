@@ -78,6 +78,8 @@ interface MaintenanceExecutionModalProps {
     execution_alerts?: ExecutionAlert[];
     failure_risk_detected?: boolean;
   }) => void;
+  /** True while the parent's completeMaintenance mutation is in flight — disables the confirm button to prevent duplicate submissions on rapid clicks. */
+  isSubmitting?: boolean;
 }
 
 export function MaintenanceExecutionModal({
@@ -86,6 +88,7 @@ export function MaintenanceExecutionModal({
   schedule,
   recordId,
   onComplete,
+  isSubmitting = false,
 }: MaintenanceExecutionModalProps) {
   const { checklists } = useTPM();
   const { sheets: technicalSheets } = useTechnicalSheets();
@@ -696,10 +699,10 @@ export function MaintenanceExecutionModal({
         </ScrollArea>
 
         <DialogFooter className="mt-6">
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleComplete} className="gap-2">
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
+          <Button onClick={handleComplete} disabled={isSubmitting} className="gap-2">
             <CheckCircle2 className="h-4 w-4" />
-            Concluir Manutenção
+            {isSubmitting ? 'Salvando...' : 'Concluir Manutenção'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -22,6 +22,7 @@ import { Bitrix24SyncHistory } from '@/components/integrations/Bitrix24SyncHisto
 import { Bitrix24MappingDialog } from '@/features/analytics/components/bitrix24/Bitrix24MappingDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { edgeFunctionFetch } from '@/lib/edgeFunctionFetch';
 
 interface FieldInfo {
   type: string; isRequired: boolean; isReadOnly: boolean; isImmutable: boolean; isMultiple: boolean; title: string; formLabel?: string; listLabel?: string;
@@ -53,9 +54,10 @@ const Bitrix24ConfigPage = () => {
   const { toast } = useToast();
 
   const callBitrixSync = async (action: string, body?: Record<string, unknown>): Promise<Record<string, unknown> & { customFields?: Record<string, FieldInfo>; totalCustomFields?: number; mappings?: MappingRecord[] }> => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const url = `${supabaseUrl}/functions/v1/bitrix24-sync?action=${action}`;
-    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY }, body: body ? JSON.stringify(body) : undefined });
+    const response = await edgeFunctionFetch(`bitrix24-sync?action=${action}`, {
+      method: 'POST',
+      body: body ? JSON.stringify(body) : undefined,
+    });
     if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Request failed'); }
     return response.json();
   };
@@ -70,7 +72,7 @@ const Bitrix24ConfigPage = () => {
   const fetchMappings = async () => {
     setIsLoading(true);
     try { const result = await callBitrixSync('list-mappings'); setAllMappings(result.mappings || []); }
-    catch (error) { /* Error handled silently in UI */ }
+    catch (error) { toast({ title: 'Erro ao carregar mapeamentos', description: error instanceof Error ? error.message : 'Erro desconhecido', variant: 'destructive' }); }
     finally { setIsLoading(false); }
   };
 

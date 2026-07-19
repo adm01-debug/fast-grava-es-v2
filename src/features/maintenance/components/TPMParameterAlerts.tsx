@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/immutability -- Padrões intencionais: sync com sistemas externos, memoização manual por performance, integração com libs (dnd-kit, framer-motion, supabase realtime). */
+ 
 import { Zap, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,22 +27,7 @@ interface TPMParameterAlert {
 export function TPMParameterAlerts() {
   const [alerts, setAlerts] = useState<TPMParameterAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchAlerts();
-
-    // Subscription for new alerts
-    const channel = supabase
-      .channel('parameter-alerts')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tpm_parameter_alerts' }, () => {
-        fetchAlerts();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  const isMountedRef = useRef(true);
 
   const fetchAlerts = async () => {
     try {
@@ -54,13 +39,32 @@ export function TPMParameterAlerts() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      if (!isMountedRef.current) return;
       setAlerts((data ?? []) as unknown as TPMParameterAlert[]);
     } catch (err) {
       logger.warn('Falha ao carregar alertas de parâmetros TPM', err, 'TPMParameterAlerts');
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    fetchAlerts();
+
+    // Subscription for new alerts
+    const channel = supabase
+      .channel('parameter-alerts')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tpm_parameter_alerts' }, () => {
+        fetchAlerts();
+      })
+      .subscribe();
+
+    return () => {
+      isMountedRef.current = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const resolveAlert = async (id: string) => {
     try {

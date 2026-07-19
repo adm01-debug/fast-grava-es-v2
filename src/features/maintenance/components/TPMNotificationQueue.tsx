@@ -25,11 +25,12 @@ export function TPMNotificationQueue() {
           *,
           machine:machines(name, code)
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
       if (error) throw error;
       return data;
     },
-    refetchInterval: 5000
+    refetchInterval: 30000
   });
 
   const retryMutation = useMutation({

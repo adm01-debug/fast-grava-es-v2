@@ -180,8 +180,10 @@ describe('oeeExport — regressão de formato', () => {
     const csv = await readLastBlob();
     const [header, l1, l2] = csv.split('\n');
     expect(header).toBe('Máquina,Disponibilidade (%),Performance (%),Qualidade (%),OEE (%)');
-    expect(l1).toBe('M-01,95.2,87.7,99.9,82.3');
-    expect(l2).toBe('M-02,70.0,60.0,100.0,42.0');
+    // machineName is quoted (RFC-4180 + formula-injection sanitization) —
+    // the numeric columns are never user-controlled and stay unquoted.
+    expect(l1).toBe('"M-01",95.2,87.7,99.9,82.3');
+    expect(l2).toBe('"M-02",70.0,60.0,100.0,42.0');
   });
 
   it('CSV: nome do arquivo com timestamp e extensão', () => {

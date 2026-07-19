@@ -1,26 +1,19 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireCronSecret } from "../_shared/cronAuth.ts";
+import { escapeHtml } from "../_shared/htmlEscape.ts";
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature, x-api-key',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
+
+  // Triggered only by the Supabase DB webhook on maintenance_alerts INSERT —
+  // requires the shared secret configured on that webhook's headers.
+  const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) });
+  if (unauthorized) return unauthorized;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -87,13 +80,13 @@ serve(async (req) => {
 
       const htmlContent = `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
-          <h2 style="color: #f97316;">${iconMap[alert.alert_type]} ${titleMap[alert.alert_type]}</h2>
+          <h2 style="color: #f97316;">${iconMap[alert.alert_type]} ${escapeHtml(titleMap[alert.alert_type])}</h2>
           <p>Olá,</p>
           <p>Uma nova notificação de manutenção foi gerada para o sistema TPM:</p>
           <div style="background: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0;">
-            <p><strong>Máquina:</strong> ${machine?.name} (${machine?.code})</p>
-            <p><strong>Mensagem:</strong> ${alert.message}</p>
-            <p><strong>Data/Hora:</strong> ${new Date(alert.created_at).toLocaleString('pt-BR')}</p>
+            <p><strong>Máquina:</strong> ${escapeHtml(machine?.name)} (${escapeHtml(machine?.code)})</p>
+            <p><strong>Mensagem:</strong> ${escapeHtml(alert.message)}</p>
+            <p><strong>Data/Hora:</strong> ${escapeHtml(new Date(alert.created_at).toLocaleString('pt-BR'))}</p>
           </div>
           <p>Para mais detalhes e execução da manutenção, acesse o painel TPM:</p>
           <a href="${Deno.env.get('PUBLIC_URL') || '#'}/tpm" style="display: inline-block; padding: 10px 20px; background: #f97316; color: white; text-decoration: none; border-radius: 6px;">Ver Painel TPM</a>

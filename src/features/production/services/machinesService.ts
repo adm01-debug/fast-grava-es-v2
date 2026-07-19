@@ -9,8 +9,10 @@ export const machinesService = {
   async getAll(): Promise<Machine[]> {
     const { data, error } = await supabase.from('machines').select('*').order('name');
     if (error) {
+      // Throw instead of swallowing: a connectivity/RLS failure must not be
+      // indistinguishable from "no machines" (see jobsService.getAll).
       logger.error('Failed to fetch machines', error, 'machinesService');
-      return [];
+      throw error;
     }
     return data || [];
   },

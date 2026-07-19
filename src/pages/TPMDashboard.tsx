@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { Wrench, AlertTriangle, CheckCircle, Clock, CalendarCheck, RefreshCw, Settings, Command, Zap, BrainCircuit, Activity } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -370,6 +370,7 @@ export default function TPMDashboard() {
           schedule={selectedSchedule}
           recordId={currentRecordId}
           onComplete={handleCompleteMaintenance}
+          isSubmitting={completeMaintenance.isPending}
         />
       </div>
     </MainLayout>

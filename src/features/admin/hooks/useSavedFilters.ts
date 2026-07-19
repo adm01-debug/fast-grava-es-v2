@@ -37,7 +37,7 @@ export function useSavedFilters(context: string) {
   // Persist to localStorage on change
   const persist = useCallback(
     (filters: SavedFilter[]) => {
-      localStorage.setItem(storageKey, JSON.stringify(filters));
+      try { localStorage.setItem(storageKey, JSON.stringify(filters)); } catch { /* quota exceeded */ }
       setSavedFilters(filters);
     },
     [storageKey]

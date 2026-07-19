@@ -41,6 +41,7 @@ export function useJobs() {
       .channel('jobs-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
       })
       .subscribe();
 
@@ -65,6 +66,7 @@ export function useUpdateJobStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
     },
     onError: createMutationErrorHandler('Erro ao atualizar status do job'),
   });
@@ -83,6 +85,7 @@ export function useUpdateJob() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAGINATED_JOBS });
     },
     onError: createMutationErrorHandler('Erro ao atualizar job'),
@@ -102,6 +105,7 @@ export function useDeleteJob() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAGINATED_JOBS });
     },
     onError: createMutationErrorHandler('Erro ao excluir job'),

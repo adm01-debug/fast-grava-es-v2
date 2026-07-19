@@ -38,7 +38,7 @@ export function useThemeSound() {
   const toggleSound = useCallback(() => {
     setSoundEnabled(prev => {
       const newValue = !prev;
-      localStorage.setItem(SOUND_ENABLED_KEY, String(newValue));
+      try { localStorage.setItem(SOUND_ENABLED_KEY, String(newValue)); } catch { /* quota exceeded */ }
       return newValue;
     });
   }, []);

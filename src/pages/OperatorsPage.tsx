@@ -3,7 +3,7 @@
    infinitos, invalidação excessiva de cache ou recomputação em cada
    render. Callbacks/valores externos são estáveis por contrato. */
 import { useState, useMemo } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useFuseSearch } from '@/hooks/useFuseSearch';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';

@@ -52,7 +52,7 @@ export const QRScanner = () => {
   useEffect(() => {
     return () => {
       if (scannerRef.current?.isScanning) {
-        scannerRef.current.stop().catch(() => {});
+        scannerRef.current.stop().catch((e) => logger.debug('Parada do scanner no cleanup', e, 'QRScanner'));
       }
     };
   }, []);

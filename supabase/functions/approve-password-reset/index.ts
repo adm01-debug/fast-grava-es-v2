@@ -1,26 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 import { approvePasswordResetSchema } from '../_shared/validation.ts'
+import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+const APP_URL = Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br';
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: getCorsHeaders(req) })
-  }
+  const preflight = handleCorsPreflight(req);
+  if (preflight) return preflight;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -143,11 +129,23 @@ Deno.serve(async (req) => {
 
     // If approved, send the password reset email
     if (action === 'approve') {
+      // Validate redirectUrl against APP_URL origin to prevent open redirects
+      const safeRedirectUrl = (() => {
+        const defaultUrl = `${APP_URL}/reset-password`;
+        if (!redirectUrl) return defaultUrl;
+        try {
+          const parsed = new URL(redirectUrl);
+          const allowed = new URL(APP_URL);
+          if (parsed.origin !== allowed.origin) return defaultUrl;
+          return redirectUrl;
+        } catch {
+          return defaultUrl;
+        }
+      })();
+
       const { error: resetError } = await supabaseAdmin.auth.resetPasswordForEmail(
         resetRequest.user_email,
-        {
-          redirectTo: redirectUrl || `${supabaseUrl.replace('.supabase.co', '')}/reset-password`,
-        }
+        { redirectTo: safeRedirectUrl }
       )
 
       if (resetError) {

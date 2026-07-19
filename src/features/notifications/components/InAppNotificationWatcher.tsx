@@ -21,13 +21,16 @@ export function InAppNotificationWatcher() {
   useEffect(() => {
     if (!user) return;
 
-    // Watch job status changes
+    // Watch job status changes — filtered to jobs assigned to this operator.
+    // Without the filter, every job update is broadcast to every connected
+    // user, leaking client names, order numbers, and product names (LGPD/PII).
     const jobChannel = supabase
       .channel('inapp-job-notifications')
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
         table: 'jobs',
+        filter: `assigned_operator_id=eq.${user.id}`,
       }, (payload) => {
         const newJob = payload.new as Record<string, unknown>;
         const oldJob = payload.old as Record<string, unknown>;

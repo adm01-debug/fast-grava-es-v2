@@ -69,7 +69,7 @@ export function useMTBFMTTR(periodDays: number = 90) {
           .from('maintenance_records')
           .select('*')
           .gte('started_at', startDate.toISOString())
-          .eq('status', 'completed')
+          .in('status', ['completed', 'approved'])
           .order('started_at', { ascending: true });
 
         if (error) throw error;

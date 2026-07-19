@@ -91,7 +91,7 @@ export function DroppableColumn({
         }
         const entityStored = localStorage.getItem('entity-thresholds');
         if (entityStored) {
-          setEntityThresholds(JSON.parse(entityStored));
+          try { setEntityThresholds(JSON.parse(entityStored)); } catch { /* corrupted */ }
         }
   }, []);
 

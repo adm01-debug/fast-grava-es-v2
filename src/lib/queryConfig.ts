@@ -15,6 +15,12 @@ export const STALE_TIMES = {
 // Shared Query Keys to avoid duplication
 export const QUERY_KEYS = {
   JOBS: ['jobs'],
+  // Distinct from JOBS: jobsService.getAll({ recentOnly: true }) returns a
+  // different result set (unfinished + last 30 days only) than the plain
+  // JOBS key's full history. They must never share a cache entry — whichever
+  // hook resolved/invalidated last would silently overwrite the other's data
+  // for every consumer of that key (see useJobs vs useSchedulingData).
+  JOBS_RECENT: ['jobs', 'recent'],
   MACHINES: ['machines'],
   TECHNIQUES: ['techniques'],
   PROFILES: ['profiles'],
