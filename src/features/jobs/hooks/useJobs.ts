@@ -42,6 +42,7 @@ export function useJobs() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAGINATED_JOBS });
       })
       .subscribe();
 
@@ -67,6 +68,7 @@ export function useUpdateJobStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAGINATED_JOBS });
     },
     onError: createMutationErrorHandler('Erro ao atualizar status do job'),
   });
