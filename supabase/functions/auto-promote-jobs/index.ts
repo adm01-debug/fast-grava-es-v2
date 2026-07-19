@@ -45,7 +45,9 @@ serve(async (req) => {
         })
       }
     } else {
-      const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) })
+      // failClosed: this function mutates job statuses across the board;
+      // must not run unauthenticated on an unconfigured deployment.
+      const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) })
       if (unauthorized) return unauthorized
     }
 

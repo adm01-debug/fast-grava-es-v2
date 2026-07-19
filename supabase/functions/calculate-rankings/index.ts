@@ -48,9 +48,10 @@ serve(async (req: Request): Promise<Response> => {
       }
     } else {
       // A missing Authorization header no longer implies "trusted cron" —
-      // require the shared cron secret instead of blindly running the
-      // destructive delete+rewrite of operator_rankings/achievements below.
-      const unauthorized = requireCronSecret(req, { corsHeaders: getCorsHeaders(req) });
+      // require the shared cron secret. failClosed=true because this function
+      // does a destructive delete+rewrite of operator_rankings/achievements,
+      // so an unconfigured deployment must never run it unauthenticated.
+      const unauthorized = requireCronSecret(req, { failClosed: true, corsHeaders: getCorsHeaders(req) });
       if (unauthorized) return unauthorized;
     }
 
