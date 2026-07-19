@@ -123,9 +123,8 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error("Webhook Error:", error);
-    return new Response(JSON.stringify({ error: message }), {
+    console.error("Webhook Error:", error instanceof Error ? error.message : String(error));
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });

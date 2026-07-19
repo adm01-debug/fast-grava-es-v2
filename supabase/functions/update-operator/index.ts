@@ -90,8 +90,8 @@ Deno.serve(async (req) => {
       .eq('id', operator_id)
 
     if (updateError) {
-      console.error('Error updating profile:', updateError)
-      return new Response(JSON.stringify({ error: updateError.message }), {
+      console.error('Error updating profile:', updateError.message)
+      return new Response(JSON.stringify({ error: 'Erro ao atualizar operador' }), {
         status: 400,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
       })

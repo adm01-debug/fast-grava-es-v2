@@ -52,6 +52,10 @@ Deno.serve(async (req) => {
     // alert recipients.
     deviceInfo.user_id = authUser.id;
     deviceInfo.user_email = authUser.email ?? '';
+    // Derive IP from the request, not the caller-supplied body, to prevent
+    // a malicious caller from injecting a forged IP into DB rows and alert emails.
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    deviceInfo.ip_address = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
 
     console.log('Checking device for user:', deviceInfo.user_id);
     console.log('Device fingerprint:', deviceInfo.device_fingerprint);
@@ -293,13 +297,12 @@ Deno.serve(async (req) => {
     );
 
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('Error in new-device-alert:', message);
+    console.error('Error in new-device-alert:', err instanceof Error ? err.message : String(err));
     return new Response(
-      JSON.stringify({ error: message }),
-      { 
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }, 
-        status: 500 
+      JSON.stringify({ error: 'Internal server error' }),
+      {
+        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        status: 500
       }
     );
   }
