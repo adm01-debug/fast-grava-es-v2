@@ -125,6 +125,7 @@ export function useOperators() {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator-machines'] });
       queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
+      queryClient.invalidateQueries({ queryKey: ['operators-productivity'] });
       toast.success(t('operators.operatorRemoved', 'Operador removido'), {
         description: t('operators.operatorRemovedDesc', 'O operador foi removido do sistema com sucesso.'),
       });
@@ -176,6 +177,7 @@ export function useOperators() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['operators'] });
       queryClient.invalidateQueries({ queryKey: ['operator-status-audit'] });
+      queryClient.invalidateQueries({ queryKey: ['operators-productivity'] });
       toast.success(data.isActive ? t('operators.operatorActivated', 'Operador ativado') : t('operators.operatorDeactivated', 'Operador desativado'), {
         description: data.isActive
           ? t('operators.operatorActivatedDesc', 'O operador foi reativado e pode acessar o sistema.')
