@@ -28,6 +28,7 @@ import { useSchedulingConflicts } from '@/features/jobs';
 import { DbJob, DbMachine, DbTechnique } from '@/features/jobs';
 import { JobStatus } from '@/types/scheduling';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { SectionErrorBoundary } from '@/components/ui/section-error-boundary';
 import { DndContext, useDraggable, useDroppable, DragOverlay, closestCenter } from '@dnd-kit/core';
 import { useWeeklyDragDrop } from '@/features/jobs';
 import { Fragment } from 'react';
@@ -307,7 +308,7 @@ export default function WeeklyCalendar() {
         <Breadcrumbs />
 
         <div className="space-y-4">
-          <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+          <SectionErrorBoundary compact><Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
             <CalendarHeader
               title="Calendário Semanal"
               subtitle="Visualização panorâmica da semana por máquina"
@@ -333,9 +334,9 @@ export default function WeeklyCalendar() {
                 />
               }
             />
-          </Suspense>
+          </Suspense></SectionErrorBoundary>
 
-          <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg" />}>
+          <SectionErrorBoundary compact><Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-lg" />}>
             <CalendarToolbar
               zoom={prefs.zoom}
               onZoomChange={setZoom}
@@ -347,13 +348,13 @@ export default function WeeklyCalendar() {
               onExportICal={() => {}}
               onShowOnboarding={() => {}}
             />
-          </Suspense>
+          </Suspense></SectionErrorBoundary>
 
-          <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
+          <SectionErrorBoundary compact><Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded-lg" />}>
             <Card className="p-3 bg-card/50 border-border/40">
                <UtilizationHeatmap jobs={weekJobs} machines={filteredMachines} />
             </Card>
-          </Suspense>
+          </Suspense></SectionErrorBoundary>
         </div>
 
         <DndContext
