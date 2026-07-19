@@ -275,7 +275,8 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         }
 
         if (alertsToInsert.length > 0) {
-          await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
+          const { error: alertInsertError } = await supabase.from('tpm_parameter_alerts').insert(alertsToInsert);
+          if (alertInsertError) throw alertInsertError;
         }
       }
 
@@ -394,12 +395,18 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         if (scheduleError) throw scheduleError;
       }
 
-      // Resolve alerts
-      await supabase
-        .from('maintenance_alerts')
-        .update({ is_resolved: true, resolved_at: new Date().toISOString() })
-        .eq('schedule_id', recordData.schedule_id)
-        .eq('is_resolved', false);
+      // Resolve alerts — non-fatal: the record is already approved; log but
+      // do not throw so a missing schedule_id does not roll back the approval.
+      if (recordData.schedule_id) {
+        const { error: resolveError } = await supabase
+          .from('maintenance_alerts')
+          .update({ is_resolved: true, resolved_at: new Date().toISOString() })
+          .eq('schedule_id', recordData.schedule_id)
+          .eq('is_resolved', false);
+        if (resolveError) {
+          logger.error('Falha ao resolver alertas de manutenção após aprovação', resolveError, 'useTPMMutations');
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
@@ -543,6 +550,9 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       } else {
         toast.success('Diagnóstico concluído: Nenhum novo risco detectado.');
       }
+    },
+    onError: (error) => {
+      showErrorToast(error, 'Erro ao gerar alertas de manutenção', TPM_ERROR_CONTEXT.alerts);
     },
   });
 
