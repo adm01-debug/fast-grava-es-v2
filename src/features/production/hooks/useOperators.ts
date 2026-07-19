@@ -32,43 +32,41 @@ export function useOperators() {
   const query = useQuery({
     queryKey: ['operators'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select(`
-            id,
-            user_id,
-            role,
-            created_at,
-            is_active,
-            profiles!inner (
-              full_name,
-              avatar_url,
-              phone
-            )
-          `)
-          .eq('role', 'operator');
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select(`
+          id,
+          user_id,
+          role,
+          created_at,
+          is_active,
+          profiles!inner (
+            full_name,
+            avatar_url,
+            phone
+          )
+        `)
+        .eq('role', 'operator');
 
-        if (error) throw error;
-
-        // Type-safe mapping with proper profile extraction
-        return (data || []).map(item => {
-          const profile = item.profiles as unknown as Database['public']['Tables']['profiles']['Row'] | null;
-          return {
-            id: item.id,
-            user_id: item.user_id,
-            role: item.role as 'operator',
-            full_name: profile?.full_name ?? null,
-            avatar_url: profile?.avatar_url ?? null,
-            phone: profile?.phone ?? null,
-            created_at: item.created_at,
-            is_active: item.is_active ?? true,
-          };
-        }) as OperatorWithProfile[];
-      } catch (error) {
+      if (error) {
         logger.error('Failed to fetch operators', error, 'useOperators');
-        return [];
+        throw error;
       }
+
+      // Type-safe mapping with proper profile extraction
+      return (data || []).map(item => {
+        const profile = item.profiles as unknown as Database['public']['Tables']['profiles']['Row'] | null;
+        return {
+          id: item.id,
+          user_id: item.user_id,
+          role: item.role as 'operator',
+          full_name: profile?.full_name ?? null,
+          avatar_url: profile?.avatar_url ?? null,
+          phone: profile?.phone ?? null,
+          created_at: item.created_at,
+          is_active: item.is_active ?? true,
+        };
+      }) as OperatorWithProfile[];
     },
     enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -76,34 +74,23 @@ export function useOperators() {
 
   const removeOperatorMutation = useMutation({
     mutationFn: async ({ operatorId, operatorName, reason }: { operatorId: string; operatorName: string | null; reason?: string }) => {
-      // Get current user info for audit
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Get performer name
-      const { data: performerProfile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      // First, remove all machine assignments for this operator
-      const { error: assignmentsError } = await supabase
-        .from('operator_machines')
-        .delete()
-        .eq('operator_id', operatorId);
+      // Fetch profile + delete machine assignments + delete role in parallel
+      const [
+        { data: performerProfile },
+        { error: assignmentsError },
+        { error: roleError },
+      ] = await Promise.all([
+        supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle(),
+        supabase.from('operator_machines').delete().eq('operator_id', operatorId),
+        supabase.from('user_roles').delete().eq('user_id', operatorId).eq('role', 'operator'),
+      ]);
 
       if (assignmentsError) throw assignmentsError;
-
-      // Then, remove the operator role (this effectively removes them as operator)
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', operatorId)
-        .eq('role', 'operator');
-
       if (roleError) throw roleError;
 
-      // Log the action in audit table with error handling
+      // Non-critical audit — warn on failure, don't block the mutation
       const { error: auditError } = await supabase
         .from('operator_status_audit')
         .insert({
@@ -138,25 +125,20 @@ export function useOperators() {
 
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ operatorId, operatorName, isActive, reason }: { operatorId: string; operatorName: string | null; isActive: boolean; reason?: string }) => {
-      // Get current user info for audit
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Get performer name
-      const { data: performerProfile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      const { error } = await supabase
-        .from('user_roles')
-        .update({ is_active: isActive })
-        .eq('user_id', operatorId)
-        .eq('role', 'operator');
+      // Fetch profile + update status in parallel
+      const [
+        { data: performerProfile },
+        { error },
+      ] = await Promise.all([
+        supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle(),
+        supabase.from('user_roles').update({ is_active: isActive }).eq('user_id', operatorId).eq('role', 'operator'),
+      ]);
 
       if (error) throw error;
 
-      // Log the action in audit table with error handling
+      // Non-critical audit — warn on failure, don't block the mutation
       const { error: auditError } = await supabase
         .from('operator_status_audit')
         .insert({
