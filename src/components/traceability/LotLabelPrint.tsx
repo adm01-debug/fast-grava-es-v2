@@ -11,6 +11,7 @@ import { ProductionLot } from '@/features/inventory';
 import { format } from 'date-fns';
 import { parseDateOnly } from '@/lib/dateUtils';
 import { toast } from 'sonner';
+import { escapeHtml } from '@/lib/sanitize';
 
 interface LotLabelPrintProps {
   lots: ProductionLot[];
@@ -40,6 +41,9 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
   const buildLabelHTML = (lot: ProductionLot, cfg: typeof config) => {
     const qrValue = generateQrValue(lot);
     const isLandscape = cfg.w > cfg.h;
+    const safeLotNumber = escapeHtml(lot.lot_number);
+    const safeProductName = escapeHtml(lot.product_name);
+    const safeQuantity = escapeHtml(String(lot.quantity));
 
     return `
       <div style="
@@ -52,17 +56,17 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
         page-break-inside:avoid;break-inside:avoid;
       ">
         <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
-          <div id="qr-placeholder-${lot.id}" data-value="${qrValue}" data-size="${cfg.qrSize}"></div>
+          <div id="qr-placeholder-${escapeHtml(lot.id)}" data-value="${escapeHtml(qrValue)}" data-size="${cfg.qrSize}"></div>
         </div>
         <div style="text-align:${isLandscape ? 'left' : 'center'};flex:1;min-width:0;overflow:hidden;">
           <div style="font-size:${isLandscape ? '13px' : '16px'};font-weight:bold;margin-bottom:4px;word-break:break-word;">
-            ${lot.lot_number}
+            ${safeLotNumber}
           </div>
           <div style="font-size:${isLandscape ? '11px' : '13px'};color:#333;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            ${lot.product_name}
+            ${safeProductName}
           </div>
           <div style="font-size:${isLandscape ? '10px' : '11px'};color:#666;margin-bottom:2px;">
-            Qtd: ${lot.quantity} un
+            Qtd: ${safeQuantity} un
           </div>
           <div style="font-size:${isLandscape ? '10px' : '11px'};color:#666;margin-bottom:2px;">
             Produção: ${format(parseDateOnly(lot.production_date) ?? new Date(), 'dd/MM/yyyy')}
@@ -74,11 +78,11 @@ export function LotLabelPrint({ lots, open, onClose }: LotLabelPrintProps) {
           ` : ''}
           ${lot.job ? `
             <div style="font-size:${isLandscape ? '9px' : '10px'};color:#999;margin-top:4px;">
-              OS: ${lot.job.order_number}
+              OS: ${escapeHtml(lot.job.order_number)}
             </div>
           ` : ''}
           <div style="font-size:8px;color:#bbb;margin-top:6px;">
-            ${lot.lot_number}
+            ${safeLotNumber}
           </div>
         </div>
       </div>
