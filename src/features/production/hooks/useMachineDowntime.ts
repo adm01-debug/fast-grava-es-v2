@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
+import { showErrorToast } from '@/lib/errorHandling';
 
 export type DowntimeType = 'setup' | 'maintenance' | 'breakdown' | 'idle' | 'other';
 
@@ -50,10 +50,7 @@ export function useMachineDowntime(machineId?: string) {
       toast.success('Parada registrada com sucesso');
     },
     onError: (error: unknown) => {
-      logger.error('Erro ao registrar parada de máquina', error, 'useMachineDowntime');
-      toast.error('Erro ao registrar parada', {
-        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.',
-      });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao registrar parada');
     },
   });
 
@@ -71,10 +68,7 @@ export function useMachineDowntime(machineId?: string) {
       toast.success('Parada encerrada');
     },
     onError: (error: unknown) => {
-      logger.error('Erro ao encerrar parada de máquina', error, 'useMachineDowntime');
-      toast.error('Erro ao encerrar parada', {
-        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.',
-      });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao encerrar parada');
     },
   });
 

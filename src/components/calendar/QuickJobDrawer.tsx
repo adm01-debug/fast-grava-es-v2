@@ -111,7 +111,7 @@ export function QuickJobDrawer({
 
       if (error) {
         if (error.message?.includes('Conflito de agendamento')) {
-          toast.error(error.message);
+          toast.error('Conflito de agendamento: máquina já possui job neste horário.');
           return;
         }
         throw error;
