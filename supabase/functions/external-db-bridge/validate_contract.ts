@@ -46,7 +46,8 @@ async function testBridge() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${SERVICE_ROLE_KEY}`
         },
-        body: JSON.stringify(test.payload)
+        body: JSON.stringify(test.payload),
+        signal: AbortSignal.timeout(15_000),
       });
 
       const body = await response.json();
