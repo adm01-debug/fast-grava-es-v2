@@ -103,8 +103,15 @@ serve(async (req: Request) => {
     return jsonResponse(req, API_DOCS);
   }
 
-  // Auth required for all other endpoints
-  const isAuthorized = await validateApiKey(req, supabase);
+  // Auth required for all other endpoints — wrapped in try/catch so any
+  // unexpected throw (DB timeout, crypto error) still returns a CORS-safe 500.
+  let isAuthorized: boolean;
+  try {
+    isAuthorized = await validateApiKey(req, supabase);
+  } catch (authError: unknown) {
+    console.error('[ERP-API] Auth error:', authError instanceof Error ? authError.message : authError);
+    return jsonResponse(req, { error: 'Internal Server Error' }, 500);
+  }
   if (!isAuthorized) {
     return jsonResponse(req, { error: 'Unauthorized', message: 'Missing or invalid authentication' }, 401);
   }
@@ -128,9 +135,8 @@ serve(async (req: Request) => {
         return jsonResponse(req, { error: 'Not Found', message: `Endpoint /${endpoint} not found` }, 404);
     }
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[ERP-API] Error:', errorMessage);
-    return jsonResponse(req, { error: 'Internal Server Error', message: errorMessage }, 500);
+    console.error('[ERP-API] Error:', error instanceof Error ? error.message : error);
+    return jsonResponse(req, { error: 'Internal Server Error' }, 500);
   }
 
   return jsonResponse(req, { error: 'Not Found' }, 404);
@@ -276,11 +282,17 @@ async function handleProductionSummary(req: Request, supabase: ReturnType<typeof
 async function handleKPIs(req: Request, supabase: ReturnType<typeof createClient>, url: URL): Promise<Response> {
   if (req.method !== 'GET') return jsonResponse(req, { error: 'Method not allowed' }, 405);
   const today = new Date().toISOString().split('T')[0];
-  const [{ data: todayJobs }, { count: machinesCount }, { count: alertsCount }] = await Promise.all([
+  const [jobsResult, machinesResult, alertsResult] = await Promise.all([
     supabase.from('jobs').select('status, quantity, produced_quantity, lost_pieces').eq('scheduled_date', today).limit(1000),
     supabase.from('machines').select('*', { count: 'exact', head: true }).eq('is_active', true),
     supabase.from('spc_alerts').select('*', { count: 'exact', head: true }).is('resolved_at', null),
   ]);
+  if (jobsResult.error) throw jobsResult.error;
+  if (machinesResult.error) throw machinesResult.error;
+  if (alertsResult.error) throw alertsResult.error;
+  const { data: todayJobs } = jobsResult;
+  const { count: machinesCount } = machinesResult;
+  const { count: alertsCount } = alertsResult;
   const jobs = todayJobs || [];
   const totalPlanned = jobs.reduce((s: number, j: { quantity: number }) => s + (j.quantity || 0), 0);
   const totalProduced = jobs.reduce((s: number, j: { produced_quantity: number }) => s + (j.produced_quantity || 0), 0);
