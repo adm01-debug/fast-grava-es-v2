@@ -122,11 +122,11 @@ export function useMLPredictions() {
       queryClient.invalidateQueries({ queryKey: ['ml-predictions'] });
       toast.success(`${data.predictions_generated} previsões geradas com sucesso`);
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables: string | undefined) => {
       supabase.from('error_logs').insert({
         component_name: 'useMLPredictions:generatePredictions',
         message: error.message,
-        metadata: { machine_id: generatePredictions.variables, severity: 'high' }
+        metadata: { machine_id: variables, severity: 'high' }
       }).catch((logErr: unknown) => {
         console.error('Failed to write error_log', logErr);
       });
@@ -160,7 +160,7 @@ export function useMLPredictions() {
       toast.success('Previsão reconhecida');
     },
     onError: (error: Error) => {
-      toast.error('Erro ao reconhecer previsão: ' + error.message);
+      showErrorToast(error, ML_ERROR_CONTEXT.generate);
     },
   });
 
