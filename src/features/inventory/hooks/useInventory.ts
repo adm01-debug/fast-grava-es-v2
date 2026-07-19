@@ -139,29 +139,52 @@ export function useInventory() {
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Movimentação desfeita');
     },
+    onError: (error: unknown) => {
+      logger.error('Erro ao desfazer movimentação de estoque', error, 'useInventory');
+      toast.error('Erro ao desfazer movimentação', {
+        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.'
+      });
+    },
   });
 
   const transferItemsMutation = useMutation({
     mutationFn: async ({ fromLocation, toLocation, itemIds }: { fromLocation: string, toLocation: string, itemIds: string[] }) => {
       if (!user?.id) throw new Error('Sessão expirada. Faça login novamente.');
+      if (itemIds.length === 0) return [];
 
-      const results = await Promise.all(itemIds.map(async (itemId) => {
-        const { error: updateError } = await supabase.from('inventory_items').update({ location: toLocation }).eq('id', itemId);
-        if (updateError) throw updateError;
-        await supabase.from('inventory_movements').insert([{
-          item_id: itemId, user_id: user.id, type: 'TRANSFER', quantity: 0,
-          from_location: fromLocation, to_location: toLocation,
-          reason: `Transferência de ${fromLocation} para ${toLocation}`
-        }]);
-        return itemId;
+      // Bulk UPDATE: single query instead of N individual updates
+      const { error: updateError } = await supabase
+        .from('inventory_items')
+        .update({ location: toLocation })
+        .in('id', itemIds);
+      if (updateError) throw updateError;
+
+      // Bulk INSERT: single query instead of N individual inserts
+      const movements = itemIds.map(itemId => ({
+        item_id: itemId,
+        user_id: user.id,
+        type: 'TRANSFER' as const,
+        quantity: 0,
+        from_location: fromLocation,
+        to_location: toLocation,
+        reason: `Transferência de ${fromLocation} para ${toLocation}`,
       }));
-      return results;
+      const { error: movError } = await supabase.from('inventory_movements').insert(movements);
+      if (movError) throw movError;
+
+      return itemIds;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-movements'] });
       toast.success('Transferência concluída');
-    }
+    },
+    onError: (error: unknown) => {
+      logger.error('Erro ao transferir itens de estoque', error, 'useInventory');
+      toast.error('Erro ao transferir itens', {
+        description: error instanceof Error ? error.message : 'Verifique sua conexão e tente novamente.'
+      });
+    },
   });
 
   return {
