@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 export interface LockoutStatus {
   locked: boolean;
@@ -47,9 +48,13 @@ export const AuthService = {
       const { data, error } = await supabase.functions.invoke('check-login-lockout', {
         body: { email, action: 'check' }
       });
-      if (error) return { locked: false };
+      if (error) {
+        logger.warn('Lockout check returned error — brute-force protection may be inactive', { error }, 'authService');
+        return { locked: false };
+      }
       return data;
     } catch (err) {
+      logger.warn('Lockout check threw exception — brute-force protection may be inactive', { error: String(err) }, 'authService');
       return { locked: false };
     }
   },
@@ -62,9 +67,13 @@ export const AuthService = {
           action: success ? 'record_success' : 'record_failure'
         }
       });
-      if (error) return { locked: false };
+      if (error) {
+        logger.warn('recordLoginAttempt returned error — attempt count may be inaccurate', { error }, 'authService');
+        return { locked: false };
+      }
       return data;
     } catch (err) {
+      logger.warn('recordLoginAttempt threw exception — attempt count may be inaccurate', { error: String(err) }, 'authService');
       return { locked: false };
     }
   }
