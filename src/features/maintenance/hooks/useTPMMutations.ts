@@ -330,10 +330,13 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
       record_id: string;
       approver_id: string;
     }) => {
-      // Validação de requisitos mínimos (fotos e assinaturas)
+      // Single fetch for both validation data (responses/photos) and schedule
+      // data — two separate fetches previously created a TOCTOU window where
+      // a concurrent delete or double-approve could slip through after the first
+      // validation check passed.
       const { data: record, error: fetchErr } = await supabase
         .from('maintenance_records')
-        .select('*, responses:maintenance_item_responses(*, checklist_item:maintenance_checklist_items(requires_photo))')
+        .select('*, responses:maintenance_item_responses(*, checklist_item:maintenance_checklist_items(requires_photo)), schedule:maintenance_schedules(*)')
         .eq('id', data.record_id)
         .single();
 
@@ -354,16 +357,7 @@ export function useTPMMutations({ schedules, alerts }: UseTPMMutationsProps) {
         throw new Error('Pelo menos uma foto de evidência é obrigatória para itens que exigem foto.');
       }
 
-      const { data: recordData, error: recordFetchError } = await supabase
-        .from('maintenance_records')
-        .select('*, schedule:maintenance_schedules(*)')
-        .eq('id', data.record_id)
-        .maybeSingle();
-
-      if (recordFetchError || !recordData) {
-        throw new Error('Registro não encontrado');
-      }
-
+      const recordData = record;
       const scheduleData = (recordData as { schedule?: { id: string; interval_days?: number } | null }).schedule ?? null;
       const nextDue = addDays(new Date(), scheduleData?.interval_days || 30).toISOString();
 
