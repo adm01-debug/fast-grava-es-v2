@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import type { Database } from '@/integrations/supabase/types';
 
 type TableName = keyof Database['public']['Tables'];
@@ -123,7 +124,7 @@ export function useDataImport(tableName: TableName) {
       }
     },
     onError: (error) => {
-      toast.error(`Erro na importação: ${error.message}`);
+      showErrorToast(error, 'Erro na importação');
     },
   });
 
