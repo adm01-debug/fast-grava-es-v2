@@ -401,8 +401,8 @@ Deno.serve(async (req) => {
         { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
-  } catch (error: any) {
-    console.error('[send-email-report] Error:', error);
+  } catch (error: unknown) {
+    console.error('[send-email-report] Error:', error instanceof Error ? error.message : String(error));
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
