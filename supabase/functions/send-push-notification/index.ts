@@ -76,6 +76,7 @@ async function sendWebPush(
     // Send push notification
     const response = await fetch(subscription.endpoint, {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         "Content-Type": "application/octet-stream",
         "Content-Encoding": "aes128gcm",

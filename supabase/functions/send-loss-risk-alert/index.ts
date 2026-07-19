@@ -137,6 +137,7 @@ serve(async (req) => {
         const chunk = subscriberEmails.slice(i, i + RESEND_MAX_RECIPIENTS);
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
+          signal: AbortSignal.timeout(10_000),
           headers: {
             'Authorization': `Bearer ${resendApiKey}`,
             'Content-Type': 'application/json',

@@ -113,7 +113,7 @@ async function refreshAccessToken(refreshToken: string, supabase: any): Promise<
       refresh_token: refreshToken
     });
 
-    const response = await fetch(refreshUrl, { method: 'POST' });
+    const response = await fetch(refreshUrl, { method: 'POST', signal: AbortSignal.timeout(15_000) });
     const responseText = await response.text();
     
     let data;
@@ -197,7 +197,7 @@ async function exchangeCodeForTokens(code: string, redirectUri: string, supabase
       redirect_uri: redirectUri
     });
 
-    const response = await fetch(tokenUrl, { method: 'POST' });
+    const response = await fetch(tokenUrl, { method: 'POST', signal: AbortSignal.timeout(15_000) });
     const data = await response.json();
     
     if (!response.ok || data.error) {
@@ -447,6 +447,7 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
       
       const response = await fetch(url, {
         method: 'POST',
+        signal: AbortSignal.timeout(15_000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
       });
@@ -483,6 +484,7 @@ async function callBitrix(method: string, params: Record<string, any> = {}, supa
       
       const response = await fetch(url, {
         method: 'POST',
+        signal: AbortSignal.timeout(15_000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
       });
