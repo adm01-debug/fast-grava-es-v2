@@ -13,41 +13,47 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Audit dependencies
-        run: npm audit --audit-level=critical
+        run: npm audit --audit-level=high
 
       - name: Check for secrets in code
-        uses: trufflesecurity/trufflehog@main
+        # Pinned to v3 tag for supply-chain safety.
+        uses: trufflesecurity/trufflehog@v3.82.13
         with:
           path: ./
-          base: ${{ github.event.before }}
+          # Fallback to HEAD~1 for workflow_dispatch (github.event.before is empty)
+          base: ${{ github.event.before || 'HEAD~1' }}
           head: HEAD
-          extra_args: --only-verified
+          # Removed --only-verified: unverifiable secrets would be silently missed
 
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Run tests
         run: npm run test -- --run
@@ -55,17 +61,19 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [security-scan, test]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-fund
+        run: npm ci --legacy-peer-deps --no-fund
 
       - name: Build
         env:
@@ -89,10 +97,11 @@ jobs:
   apply-migrations:
     name: Apply DB Migrations
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [security-scan, test]
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
@@ -110,10 +119,11 @@ jobs:
   deploy-edge-functions:
     name: Deploy Edge Functions
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [security-scan, test, apply-migrations]
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1

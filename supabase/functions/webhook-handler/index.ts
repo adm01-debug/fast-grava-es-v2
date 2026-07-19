@@ -1,25 +1,11 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { WebhookPayloadSchema, WebhookResponseSchema, validateContract } from "../_shared/contracts.ts";
-
-const ALLOWED_ORIGINS = [
-  Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br',
-  'https://xxroejpvloldkmqdydar.lovableproject.com',
-].filter(Boolean);
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature, x-api-key',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-    'Vary': 'Origin',
-  };
-}
+import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
 
 export const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: getCorsHeaders(req) });
+  const preflight = handleCorsPreflight(req);
+  if (preflight) return preflight;
 
   try {
     const supabase = createClient(
@@ -55,42 +41,44 @@ export const handler = async (req: Request): Promise<Response> => {
     const { source, event, data } = validation.data;
     const sanitizedData = data;
 
-    // HMAC verification for security (Always use production keys if available)
+    // HMAC verification — fail-closed by default.
+    // Every webhook source must have a configured secret (WEBHOOK_SECRET_<SOURCE>).
+    // Accepting webhooks without signature verification allows forged payloads.
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
-    if (secret) {
-      const encoder = new TextEncoder();
-      const key = await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(secret),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["verify"]
-      );
-      
-      const sigBuffer = new Uint8Array(
-        signature?.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []
-      );
-      
-      const isValid = await crypto.subtle.verify(
-        "HMAC",
-        key,
-        sigBuffer,
-        encoder.encode(bodyText)
-      );
+    if (!secret) {
+      console.error(`No HMAC secret configured for webhook source: ${source}. Rejecting.`);
+      return new Response(JSON.stringify({ error: "Webhook source not configured" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
-      if (!isValid) {
-        console.error(`Invalid signature for source: ${source}`);
-        return new Response(JSON.stringify({ error: "Invalid signature" }), {
-          status: 401,
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        });
-      }
-    } else if (Deno.env.get("ENFORCE_WEBHOOK_SIGNATURES") === "true") {
-       console.error(`Missing secret for source: ${source}`);
-       return new Response(JSON.stringify({ error: "Security enforcement active: missing secret" }), {
-          status: 401,
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        });
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"]
+    );
+
+    const sigBuffer = new Uint8Array(
+      signature?.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []
+    );
+
+    const isValid = await crypto.subtle.verify(
+      "HMAC",
+      key,
+      sigBuffer,
+      encoder.encode(bodyText)
+    );
+
+    if (!isValid) {
+      console.error(`Invalid signature for source: ${source}`);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
 
     // Log webhook

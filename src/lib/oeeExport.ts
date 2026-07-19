@@ -67,5 +67,6 @@ export const exportOEETabledData = (data: OEETableData, formatType: 'pdf' | 'csv
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 };

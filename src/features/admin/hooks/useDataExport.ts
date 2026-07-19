@@ -108,7 +108,7 @@ export function useDataExport(tableName: TableName) {
         });
       }
 
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+      query = query.order(sortBy, { ascending: sortOrder === 'asc' }).limit(10000);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -140,7 +140,7 @@ export function useDataExport(tableName: TableName) {
   const exportAuditTrail = useCallback(async (filters: AuditExportFilters, fileName?: string, formatType: 'csv' | 'pdf' = 'csv') => {
     setIsExporting(true);
     try {
-      let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false });
+      let query = supabase.from('audit_log').select('*').order('created_at', { ascending: false }).limit(10000);
 
       if (filters.entityType) query = query.eq('entity_type', filters.entityType);
       if (filters.entityId) query = query.eq('entity_id', filters.entityId);

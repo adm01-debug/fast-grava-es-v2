@@ -8,9 +8,9 @@ export type JobPriority = z.infer<typeof jobPrioritySchema>;
 
 export const jobSchema = z.object({
   id: z.string().uuid(),
-  order_number: z.string().min(1, 'Número do pedido é obrigatório'),
-  client: z.string().min(1, 'Cliente é obrigatório'),
-  product: z.string().min(1, 'Produto é obrigatório'),
+  order_number: z.string().min(1, 'Número do pedido é obrigatório').max(50, 'Número do pedido muito longo'),
+  client: z.string().min(1, 'Cliente é obrigatório').max(200, 'Nome do cliente muito longo'),
+  product: z.string().min(1, 'Produto é obrigatório').max(200, 'Nome do produto muito longo'),
   quantity: z.number().int().positive('Quantidade deve ser positiva'),
   technique_id: z.string().uuid('Técnica é obrigatória'),
   machine_id: z.string().uuid().nullable().optional(),
@@ -20,7 +20,7 @@ export const jobSchema = z.object({
   scheduled_date: z.string().nullable().optional(),
   start_time: z.string().nullable().optional(),
   end_time: z.string().nullable().optional(),
-  notes: z.string().nullable().optional(),
+  notes: z.string().max(2000, 'Observações muito longas').nullable().optional(),
   gravure_color: z.string().nullable().optional(),
 });
 

@@ -110,7 +110,10 @@ serve(async (req) => {
 
     const now = new Date();
 
-    // CHECK action - verify if account is locked
+    // CHECK action - verify if account is locked.
+    // IMPORTANT: Do NOT return failed_attempts, locked_until, or lockout_count
+    // to unauthenticated callers — that would allow user enumeration (attacker
+    // can probe any email and learn its failed-attempt count).
     if (action === 'check') {
       // Check email lockout
       if (emailLockout?.locked_until) {
@@ -118,16 +121,16 @@ serve(async (req) => {
         if (lockedUntil > now) {
           const remainingSeconds = Math.ceil((lockedUntil.getTime() - now.getTime()) / 1000);
           const remainingMinutes = Math.ceil(remainingSeconds / 60);
-          
+
           console.log(`Account ${normalizedEmail} is locked until ${lockedUntil.toISOString()}`);
-          
+
           return new Response(
             JSON.stringify({
               locked: true,
-              locked_until: emailLockout.locked_until,
               remaining_seconds: remainingSeconds,
               remaining_minutes: remainingMinutes,
-              failed_attempts: emailLockout.failed_attempts,
+              // Omit locked_until (exact timestamp), failed_attempts, lockout_count
+              // to prevent account enumeration by unauthenticated callers.
               message: `Conta bloqueada por ${remainingMinutes} minuto(s) devido a múltiplas tentativas falhas.`
             }),
             { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
@@ -141,16 +144,14 @@ serve(async (req) => {
         if (lockedUntil > now) {
           const remainingSeconds = Math.ceil((lockedUntil.getTime() - now.getTime()) / 1000);
           const remainingMinutes = Math.ceil(remainingSeconds / 60);
-          
+
           console.log(`IP ${ip_address} is locked until ${lockedUntil.toISOString()}`);
-          
+
           return new Response(
             JSON.stringify({
               locked: true,
-              locked_until: ipLockout.locked_until,
               remaining_seconds: remainingSeconds,
               remaining_minutes: remainingMinutes,
-              failed_attempts: ipLockout.failed_attempts,
               message: `IP bloqueado por ${remainingMinutes} minuto(s) devido a múltiplas tentativas falhas.`
             }),
             { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
@@ -158,18 +159,34 @@ serve(async (req) => {
         }
       }
 
-      // Not locked
+      // Not locked — return minimal response without attempt details
       return new Response(
-        JSON.stringify({
-          locked: false,
-          failed_attempts: emailLockout?.failed_attempts || 0,
-          attempts_remaining: MAX_FAILED_ATTEMPTS - (emailLockout?.failed_attempts || 0)
-        }),
+        JSON.stringify({ locked: false }),
         { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
 
-    // RECORD_FAILURE action - increment failed attempts
+    // RECORD_FAILURE action - increment failed attempts.
+    // Guard: limit how fast a single IP can call this action to prevent
+    // account-lockout DoS (attacker flooding record_failure for victim email).
+    // 20 calls per minute per IP is generous for legitimate auth flows.
+    if (action === 'record_failure') {
+      if (ip_address) {
+        const oneMinuteAgo = new Date(now.getTime() - 60_000).toISOString();
+        const { count: recentCalls } = await supabase
+          .from('login_lockouts')
+          .select('*', { count: 'exact', head: true })
+          .eq('identifier', ip_address)
+          .eq('identifier_type', 'ip')
+          .gte('last_failed_at', oneMinuteAgo);
+        if ((recentCalls ?? 0) > 20) {
+          return new Response(
+            JSON.stringify({ error: 'Too many requests from this IP' }),
+            { status: 429, headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+    }
     if (action === 'record_failure') {
       const currentAttempts = (emailLockout?.failed_attempts || 0) + 1;
       const currentLockoutCount = emailLockout?.lockout_count || 0;

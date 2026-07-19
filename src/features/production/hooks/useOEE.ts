@@ -3,6 +3,7 @@ import { useSchedulingData } from '@/features/jobs';
 import { useBusinessConfig } from '@/features/admin';
 import { startOfDay, endOfDay, subDays, differenceInMinutes, parseISO, isWithinInterval, isValid } from 'date-fns';
 import { logger } from '@/lib/logger';
+import { calculateRealOEE } from '@/features/production/services/oeeCalculations';
 
 // Data validation helpers
 function isValidDate(dateStr: string | null | undefined): dateStr is string {
@@ -335,7 +336,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
         const techName = techniqueNameById.get(j.technique_id) || '';
         return studio.techniques.some(pattern => techName.includes(pattern));
       });
-      const m = calculateMetrics(studioJobs, Math.max(studioJobs.length, 1), PLANNED_MINUTES_PER_DAY);
+      const daysWithStudioJobs = new Set(
+        studioJobs.filter(j => j.actual_end_time).map(j => startOfDay(parseISO(asStr(j.actual_end_time))).toISOString())
+      ).size || 1;
+      const m = calculateMetrics(studioJobs, daysWithStudioJobs, PLANNED_MINUTES_PER_DAY);
 
       // Derive health score from actual OEE data. There is no real
       // consumable/wear-level data source (no sensor/inventory feed for
@@ -383,7 +387,10 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
     });
 
     const byMaterial = Array.from(materialJobsMap.entries()).map(([material, matJobs]) => {
-      const m = calculateMetrics(matJobs, Math.max(matJobs.length, 1), PLANNED_MINUTES_PER_DAY);
+      const daysWithMatJobs = new Set(
+        matJobs.filter(j => j.actual_end_time).map(j => startOfDay(parseISO(asStr(j.actual_end_time))).toISOString())
+      ).size || 1;
+      const m = calculateMetrics(matJobs, daysWithMatJobs, PLANNED_MINUTES_PER_DAY);
       const totalPieces = matJobs.reduce((s, j) => s + sanitizeNumber(j.produced_quantity ?? 0), 0);
       return {
         material,
@@ -395,11 +402,14 @@ export function useOEE(daysBack: number = 30, comparisonDaysBack: number = 30, f
       };
     });
 
-    const machinesWithData = byMachine.filter(m => m.totalJobs > 0);
-    const overallOEE = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.oee, 0) / machinesWithData.length : 0;
-    const overallAvailability = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.availability, 0) / machinesWithData.length : 0;
-    const overallPerformance = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.performance, 0) / machinesWithData.length : 0;
-    const overallQuality = machinesWithData.length > 0 ? machinesWithData.reduce((sum, m) => sum + m.quality, 0) / machinesWithData.length : 0;
+    // ISO 22400-2: aggregate raw production totals first, then compute ratios.
+    // An arithmetic mean of per-machine OEE ratios is mathematically incorrect
+    // (it weights idle machines equally with busy ones).
+    const globalOEE = calculateRealOEE(periodJobs);
+    const overallOEE = globalOEE.oee;
+    const overallAvailability = globalOEE.availability;
+    const overallPerformance = globalOEE.performance;
+    const overallQuality = globalOEE.quality;
 
     // Group periodJobs by date for efficient trend calculation
     const jobsByDate = new Map<string, typeof periodJobs>();
