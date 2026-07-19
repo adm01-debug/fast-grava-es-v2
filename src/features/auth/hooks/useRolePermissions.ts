@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { showErrorToast } from '@/lib/errorHandling';
 import { type AppRole } from '../index';
 import { ROLE_PERMISSIONS } from './useRBAC';
 
@@ -71,8 +72,7 @@ export function useRolePermissions(role: AppRole | null) {
       }
       toast.success('Permissão atualizada');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      toast.error('Erro ao atualizar permissão', { description: message });
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro ao atualizar permissão');
     } finally {
       setIsSaving(false);
     }

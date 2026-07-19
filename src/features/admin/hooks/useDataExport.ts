@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/errorHandling';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { Database } from '@/integrations/supabase/types';
@@ -130,8 +131,7 @@ export function useDataExport(tableName: TableName) {
 
       toast.success(`${data.length} registros exportados`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro desconhecido';
-      toast.error(`Erro na exportação: ${message}`);
+      showErrorToast(error instanceof Error ? error : new Error(String(error)), 'Erro na exportação');
     } finally {
       setIsExporting(false);
     }
