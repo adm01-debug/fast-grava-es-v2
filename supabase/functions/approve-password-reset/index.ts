@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
     const { data: resetRequest, error: fetchError } = await supabaseAdmin
       .from('password_reset_requests')
       .select('*')
-      .eq('id', requestId)
+      .eq('id', resetRequestId)
       .single()
 
     if (fetchError || !resetRequest) {
@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
         reviewed_at: new Date().toISOString(),
         rejection_reason: action === 'reject' ? rejectionReason : null,
       })
-      .eq('id', requestId)
+      .eq('id', resetRequestId)
 
     if (updateError) {
       console.error('Error updating request:', updateError)
