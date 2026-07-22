@@ -1,6 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 import { approvePasswordResetSchema } from '../_shared/validation.ts'
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
+import { checkRateLimit } from '../_shared/rateLimit.ts'
+import { createLogger, getOrCreateRequestId, withRequestId } from '../_shared/logger.ts'
+import { parseOrError } from '../_shared/validate.ts'
 
 const APP_URL = Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br';
 
@@ -8,17 +11,20 @@ Deno.serve(async (req) => {
   const preflight = handleCorsPreflight(req);
   if (preflight) return preflight;
 
+  const requestId = getOrCreateRequestId(req);
+  const log = createLogger({ fn: 'approve-password-reset', requestId });
+  const cors = withRequestId(getCorsHeaders(req), requestId);
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!
 
-    // Verify the requesting user is a coordinator or manager
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+      return new Response(JSON.stringify({ error: 'Não autorizado', requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
     }
 
@@ -28,9 +34,9 @@ Deno.serve(async (req) => {
 
     const { data: { user: requestingUser } } = await supabaseClient.auth.getUser()
     if (!requestingUser) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+      return new Response(JSON.stringify({ error: 'Não autorizado', requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
     }
 
@@ -57,10 +63,24 @@ Deno.serve(async (req) => {
     }
 
     if (!(roleRows ?? []).some((r: { role: string }) => ['coordinator', 'manager'].includes(r.role))) {
-      return new Response(JSON.stringify({ error: 'Apenas coordenadores e gerentes podem aprovar solicitações' }), {
+      return new Response(JSON.stringify({ error: 'Apenas coordenadores e gerentes podem aprovar solicitações', requestId }), {
         status: 403,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
+    }
+
+    // Rate limit: 30 approvals per hour per reviewer.
+    const rateLimited = await checkRateLimit(supabaseAdmin, {
+      endpoint: 'approve-password-reset',
+      identity: { userId: requestingUser.id, email: requestingUser.email ?? null },
+      max: 30,
+      windowSeconds: 3600,
+      corsHeaders: cors,
+      requestId,
+    })
+    if (rateLimited) {
+      log.warn('rate_limited', { userId: requestingUser.id })
+      return rateLimited
     }
 
     // Get reviewer name
@@ -70,26 +90,17 @@ Deno.serve(async (req) => {
       .eq('id', requestingUser.id)
       .single()
 
-    const body = await req.json().catch(() => ({}))
-    const validationResult = approvePasswordResetSchema.safeParse(body)
+    const parsed = await parseOrError(approvePasswordResetSchema, req, { corsHeaders: cors, requestId });
+    if (parsed.response) return parsed.response;
 
-    if (!validationResult.success) {
-      return new Response(JSON.stringify({ 
-        error: 'Validação falhou', 
-        details: validationResult.error.format() 
-      }), {
-        status: 400,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-      })
-    }
+    const { requestId: resetRequestId, action, rejectionReason, redirectUrl } = parsed.data;
 
-    const { requestId, action, rejectionReason, redirectUrl } = validationResult.data
 
     // Get the request
     const { data: resetRequest, error: fetchError } = await supabaseAdmin
       .from('password_reset_requests')
       .select('*')
-      .eq('id', requestId)
+      .eq('id', resetRequestId)
       .single()
 
     if (fetchError || !resetRequest) {
@@ -125,7 +136,7 @@ Deno.serve(async (req) => {
         reviewed_at: new Date().toISOString(),
         rejection_reason: action === 'reject' ? rejectionReason : null,
       })
-      .eq('id', requestId)
+      .eq('id', resetRequestId)
 
     if (updateError) {
       console.error('Error updating request:', updateError)

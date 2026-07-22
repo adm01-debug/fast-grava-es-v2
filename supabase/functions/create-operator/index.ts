@@ -1,9 +1,15 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
+import { checkRateLimit } from '../_shared/rateLimit.ts'
+import { createLogger, getOrCreateRequestId, withRequestId } from '../_shared/logger.ts'
 
 Deno.serve(async (req) => {
   const preflight = handleCorsPreflight(req);
   if (preflight) return preflight;
+
+  const requestId = getOrCreateRequestId(req);
+  const log = createLogger({ fn: 'create-operator', requestId });
+  const cors = withRequestId(getCorsHeaders(req), requestId);
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -31,10 +37,24 @@ Deno.serve(async (req) => {
 
     const { data: { user: requestingUser } } = await supabaseClient.auth.getUser()
     if (!requestingUser) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+      return new Response(JSON.stringify({ error: 'Não autorizado', requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
+    }
+
+    // Rate limit: 10 operator-creations per hour per requesting user.
+    const rateLimited = await checkRateLimit(supabaseAdmin, {
+      endpoint: 'create-operator',
+      identity: { userId: requestingUser.id, email: requestingUser.email ?? null },
+      max: 10,
+      windowSeconds: 3600,
+      corsHeaders: cors,
+      requestId,
+    })
+    if (rateLimited) {
+      log.warn('rate_limited', { userId: requestingUser.id })
+      return rateLimited
     }
 
     // Check if requesting user is coordinator/admin. Fetch all role rows: a
