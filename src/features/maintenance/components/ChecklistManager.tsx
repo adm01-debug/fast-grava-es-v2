@@ -122,8 +122,10 @@ export function ChecklistManager() {
         const oldItemIds = (oldItems ?? []).map((r: { id: string }) => r.id);
 
         if (localItems.length > 0) {
+          if (!checklistId) throw new Error('checklistId ausente ao inserir itens');
+          const cid: string = checklistId;
           const itemsToInsert = localItems.map((item, index) => ({
-            checklist_id: checklistId,
+            checklist_id: cid,
             description: item.description || '',
             is_critical: !!item.is_critical,
             requires_photo: !!item.requires_photo,

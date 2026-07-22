@@ -100,7 +100,7 @@ export function useSmartSequencingWithActions() {
       const { error } = await supabase
         .from('jobs')
         .upsert(
-          timeSlots.map(slot => ({ id: slot.jobId, start_time: slot.startTime, end_time: slot.endTime })),
+          timeSlots.map(slot => ({ id: slot.jobId, start_time: slot.startTime, end_time: slot.endTime })) as never,
           { onConflict: 'id' }
         );
 
@@ -141,7 +141,7 @@ export function useSmartSequencingWithActions() {
             const { error } = await supabase
               .from('jobs')
               .upsert(
-                timeSlots.map(slot => ({ id: slot.jobId, start_time: slot.startTime, end_time: slot.endTime })),
+                timeSlots.map(slot => ({ id: slot.jobId, start_time: slot.startTime, end_time: slot.endTime })) as never,
                 { onConflict: 'id' }
               );
 

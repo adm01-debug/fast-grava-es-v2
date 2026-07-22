@@ -69,7 +69,7 @@ export function useLoadBalancingWithActions(targetDate?: Date) {
       const { error } = await supabase
         .from('jobs')
         .upsert(
-          suggestions.map(s => ({ id: s.jobId, machine_id: s.suggestedMachineId })),
+          suggestions.map(s => ({ id: s.jobId, machine_id: s.suggestedMachineId })) as never,
           { onConflict: 'id' }
         );
 
