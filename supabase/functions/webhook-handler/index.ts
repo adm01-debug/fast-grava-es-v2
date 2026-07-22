@@ -2,10 +2,16 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { WebhookPayloadSchema, WebhookResponseSchema, validateContract } from "../_shared/contracts.ts";
 import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
+import { createLogger, getOrCreateRequestId, withRequestId } from "../_shared/logger.ts";
 
 export const handler = async (req: Request): Promise<Response> => {
   const preflight = handleCorsPreflight(req);
   if (preflight) return preflight;
+
+  const requestId = getOrCreateRequestId(req);
+  const log = createLogger({ fn: "webhook-handler", requestId });
+  const started = Date.now();
+  const jsonHeaders = withRequestId({ ...getCorsHeaders(req), "Content-Type": "application/json" }, requestId);
 
   try {
     const supabase = createClient(
@@ -18,38 +24,38 @@ export const handler = async (req: Request): Promise<Response> => {
     let payload;
     try {
       payload = JSON.parse(bodyText);
-    } catch (e) {
-      return new Response(JSON.stringify({ error: "Invalid JSON payload" }), {
+    } catch (_e) {
+      log.warn("payload.invalid_json", { bytes: bodyText.length });
+      return new Response(JSON.stringify({ error: "Invalid JSON payload", requestId }), {
         status: 400,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        headers: jsonHeaders,
       });
     }
 
     const validation = await validateContract(WebhookPayloadSchema, payload);
-    
+
     if (!validation.success) {
-      console.warn("Received webhook failed contract validation:", validation.details);
-      return new Response(JSON.stringify({ 
-        error: validation.error, 
-        details: validation.details 
+      log.warn("contract.validation_failed", { details: validation.details });
+      return new Response(JSON.stringify({
+        error: validation.error,
+        details: validation.details,
+        requestId,
       }), {
         status: 400,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        headers: jsonHeaders,
       });
     }
 
     const { source, event, data } = validation.data;
     const sanitizedData = data;
+    const scoped = log.child({ source, event });
 
-    // HMAC verification — fail-closed by default.
-    // Every webhook source must have a configured secret (WEBHOOK_SECRET_<SOURCE>).
-    // Accepting webhooks without signature verification allows forged payloads.
     const secret = Deno.env.get(`WEBHOOK_SECRET_${source.toUpperCase()}`);
     if (!secret) {
-      console.error(`No HMAC secret configured for webhook source: ${source}. Rejecting.`);
-      return new Response(JSON.stringify({ error: "Webhook source not configured" }), {
+      scoped.error("hmac.secret_missing");
+      return new Response(JSON.stringify({ error: "Webhook source not configured", requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        headers: jsonHeaders,
       });
     }
 
@@ -74,14 +80,13 @@ export const handler = async (req: Request): Promise<Response> => {
     );
 
     if (!isValid) {
-      console.error(`Invalid signature for source: ${source}`);
-      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+      scoped.error("hmac.invalid_signature");
+      return new Response(JSON.stringify({ error: "Invalid signature", requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        headers: jsonHeaders,
       });
     }
 
-    // Log webhook
     const { error: logError } = await supabase.from("webhook_logs").insert({
       source,
       event,
@@ -90,43 +95,42 @@ export const handler = async (req: Request): Promise<Response> => {
     });
 
     if (logError) {
-      console.error("Error logging webhook:", logError);
+      scoped.error("webhook_logs.insert_failed", logError);
     }
 
-    // Process based on source
     let result = { processed: true };
 
     switch (source) {
       case "bitrix24":
-        result = await processBitrix24Webhook(supabase, event, sanitizedData);
+        result = await processBitrix24Webhook(supabase, event, sanitizedData, scoped);
         break;
       case "stripe":
-        result = await processStripeWebhook(supabase, event, sanitizedData);
+        result = await processStripeWebhook(supabase, event, sanitizedData, scoped);
         break;
       default:
-        console.log(`Unknown webhook source: ${source}`);
+        scoped.info("source.unknown");
     }
 
     const responsePayload = {
       ...result,
       source,
       event,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      requestId,
     };
 
     const responseValidation = WebhookResponseSchema.safeParse(responsePayload);
     if (!responseValidation.success) {
-      console.error("Outgoing webhook response failed contract validation:", responseValidation.error.format());
+      scoped.error("response.contract_failed", responseValidation.error);
     }
 
-    return new Response(JSON.stringify(responsePayload), {
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-    });
+    scoped.info("webhook.processed", { latencyMs: Date.now() - started });
+    return new Response(JSON.stringify(responsePayload), { headers: jsonHeaders });
   } catch (error) {
-    console.error("Webhook Error:", error instanceof Error ? error.message : String(error));
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    log.error("unhandled_error", error, { latencyMs: Date.now() - started });
+    return new Response(JSON.stringify({ error: "Internal server error", requestId }), {
       status: 500,
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      headers: jsonHeaders,
     });
   }
 };
