@@ -139,15 +139,19 @@ if (import.meta.main) {
   serve(handler);
 }
 
-async function processBitrix24Webhook(supabase: any, event: string, data: any) {
-  console.log(`Bitrix24 event received: ${event}`);
+// deno-lint-ignore no-explicit-any
+type Supa = any;
+// deno-lint-ignore no-explicit-any
+type EventData = any;
+interface ScopedLogger {
+  info(m: string, e?: Record<string, unknown>): void;
+  warn(m: string, e?: Record<string, unknown>): void;
+  error(m: string, err?: unknown, e?: Record<string, unknown>): void;
+}
 
-  // Rastreabilidade: registrar tentativa de sincronização. O mapeamento real
-  // Bitrix24 → jobs ainda não foi implementado — retornamos `processed: false`
-  // para que o emissor não considere o evento como aplicado.
-  // The event is only logged here — the Bitrix24 → jobs mapping is not applied
-  // yet — so record it as 'partial', not 'success', or the sync-history UI would
-  // show logging-only events as completed syncs.
+async function processBitrix24Webhook(supabase: Supa, event: string, data: EventData, log: ScopedLogger) {
+  log.info("bitrix24.event_received");
+
   const { error: logError } = await supabase.from("bitrix24_sync_history").insert({
     sync_type: 'webhook',
     status: 'partial',
@@ -157,7 +161,7 @@ async function processBitrix24Webhook(supabase: any, event: string, data: any) {
     completed_at: new Date().toISOString(),
   });
   if (logError) {
-    console.error("Failed to log Bitrix24 webhook to sync history:", logError.message);
+    log.error("bitrix24_sync_history.insert_failed", logError);
   }
 
   return {
@@ -170,10 +174,8 @@ async function processBitrix24Webhook(supabase: any, event: string, data: any) {
   };
 }
 
-async function processStripeWebhook(supabase: any, event: string, data: any) {
-  console.log(`Stripe event received: ${event}`);
-
-  // Handler real de Stripe ainda não implementado.
+async function processStripeWebhook(_supabase: Supa, event: string, _data: EventData, log: ScopedLogger) {
+  log.info("stripe.event_received");
   return {
     source: "stripe",
     event,
