@@ -62,10 +62,24 @@ Deno.serve(async (req) => {
     }
 
     if (!(roleRows ?? []).some((r: { role: string }) => ['coordinator', 'manager'].includes(r.role))) {
-      return new Response(JSON.stringify({ error: 'Apenas coordenadores e gerentes podem aprovar solicitações' }), {
+      return new Response(JSON.stringify({ error: 'Apenas coordenadores e gerentes podem aprovar solicitações', requestId }), {
         status: 403,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
+    }
+
+    // Rate limit: 30 approvals per hour per reviewer.
+    const rateLimited = await checkRateLimit(supabaseAdmin, {
+      endpoint: 'approve-password-reset',
+      identity: { userId: requestingUser.id, email: requestingUser.email ?? null },
+      max: 30,
+      windowSeconds: 3600,
+      corsHeaders: cors,
+      requestId,
+    })
+    if (rateLimited) {
+      log.warn('rate_limited', { userId: requestingUser.id })
+      return rateLimited
     }
 
     // Get reviewer name
