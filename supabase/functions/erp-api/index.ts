@@ -9,6 +9,7 @@ import {
 } from "../_shared/contracts.ts";
 
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { createLogger, getOrCreateRequestId, withRequestId } from "../_shared/logger.ts";
 
 function jsonResponse(req: Request, data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -85,35 +86,36 @@ serve(async (req: Request) => {
     return new Response(null, { headers: getCorsHeaders(req) });
   }
 
+  const requestId = getOrCreateRequestId(req);
   const url = new URL(req.url);
   const pathParts = url.pathname.split('/').filter(Boolean);
   const erpIndex = pathParts.indexOf('erp-api');
   const apiPath = erpIndex !== -1 ? pathParts.slice(erpIndex + 1) : [];
   const endpoint = apiPath[0] || '';
   const resourceId = apiPath[1];
+  const log = createLogger({ fn: "erp-api", requestId, method: req.method, path: apiPath.join('/') });
+  const jsonHeaders = withRequestId({ ...getCorsHeaders(req), 'Content-Type': 'application/json' }, requestId);
 
-  console.log(`[ERP-API] ${req.method} /${apiPath.join('/')} - ${new Date().toISOString()}`);
+  log.info("request.received");
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Public endpoints
   if (endpoint === '' || endpoint === 'docs') {
     return jsonResponse(req, API_DOCS);
   }
 
-  // Auth required for all other endpoints — wrapped in try/catch so any
-  // unexpected throw (DB timeout, crypto error) still returns a CORS-safe 500.
   let isAuthorized: boolean;
   try {
     isAuthorized = await validateApiKey(req, supabase);
   } catch (authError: unknown) {
-    console.error('[ERP-API] Auth error:', authError instanceof Error ? authError.message : authError);
-    return jsonResponse(req, { error: 'Internal Server Error' }, 500);
+    log.error("auth.error", authError);
+    return new Response(JSON.stringify({ error: 'Internal Server Error', requestId }), { status: 500, headers: jsonHeaders });
   }
   if (!isAuthorized) {
-    return jsonResponse(req, { error: 'Unauthorized', message: 'Missing or invalid authentication' }, 401);
+    log.warn("auth.unauthorized");
+    return new Response(JSON.stringify({ error: 'Unauthorized', message: 'Missing or invalid authentication', requestId }), { status: 401, headers: jsonHeaders });
   }
 
   try {
@@ -132,14 +134,14 @@ serve(async (req: Request) => {
       case 'kpis':
         return await handleKPIs(req, supabase, url);
       default:
-        return jsonResponse(req, { error: 'Not Found', message: `Endpoint /${endpoint} not found` }, 404);
+        return new Response(JSON.stringify({ error: 'Not Found', message: `Endpoint /${endpoint} not found`, requestId }), { status: 404, headers: jsonHeaders });
     }
   } catch (error: unknown) {
-    console.error('[ERP-API] Error:', error instanceof Error ? error.message : error);
-    return jsonResponse(req, { error: 'Internal Server Error' }, 500);
+    log.error("handler.error", error);
+    return new Response(JSON.stringify({ error: 'Internal Server Error', requestId }), { status: 500, headers: jsonHeaders });
   }
 
-  return jsonResponse(req, { error: 'Not Found' }, 404);
+  return new Response(JSON.stringify({ error: 'Not Found', requestId }), { status: 404, headers: jsonHeaders });
 });
 
 async function handleJobs(req: Request, supabase: ReturnType<typeof createClient>, jobId: string | undefined, url: URL): Promise<Response> {
