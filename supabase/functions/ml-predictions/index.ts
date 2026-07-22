@@ -2,6 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { mlPredictionPayloadSchema } from "../_shared/validation.ts";
 import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
 import { createLogger, getOrCreateRequestId, withRequestId } from "../_shared/logger.ts";
+import { parseOrError } from "../_shared/validate.ts";
 
 Deno.serve(async (req) => {
   const preflight = handleCorsPreflight(req);
@@ -58,20 +59,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const validationResult = mlPredictionPayloadSchema.safeParse(body);
+    const cors = withRequestId(getCorsHeaders(req), requestId);
+    const parsed = await parseOrError(mlPredictionPayloadSchema, req, { corsHeaders: cors, requestId });
+    if (parsed.response) return parsed.response;
 
-    if (!validationResult.success) {
-      return new Response(JSON.stringify({ 
-        error: "Validation failed", 
-        details: validationResult.error.format() 
-      }), {
-        status: 400,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
-    }
+    const { action, machine_id } = parsed.data;
 
-    const { action, machine_id } = validationResult.data;
 
     console.log(`ML Predictions: action=${action}, machine_id=${machine_id || 'all'}`);
 

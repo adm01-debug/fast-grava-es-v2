@@ -3,6 +3,7 @@ import { approvePasswordResetSchema } from '../_shared/validation.ts'
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
 import { checkRateLimit } from '../_shared/rateLimit.ts'
 import { createLogger, getOrCreateRequestId, withRequestId } from '../_shared/logger.ts'
+import { parseOrError } from '../_shared/validate.ts'
 
 const APP_URL = Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br';
 
@@ -89,20 +90,11 @@ Deno.serve(async (req) => {
       .eq('id', requestingUser.id)
       .single()
 
-    const body = await req.json().catch(() => ({}))
-    const validationResult = approvePasswordResetSchema.safeParse(body)
+    const parsed = await parseOrError(approvePasswordResetSchema, req, { corsHeaders: cors, requestId });
+    if (parsed.response) return parsed.response;
 
-    if (!validationResult.success) {
-      return new Response(JSON.stringify({ 
-        error: 'Validação falhou', 
-        details: validationResult.error.format() 
-      }), {
-        status: 400,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-      })
-    }
+    const { requestId: resetRequestId, action, rejectionReason, redirectUrl } = parsed.data;
 
-    const { requestId, action, rejectionReason, redirectUrl } = validationResult.data
 
     // Get the request
     const { data: resetRequest, error: fetchError } = await supabaseAdmin
