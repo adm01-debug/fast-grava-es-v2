@@ -1,6 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 import { approvePasswordResetSchema } from '../_shared/validation.ts'
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
+import { checkRateLimit } from '../_shared/rateLimit.ts'
+import { createLogger, getOrCreateRequestId, withRequestId } from '../_shared/logger.ts'
 
 const APP_URL = Deno.env.get('APP_URL') || 'https://fastgravacoes.com.br';
 
@@ -8,17 +10,20 @@ Deno.serve(async (req) => {
   const preflight = handleCorsPreflight(req);
   if (preflight) return preflight;
 
+  const requestId = getOrCreateRequestId(req);
+  const log = createLogger({ fn: 'approve-password-reset', requestId });
+  const cors = withRequestId(getCorsHeaders(req), requestId);
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!
 
-    // Verify the requesting user is a coordinator or manager
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+      return new Response(JSON.stringify({ error: 'Não autorizado', requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
     }
 
@@ -28,9 +33,9 @@ Deno.serve(async (req) => {
 
     const { data: { user: requestingUser } } = await supabaseClient.auth.getUser()
     if (!requestingUser) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+      return new Response(JSON.stringify({ error: 'Não autorizado', requestId }), {
         status: 401,
-        headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
+        headers: { ...cors, 'Content-Type': 'application/json' },
       })
     }
 
