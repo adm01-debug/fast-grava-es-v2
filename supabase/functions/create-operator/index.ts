@@ -1,9 +1,15 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
+import { checkRateLimit } from '../_shared/rateLimit.ts'
+import { createLogger, getOrCreateRequestId, withRequestId } from '../_shared/logger.ts'
 
 Deno.serve(async (req) => {
   const preflight = handleCorsPreflight(req);
   if (preflight) return preflight;
+
+  const requestId = getOrCreateRequestId(req);
+  const log = createLogger({ fn: 'create-operator', requestId });
+  const cors = withRequestId(getCorsHeaders(req), requestId);
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!

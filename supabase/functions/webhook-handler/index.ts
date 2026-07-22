@@ -4,6 +4,8 @@ import { WebhookPayloadSchema, WebhookResponseSchema, validateContract } from ".
 import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
 import { createLogger, getOrCreateRequestId, withRequestId } from "../_shared/logger.ts";
 
+import { checkRateLimit } from "../_shared/rateLimit.ts";
+
 export const handler = async (req: Request): Promise<Response> => {
   const preflight = handleCorsPreflight(req);
   if (preflight) return preflight;
@@ -18,6 +20,20 @@ export const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
+
+    // Rate limit: 120 webhooks/min per source IP.
+    const rateLimited = await checkRateLimit(supabase, {
+      endpoint: "webhook-handler",
+      identity: { ip: req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") },
+      max: 120,
+      windowSeconds: 60,
+      corsHeaders: withRequestId(getCorsHeaders(req), requestId),
+      requestId,
+    });
+    if (rateLimited) {
+      log.warn("rate_limited");
+      return rateLimited;
+    }
 
     const signature = req.headers.get("x-webhook-signature");
     const bodyText = await req.text();
