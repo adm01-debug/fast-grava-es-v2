@@ -4,6 +4,7 @@ import { usePackagingQueue } from '@/features/packaging/hooks/usePackagingQueue'
 import { PackagingQueueList } from '@/features/packaging/components/PackagingQueueList';
 import { PackagingStatsCards } from '@/features/packaging/components/PackagingStatsCards';
 import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTaskDetail';
+import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { Package as PackageIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
