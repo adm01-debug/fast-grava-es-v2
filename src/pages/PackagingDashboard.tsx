@@ -8,6 +8,7 @@ import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTa
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
+import { PackagingSlaOverridesManager } from '@/features/packaging/components/PackagingSlaOverridesManager';
 import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
