@@ -53,6 +53,7 @@ const statusOrder: Record<JobStatus, number> = {
   'finished': 7,
   'cancelled': 8,
   'buffer': 9,
+  'packaging': 10,
 };
 
 const WIP_LIMITS: Record<string, number> = {
