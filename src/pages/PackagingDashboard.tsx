@@ -6,8 +6,10 @@ import { PackagingStatsCards } from '@/features/packaging/components/PackagingSt
 import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTaskDetail';
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
-import { Package as PackageIcon } from 'lucide-react';
+import { Package as PackageIcon, Monitor } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -34,12 +36,18 @@ export default function PackagingDashboard() {
       <div className="container mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center gap-3">
           <PackageIcon className="w-6 h-6 text-primary" />
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold">Manuseio e Embalagem</h1>
             <p className="text-sm text-muted-foreground">
               Triagem final, embalagem e liberação para expedição.
             </p>
           </div>
+          <Button asChild variant="outline">
+            <Link to="/packaging/kiosk">
+              <Monitor className="h-4 w-4 mr-2" />
+              Modo Kiosk
+            </Link>
+          </Button>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />

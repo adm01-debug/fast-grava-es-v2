@@ -24,6 +24,7 @@ const WeeklyCalendar = lazy(() => import("@/pages/WeeklyCalendar"));
 const MonthlyCalendar = lazy(() => import("@/pages/MonthlyCalendar"));
 const PendingQueue = lazy(() => import("@/pages/PendingQueue"));
 const PackagingDashboard = lazy(() => import("@/pages/PackagingDashboard"));
+const PackagingKioskPage = lazy(() => import("@/pages/PackagingKioskPage"));
 const AlertsDashboard = lazy(() => import("@/pages/AlertsDashboard"));
 const KanbanBoard = lazy(() => import("@/pages/KanbanBoard"));
 const KPIDashboard = lazy(() => import("@/pages/KPIDashboard"));
@@ -185,6 +186,7 @@ export function AnimatedRoutes() {
         <Route path="/kanban" element={<ProtectedPage direction={direction} fallback={<KanbanPageSkeleton />} allowedRoles={['coordinator', 'manager', 'operator']}><KanbanBoard /></ProtectedPage>} />
         <Route path="/new-job" element={<ProtectedPage direction={direction} fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><NewJobPage /></ProtectedPage>} />
         <Route path="/packaging" element={<ProtectedPage direction={direction} fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager', 'operator']}><PackagingDashboard /></ProtectedPage>} />
+        <Route path="/packaging/kiosk" element={<ProtectedPage direction={direction} fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager', 'operator']}><PackagingKioskPage /></ProtectedPage>} />
 
         {/* KPIs & Analytics */}
         <Route path="/kpis" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><KPIDashboard /></ProtectedPage>} />
