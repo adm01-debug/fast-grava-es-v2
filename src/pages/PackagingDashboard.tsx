@@ -20,13 +20,14 @@ import { toast } from 'sonner';
 import { BulkReassignDialog } from '@/features/packaging/components/BulkReassignDialog';
 import { useAuth } from '@/features/auth';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
-  const [overdueOnly, setOverdueOnly] = useState(false);
-  const [mineOnly, setMineOnly] = useState(false);
+  const [overdueOnly, setOverdueOnly] = useLocalStorage<boolean>('packaging.filter.overdueOnly', false);
+  const [mineOnly, setMineOnly] = useLocalStorage<boolean>('packaging.filter.mineOnly', false);
   const [reassignOpen, setReassignOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useLocalStorage<string>('packaging.filter.search', '');
   const debouncedSearch = useDebounce(searchTerm, 250);
   const { user } = useAuth();
   const { data: allTasks, isLoading } = usePackagingQueue();
