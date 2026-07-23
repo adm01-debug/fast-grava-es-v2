@@ -88,6 +88,8 @@ export function PackagingQualityDashboard() {
 
       <PackagingSlaHeatmap />
 
+      <PackagingDelayParetoCard days={Number(days)} />
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Evolução diária</CardTitle>
