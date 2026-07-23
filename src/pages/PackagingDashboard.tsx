@@ -43,6 +43,7 @@ export default function PackagingDashboard() {
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
+        <PackagingSlaAlerts tasks={allTasks ?? []} onOpen={setOpenTaskId} />
 
         <Tabs defaultValue="pending">
           <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
