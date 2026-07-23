@@ -22,6 +22,7 @@ import { useAuth } from '@/features/auth';
 import { useDevice } from '@/hooks/use-device';
 import { useAlertCount } from '@/hooks/useAlertCount';
 import { useNotifications } from '@/features/notifications';
+import { usePackagingOverdueCount } from '@/features/packaging/hooks/usePackagingOverdueCount';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -42,6 +43,7 @@ export function AppSidebar() {
   const { isMobile } = useDevice();
   const alertCount = useAlertCount();
   const { unreadCount: notificationCount } = useNotifications();
+  const { data: packagingOverdueCount = 0 } = usePackagingOverdueCount();
 
   const toggleGroup = useCallback((groupId: string) => {
     setOpenGroups(prev => prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]);
@@ -216,6 +218,7 @@ export function AppSidebar() {
                     isActive={isActive}
                     alertCount={alertCount}
                     notificationCount={notificationCount}
+                    packagingOverdueCount={packagingOverdueCount}
                     openGroups={openGroups}
                     toggleGroup={toggleGroup}
                   />
