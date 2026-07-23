@@ -56,11 +56,12 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
             )}
 
             <Tabs defaultValue="triage">
-              <TabsList className="grid grid-cols-4 w-full">
+              <TabsList className="grid grid-cols-5 w-full">
                 <TabsTrigger value="triage">Triagem</TabsTrigger>
                 <TabsTrigger value="packaging">Embalagem</TabsTrigger>
                 <TabsTrigger value="checklist">Conferência</TabsTrigger>
                 <TabsTrigger value="defects">Defeitos ({defects.length})</TabsTrigger>
+                <TabsTrigger value="history">Histórico</TabsTrigger>
               </TabsList>
 
               <TabsContent value="checklist" className="pt-4">
