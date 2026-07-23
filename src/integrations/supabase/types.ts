@@ -2626,6 +2626,145 @@ export type Database = {
         }
         Relationships: []
       }
+      packaging_defects: {
+        Row: {
+          created_at: string
+          decision: string
+          defect_type: string
+          id: string
+          notes: string | null
+          packaging_task_id: string
+          photo_url: string | null
+          quantity: number
+          reported_by: string | null
+          severity: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decision?: string
+          defect_type: string
+          id?: string
+          notes?: string | null
+          packaging_task_id: string
+          photo_url?: string | null
+          quantity: number
+          reported_by?: string | null
+          severity?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          defect_type?: string
+          id?: string
+          notes?: string | null
+          packaging_task_id?: string
+          photo_url?: string | null
+          quantity?: number
+          reported_by?: string | null
+          severity?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_defects_packaging_task_id_fkey"
+            columns: ["packaging_task_id"]
+            isOneToOne: false
+            referencedRelation: "packaging_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packaging_settings: {
+        Row: {
+          created_at: string
+          defect_reasons: string[]
+          id: string
+          package_types: string[]
+          updated_at: string
+          weight_unit: string
+        }
+        Insert: {
+          created_at?: string
+          defect_reasons?: string[]
+          id?: string
+          package_types?: string[]
+          updated_at?: string
+          weight_unit?: string
+        }
+        Update: {
+          created_at?: string
+          defect_reasons?: string[]
+          id?: string
+          package_types?: string[]
+          updated_at?: string
+          weight_unit?: string
+        }
+        Relationships: []
+      }
+      packaging_tasks: {
+        Row: {
+          approved_quantity: number
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          job_id: string
+          notes: string | null
+          package_type: string | null
+          packages_count: number | null
+          received_quantity: number
+          rejected_quantity: number
+          started_at: string | null
+          status: string
+          total_weight_kg: number | null
+          updated_at: string
+        }
+        Insert: {
+          approved_quantity?: number
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          job_id: string
+          notes?: string | null
+          package_type?: string | null
+          packages_count?: number | null
+          received_quantity?: number
+          rejected_quantity?: number
+          started_at?: string | null
+          status?: string
+          total_weight_kg?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approved_quantity?: number
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string
+          notes?: string | null
+          package_type?: string | null
+          packages_count?: number | null
+          received_quantity?: number
+          rejected_quantity?: number
+          started_at?: string | null
+          status?: string
+          total_weight_kg?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_tasks_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: true
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       password_reset_requests: {
         Row: {
           created_at: string
