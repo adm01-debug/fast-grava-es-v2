@@ -85,6 +85,8 @@ export function PackagingQualityDashboard() {
         </CardContent>
       </Card>
 
+      <PackagingSlaHeatmap />
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Evolução diária</CardTitle>
