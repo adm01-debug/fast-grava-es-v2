@@ -44,11 +44,12 @@ export default function PackagingDashboard() {
         <PackagingStatsCards tasks={allTasks ?? []} />
 
         <Tabs defaultValue="pending">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
             <TabsTrigger value="pending">Fila ({grouped.pending.length})</TabsTrigger>
             <TabsTrigger value="in-progress">Em andamento ({grouped.inProgress.length})</TabsTrigger>
             <TabsTrigger value="triage">Triagem ({grouped.triage.length})</TabsTrigger>
             <TabsTrigger value="done">Concluídos hoje ({grouped.completedToday.length})</TabsTrigger>
+            <TabsTrigger value="quality">Qualidade</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="mt-4">
