@@ -43,6 +43,7 @@ export function AppSidebar() {
   const { isMobile } = useDevice();
   const alertCount = useAlertCount();
   const { unreadCount: notificationCount } = useNotifications();
+  const { data: packagingOverdueCount = 0 } = usePackagingOverdueCount();
 
   const toggleGroup = useCallback((groupId: string) => {
     setOpenGroups(prev => prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]);
