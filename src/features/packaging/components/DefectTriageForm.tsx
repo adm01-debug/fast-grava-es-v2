@@ -106,6 +106,12 @@ export function DefectTriageForm({ taskId, onSubmit, submitting }: Props) {
           </Select>
         </div>
       </div>
+      {form.watch('decision') === 'rework' && (
+        <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-200">
+          Ao registrar, um novo pedido de <strong>retrabalho</strong> será criado automaticamente
+          na fila de produção com a mesma técnica e cliente, na quantidade defeituosa informada.
+        </div>
+      )}
       <div>
         <Label htmlFor="defect-photo">Foto (opcional)</Label>
         <Input
