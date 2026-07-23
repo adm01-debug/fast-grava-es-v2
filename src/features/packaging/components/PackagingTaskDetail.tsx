@@ -149,7 +149,7 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                   client: task.jobs?.client ?? '—',
                   product: task.jobs?.product ?? '—',
                   approvedQuantity: task.approved_quantity,
-                  packagedAt: task.packaged_at ?? null,
+                  packagedAt: null,
                   destination: task.jobs?.client ?? null,
                 }}
               />
