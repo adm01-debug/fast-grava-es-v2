@@ -205,6 +205,13 @@ export default function PackagingDashboard() {
           taskId={openTaskId}
           onOpenChange={(open) => { if (!open) setOpenTaskId(null); }}
         />
+
+        <BulkReassignDialog
+          open={reassignOpen}
+          onOpenChange={setReassignOpen}
+          taskIds={overdueTasks.map(t => t.id)}
+          title="Reatribuir tarefas com SLA vencido"
+        />
       </div>
     </>
   );
