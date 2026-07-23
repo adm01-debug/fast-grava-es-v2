@@ -139,6 +139,16 @@ export default function PackagingDashboard() {
             <DownloadIcon className="h-4 w-4 mr-2" />
             Exportar SLA vencido
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-2"
+            disabled={overdueCount === 0}
+            onClick={() => setReassignOpen(true)}
+          >
+            <UsersIcon className="h-4 w-4 mr-2" />
+            Reatribuir SLA vencido
+          </Button>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
