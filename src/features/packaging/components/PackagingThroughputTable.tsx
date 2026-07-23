@@ -47,11 +47,20 @@ export function PackagingThroughputTable({ days = 30 }: Props) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="flex items-center gap-2 text-base">
           <UsersIcon className="h-4 w-4 text-primary" />
           Throughput por Operador · Últimos {days} dias
         </CardTitle>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleExport}
+          disabled={!data || data.length === 0}
+        >
+          <DownloadIcon className="h-4 w-4 mr-2" />
+          Exportar CSV
+        </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
