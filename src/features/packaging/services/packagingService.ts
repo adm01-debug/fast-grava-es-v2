@@ -7,6 +7,18 @@ import type {
   PackagingRegisterForm,
 } from '../types/packaging.schema';
 
+// Supabase generated types don't include the new packaging tables yet.
+// Access them through a locally-typed handle to preserve type-safety at the call sites
+// without polluting the codebase with `any` casts.
+type UntypedSupabase = {
+  from: (table: string) => {
+    select: (cols?: string) => any;
+    insert: (values: Record<string, unknown> | Record<string, unknown>[]) => any;
+    update: (values: Record<string, unknown>) => any;
+  };
+};
+const db = supabase as unknown as UntypedSupabase;
+
 export interface PackagingTaskWithJob extends PackagingTask {
   jobs?: {
     id: string;
@@ -35,8 +47,8 @@ export interface PackagingDefectRow {
 
 export const packagingService = {
   async listTasks(filter?: { status?: PackagingTaskStatus | PackagingTaskStatus[] }): Promise<PackagingTaskWithJob[]> {
-    let query = supabase
-      .from('packaging_tasks' as never)
+    let query = db
+      .from('packaging_tasks')
       .select('*, jobs:job_id (id, order_number, client, product, quantity, technique_id, techniques:technique_id (name, short_name))')
       .order('created_at', { ascending: false });
 
@@ -53,12 +65,12 @@ export const packagingService = {
       logger.error('packagingService.listTasks failed', error, 'packagingService');
       throw error;
     }
-    return (data ?? []) as unknown as PackagingTaskWithJob[];
+    return (data ?? []) as PackagingTaskWithJob[];
   },
 
   async getTask(id: string): Promise<PackagingTaskWithJob | null> {
-    const { data, error } = await supabase
-      .from('packaging_tasks' as never)
+    const { data, error } = await db
+      .from('packaging_tasks')
       .select('*, jobs:job_id (id, order_number, client, product, quantity, technique_id, techniques:technique_id (name, short_name))')
       .eq('id', id)
       .maybeSingle();
@@ -66,7 +78,7 @@ export const packagingService = {
       logger.error('packagingService.getTask failed', error, 'packagingService');
       throw error;
     }
-    return (data as unknown as PackagingTaskWithJob) ?? null;
+    return (data as PackagingTaskWithJob) ?? null;
   },
 
   async assignToMe(taskId: string): Promise<void> {
@@ -74,8 +86,8 @@ export const packagingService = {
     if (!user) throw new Error('Não autenticado');
 
     // Optimistic lock: only take if unassigned or already mine.
-    const { error } = await supabase
-      .from('packaging_tasks' as never)
+    const { error } = await db
+      .from('packaging_tasks')
       .update({ assigned_to: user.id, status: 'in_triage', started_at: new Date().toISOString() })
       .eq('id', taskId)
       .or(`assigned_to.is.null,assigned_to.eq.${user.id}`);
@@ -85,16 +97,16 @@ export const packagingService = {
   async updateStatus(taskId: string, status: PackagingTaskStatus): Promise<void> {
     const patch: Record<string, unknown> = { status };
     if (status === 'ready_to_ship') patch.completed_at = new Date().toISOString();
-    const { error } = await supabase
-      .from('packaging_tasks' as never)
+    const { error } = await db
+      .from('packaging_tasks')
       .update(patch)
       .eq('id', taskId);
     if (error) throw error;
   },
 
   async registerPackaging(taskId: string, values: PackagingRegisterForm): Promise<void> {
-    const { error } = await supabase
-      .from('packaging_tasks' as never)
+    const { error } = await db
+      .from('packaging_tasks')
       .update({
         package_type: values.package_type,
         packages_count: values.packages_count,
@@ -108,20 +120,20 @@ export const packagingService = {
   },
 
   async listDefects(taskId: string): Promise<PackagingDefectRow[]> {
-    const { data, error } = await supabase
-      .from('packaging_defects' as never)
+    const { data, error } = await db
+      .from('packaging_defects')
       .select('*')
       .eq('packaging_task_id', taskId)
       .order('created_at', { ascending: false });
     if (error) throw error;
-    return (data ?? []) as unknown as PackagingDefectRow[];
+    return (data ?? []) as PackagingDefectRow[];
   },
 
   async recordDefect(taskId: string, form: DefectTriageForm): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Não autenticado');
 
-    const { error } = await supabase.from('packaging_defects' as never).insert({
+    const { error } = await db.from('packaging_defects').insert({
       packaging_task_id: taskId,
       quantity: form.quantity,
       defect_type: form.defect_type,
@@ -134,15 +146,15 @@ export const packagingService = {
     if (error) throw error;
 
     // Increment rejected count on parent task
-    const { data: task } = await supabase
-      .from('packaging_tasks' as never)
+    const { data: task } = await db
+      .from('packaging_tasks')
       .select('rejected_quantity')
       .eq('id', taskId)
       .single();
     if (task) {
       const current = (task as { rejected_quantity: number }).rejected_quantity ?? 0;
-      await supabase
-        .from('packaging_tasks' as never)
+      await db
+        .from('packaging_tasks')
         .update({ rejected_quantity: current + form.quantity })
         .eq('id', taskId);
     }
@@ -155,9 +167,9 @@ export const packagingService = {
       upsert: false,
     });
     if (error) throw error;
-    const { data } = supabase.storage.from('production-photos').createSignedUrl
-      ? await supabase.storage.from('production-photos').createSignedUrl(path, 60 * 60 * 24 * 30)
-      : { data: { signedUrl: '' } };
+    const { data } = await supabase.storage
+      .from('production-photos')
+      .createSignedUrl(path, 60 * 60 * 24 * 30);
     return data?.signedUrl ?? '';
   },
 };
