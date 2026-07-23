@@ -138,6 +138,10 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                   ))
                 )}
               </TabsContent>
+
+              <TabsContent value="history" className="pt-4">
+                <PackagingAuditTimeline taskId={task.id} />
+              </TabsContent>
             </Tabs>
 
             {task && (
