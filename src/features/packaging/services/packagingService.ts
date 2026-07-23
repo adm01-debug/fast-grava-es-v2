@@ -110,9 +110,16 @@ export const packagingService = {
     return taskIds.length;
   },
 
-  async updateStatus(taskId: string, status: PackagingTaskStatus): Promise<void> {
+  async updateStatus(
+    taskId: string,
+    status: PackagingTaskStatus,
+    extra?: { delay_reason?: string; delay_category?: string; was_overdue?: boolean },
+  ): Promise<void> {
     const patch: Record<string, unknown> = { status };
     if (status === 'ready_to_ship') patch.completed_at = new Date().toISOString();
+    if (extra?.delay_reason) patch.delay_reason = extra.delay_reason;
+    if (extra?.delay_category) patch.delay_category = extra.delay_category;
+    if (typeof extra?.was_overdue === 'boolean') patch.was_overdue_on_complete = extra.was_overdue;
     const { error } = await db
       .from('packaging_tasks')
       .update(patch)
