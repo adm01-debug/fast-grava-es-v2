@@ -11,6 +11,7 @@ import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { PackagingChecklistPanel } from './PackagingChecklistPanel';
 import { PackagingThermalLabel } from './PackagingThermalLabel';
+import { PackagingAuditTimeline } from './PackagingAuditTimeline';
 import { format } from 'date-fns';
 
 interface Props {
@@ -56,11 +57,12 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
             )}
 
             <Tabs defaultValue="triage">
-              <TabsList className="grid grid-cols-4 w-full">
+              <TabsList className="grid grid-cols-5 w-full">
                 <TabsTrigger value="triage">Triagem</TabsTrigger>
                 <TabsTrigger value="packaging">Embalagem</TabsTrigger>
                 <TabsTrigger value="checklist">Conferência</TabsTrigger>
                 <TabsTrigger value="defects">Defeitos ({defects.length})</TabsTrigger>
+                <TabsTrigger value="history">Histórico</TabsTrigger>
               </TabsList>
 
               <TabsContent value="checklist" className="pt-4">
@@ -136,6 +138,10 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                     </div>
                   ))
                 )}
+              </TabsContent>
+
+              <TabsContent value="history" className="pt-4">
+                <PackagingAuditTimeline taskId={task.id} />
               </TabsContent>
             </Tabs>
 
