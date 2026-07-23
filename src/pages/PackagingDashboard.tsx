@@ -47,8 +47,19 @@ export default function PackagingDashboard() {
     let list = allTasks ?? [];
     if (mineOnly && user) list = list.filter(t => t.assigned_to === user.id);
     if (overdueOnly && settings) list = list.filter(t => computeSla(t, settings).level === 'overdue');
+    const term = debouncedSearch.trim().toLowerCase();
+    if (term) {
+      list = list.filter(t => {
+        const j = t.jobs;
+        return (
+          (j?.order_number ?? '').toLowerCase().includes(term) ||
+          (j?.client ?? '').toLowerCase().includes(term) ||
+          (j?.product ?? '').toLowerCase().includes(term)
+        );
+      });
+    }
     return list;
-  }, [allTasks, overdueOnly, mineOnly, settings, user]);
+  }, [allTasks, overdueOnly, mineOnly, settings, user, debouncedSearch]);
 
   const grouped = useMemo(() => {
     const list = filteredTasks;
