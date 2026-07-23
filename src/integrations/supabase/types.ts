@@ -1276,6 +1276,7 @@ export type Database = {
           notes: string | null
           operator_id: string | null
           order_number: string
+          parent_job_id: string | null
           priority: string
           produced_quantity: number | null
           product: string
@@ -1308,6 +1309,7 @@ export type Database = {
           notes?: string | null
           operator_id?: string | null
           order_number: string
+          parent_job_id?: string | null
           priority?: string
           produced_quantity?: number | null
           product: string
@@ -1340,6 +1342,7 @@ export type Database = {
           notes?: string | null
           operator_id?: string | null
           order_number?: string
+          parent_job_id?: string | null
           priority?: string
           produced_quantity?: number | null
           product?: string
@@ -1362,6 +1365,13 @@ export type Database = {
             columns: ["machine_id"]
             isOneToOne: false
             referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_parent_job_id_fkey"
+            columns: ["parent_job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
           {
