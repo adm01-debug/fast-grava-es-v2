@@ -1,8 +1,41 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useAuth, AppRole, useAuthenticatorAssuranceLevel } from '@/features/auth';
 import { logger } from '@/lib/logger';
 import { Loader2 } from 'lucide-react';
+
+const ROLE_LABEL: Record<AppRole, string> = {
+  admin: 'Administrador',
+  manager: 'Gestor',
+  coordinator: 'Coordenador',
+  operator: 'Operador',
+};
+
+function AccessDeniedRedirect({
+  role,
+  allowedRoles,
+  path,
+  to,
+}: {
+  role: AppRole;
+  allowedRoles: AppRole[];
+  path: string;
+  to: string;
+}) {
+  const notified = useRef(false);
+  useEffect(() => {
+    if (notified.current) return;
+    notified.current = true;
+    const needed = allowedRoles.map((r) => ROLE_LABEL[r] ?? r).join(', ');
+    toast.error('Acesso restrito', {
+      description: `Esta área requer perfil: ${needed}. Seu perfil atual (${ROLE_LABEL[role] ?? role}) não tem permissão. Fale com um administrador para solicitar acesso.`,
+      duration: 8000,
+    });
+    logger.warn('Access denied: role not allowed', { role, allowedRoles, path }, 'ProtectedRoute');
+  }, [role, allowedRoles, path]);
+  return <Navigate to={to} replace />;
+}
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -70,17 +103,15 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (allowedRoles && role && !allowedRoles.includes(role)) {
-    logger.warn('Access denied: role not allowed', { 
-      role, 
-      allowedRoles, 
-      path: location.pathname 
-    }, 'ProtectedRoute');
-
-    // Redirect to appropriate page based on role
-    if (role === 'operator') {
-      return <Navigate to="/operator" replace />;
-    }
-    return <Navigate to="/" replace />;
+    const to = role === 'operator' ? '/operator' : '/';
+    return (
+      <AccessDeniedRedirect
+        role={role}
+        allowedRoles={allowedRoles}
+        path={location.pathname}
+        to={to}
+      />
+    );
   }
 
 
