@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePackagingQuality } from '../hooks/usePackagingQuality';
+import { PackagingSlaHeatmap } from './PackagingSlaHeatmap';
 import {
   ResponsiveContainer,
   ComposedChart,
