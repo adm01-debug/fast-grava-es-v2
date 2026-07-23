@@ -54,14 +54,28 @@ export const packagingRegisterFormSchema = z.object({
 });
 export type PackagingRegisterForm = z.infer<typeof packagingRegisterFormSchema>;
 
-export const defectTriageFormSchema = z.object({
-  quantity: z.coerce.number().int().positive('Quantidade deve ser positiva'),
-  defect_type: packagingDefectTypeSchema,
-  severity: packagingDefectSeveritySchema,
-  decision: packagingDefectDecisionSchema,
-  photo_url: z.string().url().optional().or(z.literal('')),
-  notes: z.string().max(1000).optional(),
-});
+export const defectTriageFormSchema = z
+  .object({
+    quantity: z.coerce.number().int().positive('Quantidade deve ser positiva'),
+    defect_type: packagingDefectTypeSchema,
+    severity: packagingDefectSeveritySchema,
+    decision: packagingDefectDecisionSchema,
+    photo_url: z.string().url().optional().or(z.literal('')),
+    notes: z.string().max(1000).optional(),
+  })
+  .superRefine((data, ctx) => {
+    const photoRequired = data.severity === 'critical' || data.decision === 'rework';
+    if (photoRequired && (!data.photo_url || data.photo_url.trim() === '')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['photo_url'],
+        message:
+          data.severity === 'critical'
+            ? 'Foto obrigatória para defeitos críticos'
+            : 'Foto obrigatória quando a decisão é retrabalho',
+      });
+    }
+  });
 export type DefectTriageForm = z.infer<typeof defectTriageFormSchema>;
 
 export const DEFECT_TYPE_LABELS: Record<PackagingDefectType, string> = {
