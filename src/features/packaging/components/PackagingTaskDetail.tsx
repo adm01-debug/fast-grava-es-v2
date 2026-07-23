@@ -115,11 +115,11 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                   {task.status === 'packaging' && (
                     <Button
                       className="w-full"
-                      variant="secondary"
-                      onClick={() => changeStatus.mutate('ready_to_ship')}
+                      variant={isOverdue ? 'destructive' : 'secondary'}
+                      onClick={handleReadyToShip}
                       disabled={changeStatus.isPending}
                     >
-                      Marcar como pronto para envio
+                      {isOverdue ? 'Registrar motivo e liberar envio' : 'Marcar como pronto para envio'}
                     </Button>
                   )}
                 </div>
