@@ -176,6 +176,24 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                 }}
               />
             )}
+
+            {task && (
+              <DelayReasonDialog
+                open={showDelay}
+                onOpenChange={setShowDelay}
+                slaLabel={sla ? `Elapsed ${sla.elapsedHours}h / SLA ${sla.slaHours}h.` : ''}
+                submitting={changeStatus.isPending}
+                onConfirm={async (values) => {
+                  await changeStatus.mutateAsync({
+                    status: 'ready_to_ship',
+                    delay_reason: values.delay_reason,
+                    delay_category: values.delay_category,
+                    was_overdue: true,
+                  });
+                  setShowDelay(false);
+                }}
+              />
+            )}
           </div>
         )}
       </SheetContent>
