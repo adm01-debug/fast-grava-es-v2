@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePackagingQuality } from '../hooks/usePackagingQuality';
 import { PackagingSlaHeatmap } from './PackagingSlaHeatmap';
+import { PackagingDelayParetoCard } from './PackagingDelayParetoCard';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -86,6 +87,8 @@ export function PackagingQualityDashboard() {
       </Card>
 
       <PackagingSlaHeatmap />
+
+      <PackagingDelayParetoCard days={Number(days)} />
 
       <Card>
         <CardHeader>
