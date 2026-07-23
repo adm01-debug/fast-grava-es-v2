@@ -40,7 +40,13 @@ export function usePackagingTask(taskId: string | null) {
   });
 
   const changeStatus = useMutation({
-    mutationFn: (status: PackagingTaskStatus) => packagingService.updateStatus(taskId!, status),
+    mutationFn: (
+      input: PackagingTaskStatus | { status: PackagingTaskStatus; delay_reason?: string; delay_category?: string; was_overdue?: boolean },
+    ) => {
+      if (typeof input === 'string') return packagingService.updateStatus(taskId!, input);
+      const { status, ...extra } = input;
+      return packagingService.updateStatus(taskId!, status, extra);
+    },
     onSuccess: () => {
       toast.success('Status atualizado');
       invalidate();

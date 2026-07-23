@@ -6,12 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Printer } from 'lucide-react';
 import { usePackagingTask } from '../hooks/usePackagingTask';
+import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
 import { DefectTriageForm } from './DefectTriageForm';
 import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { PackagingChecklistPanel } from './PackagingChecklistPanel';
 import { PackagingThermalLabel } from './PackagingThermalLabel';
 import { PackagingAuditTimeline } from './PackagingAuditTimeline';
+import { DelayReasonDialog } from './DelayReasonDialog';
 import { format } from 'date-fns';
 
 interface Props {
@@ -21,7 +23,21 @@ interface Props {
 
 export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
   const { task, defects, isLoading, assign, changeStatus, registerPackaging, recordDefect } = usePackagingTask(taskId);
+  const { data: settings } = usePackagingSettings();
   const [showLabel, setShowLabel] = useState(false);
+  const [showDelay, setShowDelay] = useState(false);
+
+  const sla = task && settings ? computeSla(task, settings) : null;
+  const isOverdue = sla?.level === 'overdue';
+
+  const handleReadyToShip = () => {
+    if (isOverdue) {
+      setShowDelay(true);
+    } else {
+      changeStatus.mutate('ready_to_ship');
+    }
+  };
+
 
   return (
     <Sheet open={!!taskId} onOpenChange={onOpenChange}>
@@ -99,11 +115,11 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                   {task.status === 'packaging' && (
                     <Button
                       className="w-full"
-                      variant="secondary"
-                      onClick={() => changeStatus.mutate('ready_to_ship')}
+                      variant={isOverdue ? 'destructive' : 'secondary'}
+                      onClick={handleReadyToShip}
                       disabled={changeStatus.isPending}
                     >
-                      Marcar como pronto para envio
+                      {isOverdue ? 'Registrar motivo e liberar envio' : 'Marcar como pronto para envio'}
                     </Button>
                   )}
                 </div>
@@ -157,6 +173,24 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                   approvedQuantity: task.approved_quantity,
                   packagedAt: null,
                   destination: task.jobs?.client ?? null,
+                }}
+              />
+            )}
+
+            {task && (
+              <DelayReasonDialog
+                open={showDelay}
+                onOpenChange={setShowDelay}
+                slaLabel={sla ? `Elapsed ${sla.elapsedHours}h / SLA ${sla.slaHours}h.` : ''}
+                submitting={changeStatus.isPending}
+                onConfirm={async (values) => {
+                  await changeStatus.mutateAsync({
+                    status: 'ready_to_ship',
+                    delay_reason: values.delay_reason,
+                    delay_category: values.delay_category,
+                    was_overdue: true,
+                  });
+                  setShowDelay(false);
                 }}
               />
             )}
