@@ -94,6 +94,22 @@ export const packagingService = {
     if (error) throw error;
   },
 
+  /**
+   * Bulk-assign multiple packaging tasks to a single user.
+   * - Overrides current assignee (used for SLA rescue).
+   * - Leaves status untouched (does not force in_triage) so an already-in-progress task keeps its state.
+   * - Returns count of rows affected client-side.
+   */
+  async bulkAssign(taskIds: string[], userId: string): Promise<number> {
+    if (taskIds.length === 0) return 0;
+    const { error } = await db
+      .from('packaging_tasks')
+      .update({ assigned_to: userId })
+      .in('id', taskIds);
+    if (error) throw error;
+    return taskIds.length;
+  },
+
   async updateStatus(taskId: string, status: PackagingTaskStatus): Promise<void> {
     const patch: Record<string, unknown> = { status };
     if (status === 'ready_to_ship') patch.completed_at = new Date().toISOString();

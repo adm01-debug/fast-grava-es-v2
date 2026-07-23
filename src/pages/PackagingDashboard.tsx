@@ -8,24 +8,27 @@ import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTa
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
-import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon } from 'lucide-react';
+import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { BulkReassignDialog } from '@/features/packaging/components/BulkReassignDialog';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [overdueOnly, setOverdueOnly] = useState(false);
+  const [reassignOpen, setReassignOpen] = useState(false);
   const { data: allTasks, isLoading } = usePackagingQueue();
   const { data: settings } = usePackagingSettings();
 
-  const overdueCount = useMemo(() => {
-    if (!settings || !allTasks) return 0;
-    return allTasks.filter(t => computeSla(t, settings).level === 'overdue').length;
+  const overdueTasks = useMemo(() => {
+    if (!settings || !allTasks) return [];
+    return allTasks.filter(t => computeSla(t, settings).level === 'overdue');
   }, [allTasks, settings]);
+  const overdueCount = overdueTasks.length;
 
   const filteredTasks = useMemo(() => {
     const list = allTasks ?? [];
@@ -136,6 +139,16 @@ export default function PackagingDashboard() {
             <DownloadIcon className="h-4 w-4 mr-2" />
             Exportar SLA vencido
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-2"
+            disabled={overdueCount === 0}
+            onClick={() => setReassignOpen(true)}
+          >
+            <UsersIcon className="h-4 w-4 mr-2" />
+            Reatribuir SLA vencido
+          </Button>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
@@ -191,6 +204,13 @@ export default function PackagingDashboard() {
         <PackagingTaskDetail
           taskId={openTaskId}
           onOpenChange={(open) => { if (!open) setOpenTaskId(null); }}
+        />
+
+        <BulkReassignDialog
+          open={reassignOpen}
+          onOpenChange={setReassignOpen}
+          taskIds={overdueTasks.map(t => t.id)}
+          title="Reatribuir tarefas com SLA vencido"
         />
       </div>
     </>
