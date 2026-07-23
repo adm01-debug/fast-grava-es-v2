@@ -64,11 +64,6 @@ export default function PackagingDashboard() {
               <Monitor className="h-4 w-4 mr-2" />
               Modo Kiosk
             </Link>
-          <Button asChild variant="outline">
-            <Link to="/packaging/kiosk">
-              <Monitor className="h-4 w-4 mr-2" />
-              Modo Kiosk
-            </Link>
           </Button>
         </div>
 
