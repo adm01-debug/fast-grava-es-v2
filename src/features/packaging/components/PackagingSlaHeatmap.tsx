@@ -62,8 +62,8 @@ export function PackagingSlaHeatmap() {
                   </div>
                 ))}
                 {HEATMAP_WEEKDAYS.map((label, d) => (
-                  <>
-                    <div key={`lbl-${d}`} className="text-xs text-muted-foreground pr-2 py-1 flex items-center">
+                  <Fragment key={`row-${d}`}>
+                    <div className="text-xs text-muted-foreground pr-2 py-1 flex items-center">
                       {label}
                     </div>
                     {Array.from({ length: 24 }, (_, h) => {
@@ -81,7 +81,7 @@ export function PackagingSlaHeatmap() {
                         />
                       );
                     })}
-                  </>
+                  </Fragment>
                 ))}
               </div>
               <div className="flex items-center gap-2 mt-3 text-[11px] text-muted-foreground">
