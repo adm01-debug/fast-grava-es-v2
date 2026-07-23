@@ -60,6 +60,7 @@ export const navGroups: NavGroup[] = [
       { icon: Cpu, label: 'Máquinas', href: '/machines', allowedRoles: STAFF_ONLY },
       { icon: ArrowRightLeft, label: 'Comparativo Máquinas', href: '/machines/compare', allowedRoles: STAFF_ONLY },
       { icon: BatteryCharging, label: 'Energia', href: '/energy', allowedRoles: STAFF_ONLY },
+      { icon: PackageCheck, label: 'Manuseio e Embalagem', href: '/packaging', allowedRoles: ALL_ROLES },
       { icon: Package, label: 'Estoque', href: '/inventory', allowedRoles: STAFF_ONLY },
       { icon: Package, label: 'Rastreabilidade', href: '/traceability', allowedRoles: STAFF_ONLY },
     ]
