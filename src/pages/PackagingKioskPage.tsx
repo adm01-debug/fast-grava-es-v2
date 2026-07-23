@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { usePackagingQueue } from '@/features/packaging/hooks/usePackagingQueue';
 import { packagingService } from '@/features/packaging/services/packagingService';
 import { SlaBadge } from '@/features/packaging/components/SlaBadge';
-import { usePackagingSettings } from '@/features/packaging/hooks/usePackagingSettings';
+import { usePackagingSettings, computeSla } from '@/features/packaging/hooks/usePackagingSettings';
 import { TASK_STATUS_LABELS, type PackagingTaskStatus } from '@/features/packaging/types/packaging.schema';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -76,8 +76,14 @@ export default function PackagingKioskPage() {
         ) : (
           <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {sorted.map((task) => {
-              const job = task.job;
+              const job = task.jobs;
               const isBusy = busyId === task.id;
+              const sla = settings
+                ? computeSla(
+                    { status: task.status, created_at: task.created_at, started_at: task.started_at, completed_at: task.completed_at ?? null },
+                    settings,
+                  )
+                : null;
               const nextAction: { status: PackagingTaskStatus; label: string; Icon: typeof PlayCircle } =
                 task.status === 'pending'
                   ? { status: 'in_triage', label: 'Iniciar triagem', Icon: PlayCircle }
@@ -92,12 +98,7 @@ export default function PackagingKioskPage() {
                       <p className="text-2xl font-bold truncate">{job?.order_number ?? '—'}</p>
                       <p className="text-base text-muted-foreground truncate">{job?.client ?? '—'}</p>
                     </div>
-                    <SlaBadge
-                      createdAt={task.created_at}
-                      startedAt={task.started_at}
-                      status={task.status}
-                      settings={settings}
-                    />
+                    {sla && <SlaBadge sla={sla} />}
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
