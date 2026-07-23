@@ -8,12 +8,13 @@ import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTa
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
-import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon } from 'lucide-react';
+import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -81,6 +82,60 @@ export default function PackagingDashboard() {
               <Badge variant="destructive" className="ml-2">{overdueCount}</Badge>
             )}
           </Toggle>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-2"
+            disabled={!settings || !allTasks || overdueCount === 0}
+            onClick={() => {
+              if (!settings || !allTasks) return;
+              const rows = allTasks.filter(t => computeSla(t, settings).level === 'overdue');
+              if (rows.length === 0) {
+                toast.info('Nenhuma tarefa com SLA vencido para exportar.');
+                return;
+              }
+              const headers = [
+                'task_id','pedido','cliente','produto','status','recebidas',
+                'atribuido_a','criado_em','iniciado_em','horas_decorridas','sla_horas','atraso_horas'
+              ];
+              const escape = (v: unknown) => {
+                const s = v === null || v === undefined ? '' : String(v);
+                return /[",;\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+              };
+              const lines = [headers.join(';')];
+              for (const t of rows) {
+                const sla = computeSla(t, settings);
+                lines.push([
+                  t.id,
+                  t.jobs?.order_number ?? '',
+                  t.jobs?.client ?? '',
+                  t.jobs?.product ?? '',
+                  t.status,
+                  t.received_quantity ?? 0,
+                  t.assigned_to ?? '',
+                  t.created_at,
+                  t.started_at ?? '',
+                  sla.elapsedHours.toFixed(2),
+                  sla.slaHours.toFixed(2),
+                  Math.max(0, sla.elapsedHours - sla.slaHours).toFixed(2),
+                ].map(escape).join(';'));
+              }
+              const csv = '\uFEFF' + lines.join('\n');
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `packaging-sla-vencido-${new Date().toISOString().slice(0, 10)}.csv`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              toast.success(`Exportadas ${rows.length} tarefa(s) com SLA vencido.`);
+            }}
+          >
+            <DownloadIcon className="h-4 w-4 mr-2" />
+            Exportar SLA vencido
+          </Button>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
