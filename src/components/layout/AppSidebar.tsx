@@ -218,6 +218,7 @@ export function AppSidebar() {
                     isActive={isActive}
                     alertCount={alertCount}
                     notificationCount={notificationCount}
+                    packagingOverdueCount={packagingOverdueCount}
                     openGroups={openGroups}
                     toggleGroup={toggleGroup}
                   />
