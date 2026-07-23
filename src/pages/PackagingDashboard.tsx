@@ -201,6 +201,9 @@ export default function PackagingDashboard() {
             <PackagingQualityDashboard />
             <PackagingThroughputTable days={30} />
           </TabsContent>
+          <TabsContent value="settings" className="mt-4">
+            <PackagingSlaOverridesManager />
+          </TabsContent>
         </Tabs>
 
         <PackagingTaskDetail
