@@ -26,6 +26,8 @@ export default function PackagingDashboard() {
   const [overdueOnly, setOverdueOnly] = useState(false);
   const [mineOnly, setMineOnly] = useState(false);
   const [reassignOpen, setReassignOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 250);
   const { user } = useAuth();
   const { data: allTasks, isLoading } = usePackagingQueue();
   const { data: settings } = usePackagingSettings();
