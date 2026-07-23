@@ -50,10 +50,40 @@ export interface SlaInfo {
   label: string;
 }
 
+export interface SlaTaskInput {
+  status: string;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  jobs?: { technique_id?: string | null; client?: string | null } | null;
+}
+
 export function computeSla(
-  task: { status: string; created_at: string; started_at: string | null; completed_at: string | null },
+  task: SlaTaskInput,
   settings: PackagingSettings,
+  overrides?: import('./usePackagingSlaOverrides').PackagingSlaOverride[] | null,
 ): SlaInfo {
+  // Resolve effective settings if overrides are provided and task carries job context
+  if (overrides && overrides.length > 0 && task.jobs) {
+    // Lazy-import via dynamic require would break bundlers; inline a simple resolver
+    const clientLc = task.jobs.client?.trim().toLowerCase() ?? null;
+    const techId = task.jobs.technique_id ?? null;
+    const active = overrides.filter((o) => o.is_active);
+    const matched =
+      active.find((o) => o.technique_id === techId && o.client && o.client.toLowerCase() === clientLc) ??
+      active.find((o) => o.technique_id === null && o.client && o.client.toLowerCase() === clientLc) ??
+      active.find((o) => o.client === null && o.technique_id === techId) ??
+      null;
+    if (matched) {
+      settings = {
+        ...settings,
+        sla_triage_hours: matched.sla_triage_hours,
+        sla_packaging_hours: matched.sla_packaging_hours,
+        sla_total_hours: matched.sla_total_hours,
+        warning_threshold_pct: matched.warning_threshold_pct,
+      };
+    }
+  }
   if (task.status === 'ready_to_ship' || task.status === 'on_hold') {
     return { level: 'ok', elapsedHours: 0, slaHours: 0, progressPct: 0, label: '—' };
   }

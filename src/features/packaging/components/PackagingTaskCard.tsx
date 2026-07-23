@@ -7,6 +7,7 @@ import { TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
+import { usePackagingSlaOverrides } from '../hooks/usePackagingSlaOverrides';
 import { SlaBadge } from './SlaBadge';
 
 interface Props {
@@ -20,7 +21,8 @@ export function PackagingTaskCard({ task, onOpen }: Props) {
   const done = task.approved_quantity + task.rejected_quantity;
   const progress = total > 0 ? Math.round((done / total) * 100) : 0;
   const { data: settings } = usePackagingSettings();
-  const sla = settings ? computeSla(task, settings) : null;
+  const { data: overrides } = usePackagingSlaOverrides();
+  const sla = settings ? computeSla(task, settings, overrides) : null;
 
   const borderClass =
     sla?.level === 'overdue'

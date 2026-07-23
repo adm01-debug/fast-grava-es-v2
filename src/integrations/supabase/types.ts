@@ -2758,6 +2758,59 @@ export type Database = {
         }
         Relationships: []
       }
+      packaging_sla_overrides: {
+        Row: {
+          client: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          sla_packaging_hours: number
+          sla_total_hours: number
+          sla_triage_hours: number
+          technique_id: string | null
+          updated_at: string
+          warning_threshold_pct: number
+        }
+        Insert: {
+          client?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          sla_packaging_hours?: number
+          sla_total_hours?: number
+          sla_triage_hours?: number
+          technique_id?: string | null
+          updated_at?: string
+          warning_threshold_pct?: number
+        }
+        Update: {
+          client?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          sla_packaging_hours?: number
+          sla_total_hours?: number
+          sla_triage_hours?: number
+          technique_id?: string | null
+          updated_at?: string
+          warning_threshold_pct?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_sla_overrides_technique_id_fkey"
+            columns: ["technique_id"]
+            isOneToOne: false
+            referencedRelation: "techniques"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       packaging_task_checklist: {
         Row: {
           checked_at: string | null

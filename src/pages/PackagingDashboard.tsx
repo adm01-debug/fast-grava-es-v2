@@ -8,6 +8,7 @@ import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTa
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
+import { PackagingSlaOverridesManager } from '@/features/packaging/components/PackagingSlaOverridesManager';
 import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
@@ -155,12 +156,13 @@ export default function PackagingDashboard() {
         <PackagingSlaAlerts tasks={allTasks ?? []} onOpen={setOpenTaskId} />
 
         <Tabs defaultValue="pending">
-          <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-2 md:grid-cols-6 w-full">
             <TabsTrigger value="pending">Fila ({grouped.pending.length})</TabsTrigger>
             <TabsTrigger value="in-progress">Em andamento ({grouped.inProgress.length})</TabsTrigger>
             <TabsTrigger value="triage">Triagem ({grouped.triage.length})</TabsTrigger>
             <TabsTrigger value="done">Concluídos hoje ({grouped.completedToday.length})</TabsTrigger>
             <TabsTrigger value="quality">Qualidade</TabsTrigger>
+            <TabsTrigger value="settings">SLA</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="mt-4">
@@ -198,6 +200,9 @@ export default function PackagingDashboard() {
           <TabsContent value="quality" className="mt-4 space-y-4">
             <PackagingQualityDashboard />
             <PackagingThroughputTable days={30} />
+          </TabsContent>
+          <TabsContent value="settings" className="mt-4">
+            <PackagingSlaOverridesManager />
           </TabsContent>
         </Tabs>
 

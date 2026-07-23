@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Printer } from 'lucide-react';
 import { usePackagingTask } from '../hooks/usePackagingTask';
 import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
+import { usePackagingSlaOverrides } from '../hooks/usePackagingSlaOverrides';
 import { DefectTriageForm } from './DefectTriageForm';
 import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
@@ -24,10 +25,11 @@ interface Props {
 export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
   const { task, defects, isLoading, assign, changeStatus, registerPackaging, recordDefect } = usePackagingTask(taskId);
   const { data: settings } = usePackagingSettings();
+  const { data: overrides } = usePackagingSlaOverrides();
   const [showLabel, setShowLabel] = useState(false);
   const [showDelay, setShowDelay] = useState(false);
 
-  const sla = task && settings ? computeSla(task, settings) : null;
+  const sla = task && settings ? computeSla(task, settings, overrides) : null;
   const isOverdue = sla?.level === 'overdue';
 
   const handleReadyToShip = () => {
