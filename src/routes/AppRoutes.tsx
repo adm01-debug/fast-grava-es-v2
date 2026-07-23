@@ -23,6 +23,7 @@ const DailyCalendar = lazy(() => import("@/pages/DailyCalendar"));
 const WeeklyCalendar = lazy(() => import("@/pages/WeeklyCalendar"));
 const MonthlyCalendar = lazy(() => import("@/pages/MonthlyCalendar"));
 const PendingQueue = lazy(() => import("@/pages/PendingQueue"));
+const PackagingDashboard = lazy(() => import("@/pages/PackagingDashboard"));
 const AlertsDashboard = lazy(() => import("@/pages/AlertsDashboard"));
 const KanbanBoard = lazy(() => import("@/pages/KanbanBoard"));
 const KPIDashboard = lazy(() => import("@/pages/KPIDashboard"));
