@@ -107,3 +107,21 @@ export const TASK_STATUS_LABELS: Record<PackagingTaskStatus, string> = {
   ready_to_ship: 'Pronto para envio',
   on_hold: 'Em espera',
 };
+
+export const DELAY_CATEGORIES = [
+  { value: 'atraso_producao', label: 'Atraso vindo da produção' },
+  { value: 'fila_manuseio', label: 'Fila no setor de manuseio' },
+  { value: 'retrabalho', label: 'Retrabalho / defeito' },
+  { value: 'falta_material', label: 'Falta de material de embalagem' },
+  { value: 'falta_operador', label: 'Falta de operador' },
+  { value: 'sistema', label: 'Problema de sistema / integração' },
+  { value: 'outro', label: 'Outro motivo' },
+] as const;
+
+export type DelayCategory = (typeof DELAY_CATEGORIES)[number]['value'];
+
+export const delayReasonSchema = z.object({
+  delay_category: z.enum(DELAY_CATEGORIES.map(c => c.value) as [DelayCategory, ...DelayCategory[]]),
+  delay_reason: z.string().min(3, 'Descreva o motivo com pelo menos 3 caracteres').max(500),
+});
+export type DelayReasonForm = z.infer<typeof delayReasonSchema>;
