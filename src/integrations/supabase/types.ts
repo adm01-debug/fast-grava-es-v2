@@ -5528,6 +5528,13 @@ export type Database = {
         Returns: undefined
       }
       process_tpm_notifications_cron: { Args: never; Returns: undefined }
+      purge_old_logs: {
+        Args: never
+        Returns: {
+          deleted_count: number
+          table_name: string
+        }[]
+      }
       refresh_operator_rankings: {
         Args: { p_type: string }
         Returns: undefined
