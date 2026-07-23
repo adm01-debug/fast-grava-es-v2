@@ -84,6 +84,9 @@ export default function PackagingDashboard() {
               onOpen={setOpenTaskId}
             />
           </TabsContent>
+          <TabsContent value="quality" className="mt-4">
+            <PackagingQualityDashboard />
+          </TabsContent>
         </Tabs>
 
         <PackagingTaskDetail
