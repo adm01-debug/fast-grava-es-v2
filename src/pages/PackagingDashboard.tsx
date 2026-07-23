@@ -4,6 +4,7 @@ import { usePackagingQueue } from '@/features/packaging/hooks/usePackagingQueue'
 import { PackagingQueueList } from '@/features/packaging/components/PackagingQueueList';
 import { PackagingStatsCards } from '@/features/packaging/components/PackagingStatsCards';
 import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTaskDetail';
+import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { Package as PackageIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
@@ -43,11 +44,12 @@ export default function PackagingDashboard() {
         <PackagingStatsCards tasks={allTasks ?? []} />
 
         <Tabs defaultValue="pending">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
             <TabsTrigger value="pending">Fila ({grouped.pending.length})</TabsTrigger>
             <TabsTrigger value="in-progress">Em andamento ({grouped.inProgress.length})</TabsTrigger>
             <TabsTrigger value="triage">Triagem ({grouped.triage.length})</TabsTrigger>
             <TabsTrigger value="done">Concluídos hoje ({grouped.completedToday.length})</TabsTrigger>
+            <TabsTrigger value="quality">Qualidade</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="mt-4">
@@ -81,6 +83,9 @@ export default function PackagingDashboard() {
               emptyLabel="Nenhuma tarefa concluída hoje."
               onOpen={setOpenTaskId}
             />
+          </TabsContent>
+          <TabsContent value="quality" className="mt-4">
+            <PackagingQualityDashboard />
           </TabsContent>
         </Tabs>
 
