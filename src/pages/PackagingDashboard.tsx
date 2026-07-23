@@ -64,7 +64,28 @@ export default function PackagingDashboard() {
               <Monitor className="h-4 w-4 mr-2" />
               Modo Kiosk
             </Link>
+          <Button asChild variant="outline">
+            <Link to="/packaging/kiosk">
+              <Monitor className="h-4 w-4 mr-2" />
+              Modo Kiosk
+            </Link>
           </Button>
+        </div>
+
+        <div className="flex items-center justify-end">
+          <Toggle
+            pressed={overdueOnly}
+            onPressedChange={setOverdueOnly}
+            aria-label="Filtrar somente SLA vencido"
+            variant="outline"
+            size="sm"
+          >
+            <OverdueIcon className="h-4 w-4 mr-2" />
+            Somente SLA vencido
+            {overdueCount > 0 && (
+              <Badge variant="destructive" className="ml-2">{overdueCount}</Badge>
+            )}
+          </Toggle>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
