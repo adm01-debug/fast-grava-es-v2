@@ -3,7 +3,7 @@ import {
   BarChart3, Gauge, Coins, Wrench, Brain, Code2, Zap, Bot, QrCode, RefreshCw,
   BookOpen, Palette, Download, Bell, ArrowRightLeft, Package, Activity, FileDown,
   Trophy, BatteryCharging, FileText, Cog, TrendingUp, Cpu, UserCircle, ShieldCheck,
-  Factory
+  Factory, PackageCheck
 } from 'lucide-react';
 import { NavGroup } from './NavGroupComponent';
 import { NavItem } from './NavButton';
