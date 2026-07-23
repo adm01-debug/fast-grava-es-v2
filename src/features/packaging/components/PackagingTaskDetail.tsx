@@ -6,12 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Printer } from 'lucide-react';
 import { usePackagingTask } from '../hooks/usePackagingTask';
+import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
 import { DefectTriageForm } from './DefectTriageForm';
 import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { PackagingChecklistPanel } from './PackagingChecklistPanel';
 import { PackagingThermalLabel } from './PackagingThermalLabel';
 import { PackagingAuditTimeline } from './PackagingAuditTimeline';
+import { DelayReasonDialog } from './DelayReasonDialog';
 import { format } from 'date-fns';
 
 interface Props {
