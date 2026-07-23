@@ -161,6 +161,7 @@ function getStatusLabel(status: JobStatus): string {
     'delayed': 'Atrasado',
     'rework': 'Retrabalho',
     'buffer': 'Buffer',
+    'packaging': 'Embalagem',
   };
   return labels[status] || status;
 }
