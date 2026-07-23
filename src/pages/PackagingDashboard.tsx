@@ -156,12 +156,13 @@ export default function PackagingDashboard() {
         <PackagingSlaAlerts tasks={allTasks ?? []} onOpen={setOpenTaskId} />
 
         <Tabs defaultValue="pending">
-          <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-2 md:grid-cols-6 w-full">
             <TabsTrigger value="pending">Fila ({grouped.pending.length})</TabsTrigger>
             <TabsTrigger value="in-progress">Em andamento ({grouped.inProgress.length})</TabsTrigger>
             <TabsTrigger value="triage">Triagem ({grouped.triage.length})</TabsTrigger>
             <TabsTrigger value="done">Concluídos hoje ({grouped.completedToday.length})</TabsTrigger>
             <TabsTrigger value="quality">Qualidade</TabsTrigger>
+            <TabsTrigger value="settings">SLA</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="mt-4">
