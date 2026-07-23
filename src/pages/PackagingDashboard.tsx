@@ -209,6 +209,7 @@ export default function PackagingDashboard() {
             <UsersIcon className="h-4 w-4 mr-2" />
             Reatribuir SLA vencido
           </Button>
+          </div>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
