@@ -75,7 +75,7 @@ export function AppSidebar() {
   }, [role]);
   const isActive = useCallback((href: string) => {
     if (href === '/') return location.pathname === '/';
-    return location.pathname.startsWith(href);
+    return location.pathname === href || location.pathname.startsWith(href + '/');
   }, [location.pathname]);
 
   const activeGroup = useMemo(() => {
