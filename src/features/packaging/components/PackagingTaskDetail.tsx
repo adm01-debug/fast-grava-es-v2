@@ -23,7 +23,21 @@ interface Props {
 
 export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
   const { task, defects, isLoading, assign, changeStatus, registerPackaging, recordDefect } = usePackagingTask(taskId);
+  const { data: settings } = usePackagingSettings();
   const [showLabel, setShowLabel] = useState(false);
+  const [showDelay, setShowDelay] = useState(false);
+
+  const sla = task && settings ? computeSla(task, settings) : null;
+  const isOverdue = sla?.level === 'overdue';
+
+  const handleReadyToShip = () => {
+    if (isOverdue) {
+      setShowDelay(true);
+    } else {
+      changeStatus.mutate('ready_to_ship');
+    }
+  };
+
 
   return (
     <Sheet open={!!taskId} onOpenChange={onOpenChange}>
