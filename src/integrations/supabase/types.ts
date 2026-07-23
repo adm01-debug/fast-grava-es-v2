@@ -2815,6 +2815,8 @@ export type Database = {
           assigned_to: string | null
           completed_at: string | null
           created_at: string
+          delay_category: string | null
+          delay_reason: string | null
           id: string
           job_id: string
           notes: string | null
@@ -2826,12 +2828,15 @@ export type Database = {
           status: string
           total_weight_kg: number | null
           updated_at: string
+          was_overdue_on_complete: boolean
         }
         Insert: {
           approved_quantity?: number
           assigned_to?: string | null
           completed_at?: string | null
           created_at?: string
+          delay_category?: string | null
+          delay_reason?: string | null
           id?: string
           job_id: string
           notes?: string | null
@@ -2843,12 +2848,15 @@ export type Database = {
           status?: string
           total_weight_kg?: number | null
           updated_at?: string
+          was_overdue_on_complete?: boolean
         }
         Update: {
           approved_quantity?: number
           assigned_to?: string | null
           completed_at?: string | null
           created_at?: string
+          delay_category?: string | null
+          delay_reason?: string | null
           id?: string
           job_id?: string
           notes?: string | null
@@ -2860,6 +2868,7 @@ export type Database = {
           status?: string
           total_weight_kg?: number | null
           updated_at?: string
+          was_overdue_on_complete?: boolean
         }
         Relationships: [
           {
