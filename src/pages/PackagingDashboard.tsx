@@ -1,23 +1,39 @@
 import { useState, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePackagingQueue } from '@/features/packaging/hooks/usePackagingQueue';
+import { usePackagingSettings, computeSla } from '@/features/packaging/hooks/usePackagingSettings';
 import { PackagingQueueList } from '@/features/packaging/components/PackagingQueueList';
 import { PackagingStatsCards } from '@/features/packaging/components/PackagingStatsCards';
 import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTaskDetail';
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
-import { Package as PackageIcon, Monitor } from 'lucide-react';
+import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
+import { Toggle } from '@/components/ui/toggle';
+import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const { data: allTasks, isLoading } = usePackagingQueue();
+  const { data: settings } = usePackagingSettings();
+
+  const overdueCount = useMemo(() => {
+    if (!settings || !allTasks) return 0;
+    return allTasks.filter(t => computeSla(t, settings).level === 'overdue').length;
+  }, [allTasks, settings]);
+
+  const filteredTasks = useMemo(() => {
+    const list = allTasks ?? [];
+    if (!overdueOnly || !settings) return list;
+    return list.filter(t => computeSla(t, settings).level === 'overdue');
+  }, [allTasks, overdueOnly, settings]);
 
   const grouped = useMemo(() => {
-    const list = allTasks ?? [];
+    const list = filteredTasks;
     const today = new Date().toISOString().slice(0, 10);
     return {
       pending: list.filter(t => t.status === 'pending'),
@@ -25,7 +41,7 @@ export default function PackagingDashboard() {
       triage: list.filter(t => t.status === 'in_triage'),
       completedToday: list.filter(t => t.status === 'ready_to_ship' && (t.completed_at ?? '').startsWith(today)),
     };
-  }, [allTasks]);
+  }, [filteredTasks]);
 
   return (
     <>
