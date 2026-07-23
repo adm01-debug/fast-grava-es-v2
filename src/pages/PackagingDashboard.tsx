@@ -9,21 +9,25 @@ import { PackagingQualityDashboard } from '@/features/packaging/components/Packa
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
 import { PackagingSlaOverridesManager } from '@/features/packaging/components/PackagingSlaOverridesManager';
-import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon } from 'lucide-react';
+import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon, Search as SearchIcon, X as XIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { BulkReassignDialog } from '@/features/packaging/components/BulkReassignDialog';
 import { useAuth } from '@/features/auth';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [overdueOnly, setOverdueOnly] = useState(false);
   const [mineOnly, setMineOnly] = useState(false);
   const [reassignOpen, setReassignOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 250);
   const { user } = useAuth();
   const { data: allTasks, isLoading } = usePackagingQueue();
   const { data: settings } = usePackagingSettings();
@@ -43,8 +47,19 @@ export default function PackagingDashboard() {
     let list = allTasks ?? [];
     if (mineOnly && user) list = list.filter(t => t.assigned_to === user.id);
     if (overdueOnly && settings) list = list.filter(t => computeSla(t, settings).level === 'overdue');
+    const term = debouncedSearch.trim().toLowerCase();
+    if (term) {
+      list = list.filter(t => {
+        const j = t.jobs;
+        return (
+          (j?.order_number ?? '').toLowerCase().includes(term) ||
+          (j?.client ?? '').toLowerCase().includes(term) ||
+          (j?.product ?? '').toLowerCase().includes(term)
+        );
+      });
+    }
     return list;
-  }, [allTasks, overdueOnly, mineOnly, settings, user]);
+  }, [allTasks, overdueOnly, mineOnly, settings, user, debouncedSearch]);
 
   const grouped = useMemo(() => {
     const list = filteredTasks;
@@ -81,7 +96,28 @@ export default function PackagingDashboard() {
           </Button>
         </div>
 
-        <div className="flex items-center justify-end flex-wrap gap-2">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="relative w-full sm:w-72">
+            <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por pedido, cliente ou produto…"
+              aria-label="Buscar tarefas"
+              className="pl-8 pr-8 h-9"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                aria-label="Limpar busca"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <XIcon className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center flex-wrap gap-2">
           <Toggle
             pressed={mineOnly}
             onPressedChange={setMineOnly}
@@ -173,6 +209,7 @@ export default function PackagingDashboard() {
             <UsersIcon className="h-4 w-4 mr-2" />
             Reatribuir SLA vencido
           </Button>
+          </div>
         </div>
 
         <PackagingStatsCards tasks={allTasks ?? []} />
