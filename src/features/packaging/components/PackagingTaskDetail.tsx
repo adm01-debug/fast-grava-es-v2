@@ -11,6 +11,7 @@ import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { PackagingChecklistPanel } from './PackagingChecklistPanel';
 import { PackagingThermalLabel } from './PackagingThermalLabel';
+import { PackagingAuditTimeline } from './PackagingAuditTimeline';
 import { format } from 'date-fns';
 
 interface Props {
