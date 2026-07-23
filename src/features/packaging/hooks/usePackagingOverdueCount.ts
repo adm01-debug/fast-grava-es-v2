@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { usePackagingSettings, computeSla } from './usePackagingSettings';
+import { usePackagingSlaOverrides } from './usePackagingSlaOverrides';
 
 type LiteTask = {
   status: string;
   created_at: string;
   started_at: string | null;
   completed_at: string | null;
+  jobs?: { technique_id: string | null; client: string | null } | null;
 };
 
 type UntypedSupabase = {
