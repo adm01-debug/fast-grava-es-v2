@@ -22,7 +22,9 @@ import { useAuth } from '@/features/auth';
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [overdueOnly, setOverdueOnly] = useState(false);
+  const [mineOnly, setMineOnly] = useState(false);
   const [reassignOpen, setReassignOpen] = useState(false);
+  const { user } = useAuth();
   const { data: allTasks, isLoading } = usePackagingQueue();
   const { data: settings } = usePackagingSettings();
 
@@ -32,11 +34,17 @@ export default function PackagingDashboard() {
   }, [allTasks, settings]);
   const overdueCount = overdueTasks.length;
 
+  const mineCount = useMemo(() => {
+    if (!user || !allTasks) return 0;
+    return allTasks.filter(t => t.assigned_to === user.id).length;
+  }, [allTasks, user]);
+
   const filteredTasks = useMemo(() => {
-    const list = allTasks ?? [];
-    if (!overdueOnly || !settings) return list;
-    return list.filter(t => computeSla(t, settings).level === 'overdue');
-  }, [allTasks, overdueOnly, settings]);
+    let list = allTasks ?? [];
+    if (mineOnly && user) list = list.filter(t => t.assigned_to === user.id);
+    if (overdueOnly && settings) list = list.filter(t => computeSla(t, settings).level === 'overdue');
+    return list;
+  }, [allTasks, overdueOnly, mineOnly, settings, user]);
 
   const grouped = useMemo(() => {
     const list = filteredTasks;
