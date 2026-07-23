@@ -5,6 +5,7 @@ import { PackagingQueueList } from '@/features/packaging/components/PackagingQue
 import { PackagingStatsCards } from '@/features/packaging/components/PackagingStatsCards';
 import { PackagingTaskDetail } from '@/features/packaging/components/PackagingTaskDetail';
 import { PackagingQualityDashboard } from '@/features/packaging/components/PackagingQualityDashboard';
+import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
 import { Package as PackageIcon, Monitor } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
@@ -94,8 +95,9 @@ export default function PackagingDashboard() {
               onOpen={setOpenTaskId}
             />
           </TabsContent>
-          <TabsContent value="quality" className="mt-4">
+          <TabsContent value="quality" className="mt-4 space-y-4">
             <PackagingQualityDashboard />
+            <PackagingThroughputTable days={30} />
           </TabsContent>
         </Tabs>
 
