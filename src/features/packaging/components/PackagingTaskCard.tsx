@@ -6,6 +6,8 @@ import type { PackagingTaskWithJob } from '../services/packagingService';
 import { TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
+import { SlaBadge } from './SlaBadge';
 
 interface Props {
   task: PackagingTaskWithJob;
@@ -17,12 +19,21 @@ export function PackagingTaskCard({ task, onOpen }: Props) {
   const total = task.received_quantity || 0;
   const done = task.approved_quantity + task.rejected_quantity;
   const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+  const { data: settings } = usePackagingSettings();
+  const sla = settings ? computeSla(task, settings) : null;
+
+  const borderClass =
+    sla?.level === 'overdue'
+      ? 'border-destructive/60'
+      : sla?.level === 'warning'
+      ? 'border-amber-500/50'
+      : 'hover:border-primary/50';
 
   return (
-    <Card className="p-4 hover:border-primary/50 transition-colors">
+    <Card className={`p-4 transition-colors ${borderClass}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <PackageIcon className="w-4 h-4 text-muted-foreground shrink-0" />
             <span className="font-semibold truncate">
               {job?.order_number ?? 'Pedido —'}
@@ -30,6 +41,7 @@ export function PackagingTaskCard({ task, onOpen }: Props) {
             <Badge variant="outline" className="text-xs">
               {TASK_STATUS_LABELS[task.status]}
             </Badge>
+            {sla && sla.level !== 'ok' && <SlaBadge sla={sla} />}
           </div>
           <p className="text-sm text-muted-foreground truncate">
             {job?.client ?? '—'} · {job?.product ?? '—'}
@@ -60,3 +72,4 @@ export function PackagingTaskCard({ task, onOpen }: Props) {
     </Card>
   );
 }
+
