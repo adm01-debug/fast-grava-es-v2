@@ -102,6 +102,11 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                         {d.quantity} peça(s) · Decisão: {DECISION_LABELS[d.decision as keyof typeof DECISION_LABELS] ?? d.decision} · {format(new Date(d.created_at), 'dd/MM HH:mm')}
                       </p>
                       {d.notes && <p className="text-xs mt-1">{d.notes}</p>}
+                      {d.decision === 'rework' && (
+                        <p className="text-xs mt-1 text-amber-400">
+                          ↻ Pedido de retrabalho gerado automaticamente na fila de produção.
+                        </p>
+                      )}
                       {d.photo_url && (
                         <a href={d.photo_url} target="_blank" rel="noreferrer" className="text-xs text-primary underline mt-1 inline-block">
                           Ver foto
