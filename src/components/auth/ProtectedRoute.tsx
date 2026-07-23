@@ -103,17 +103,15 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (allowedRoles && role && !allowedRoles.includes(role)) {
-    logger.warn('Access denied: role not allowed', { 
-      role, 
-      allowedRoles, 
-      path: location.pathname 
-    }, 'ProtectedRoute');
-
-    // Redirect to appropriate page based on role
-    if (role === 'operator') {
-      return <Navigate to="/operator" replace />;
-    }
-    return <Navigate to="/" replace />;
+    const to = role === 'operator' ? '/operator' : '/';
+    return (
+      <AccessDeniedRedirect
+        role={role}
+        allowedRoles={allowedRoles}
+        path={location.pathname}
+        to={to}
+      />
+    );
   }
 
 
