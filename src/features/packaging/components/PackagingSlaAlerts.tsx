@@ -1,6 +1,7 @@
 import { AlertTriangle as AlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
+import { usePackagingSlaOverrides } from '../hooks/usePackagingSlaOverrides';
 import type { PackagingTaskWithJob } from '../services/packagingService';
 
 interface Props {
@@ -10,10 +11,11 @@ interface Props {
 
 export function PackagingSlaAlerts({ tasks, onOpen }: Props) {
   const { data: settings } = usePackagingSettings();
+  const { data: overrides } = usePackagingSlaOverrides();
   if (!settings) return null;
 
   const flagged = tasks
-    .map(t => ({ task: t, sla: computeSla(t, settings) }))
+    .map(t => ({ task: t, sla: computeSla(t, settings, overrides) }))
     .filter(x => x.sla.level === 'overdue' || x.sla.level === 'warning')
     .sort((a, b) => b.sla.progressPct - a.sla.progressPct);
 
