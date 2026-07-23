@@ -113,17 +113,34 @@ export function DefectTriageForm({ taskId, onSubmit, submitting }: Props) {
         </div>
       )}
       <div>
-        <Label htmlFor="defect-photo">Foto (opcional)</Label>
-        <Input
-          id="defect-photo"
-          type="file"
-          accept="image/*"
-          disabled={uploading}
-          onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
-        />
-        {form.watch('photo_url') && (
-          <p className="text-xs text-muted-foreground mt-1">Foto anexada.</p>
-        )}
+        {(() => {
+          const photoRequired = form.watch('severity') === 'critical' || form.watch('decision') === 'rework';
+          return (
+            <>
+              <Label htmlFor="defect-photo">
+                Foto {photoRequired ? <span className="text-destructive">*</span> : '(opcional)'}
+              </Label>
+              <Input
+                id="defect-photo"
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+              />
+              {photoRequired && !form.watch('photo_url') && (
+                <p className="text-xs text-amber-400 mt-1">
+                  Anexe uma foto para {form.watch('severity') === 'critical' ? 'defeitos críticos' : 'pedidos de retrabalho'}.
+                </p>
+              )}
+              {form.watch('photo_url') && (
+                <p className="text-xs text-muted-foreground mt-1">Foto anexada.</p>
+              )}
+              {form.formState.errors.photo_url && (
+                <p className="text-xs text-destructive mt-1">{form.formState.errors.photo_url.message}</p>
+              )}
+            </>
+          );
+        })()}
       </div>
       <div>
         <Label htmlFor="notes">Observações</Label>
