@@ -2636,6 +2636,39 @@ export type Database = {
         }
         Relationships: []
       }
+      packaging_checklist_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_required: boolean
+          item_order: number
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          item_order?: number
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          item_order?: number
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       packaging_defects: {
         Row: {
           created_at: string
@@ -2724,6 +2757,57 @@ export type Database = {
           weight_unit?: string
         }
         Relationships: []
+      }
+      packaging_task_checklist: {
+        Row: {
+          checked_at: string | null
+          checked_by: string | null
+          created_at: string
+          id: string
+          is_checked: boolean
+          item_id: string
+          notes: string | null
+          packaging_task_id: string
+          updated_at: string
+        }
+        Insert: {
+          checked_at?: string | null
+          checked_by?: string | null
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          item_id: string
+          notes?: string | null
+          packaging_task_id: string
+          updated_at?: string
+        }
+        Update: {
+          checked_at?: string | null
+          checked_by?: string | null
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          item_id?: string
+          notes?: string | null
+          packaging_task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_task_checklist_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "packaging_checklist_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "packaging_task_checklist_packaging_task_id_fkey"
+            columns: ["packaging_task_id"]
+            isOneToOne: false
+            referencedRelation: "packaging_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       packaging_tasks: {
         Row: {
