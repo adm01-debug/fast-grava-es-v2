@@ -9,15 +9,17 @@ import { PackagingQualityDashboard } from '@/features/packaging/components/Packa
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
 import { PackagingSlaOverridesManager } from '@/features/packaging/components/PackagingSlaOverridesManager';
-import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon } from 'lucide-react';
+import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon, Search as SearchIcon, X as XIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { BulkReassignDialog } from '@/features/packaging/components/BulkReassignDialog';
 import { useAuth } from '@/features/auth';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function PackagingDashboard() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
