@@ -138,6 +138,22 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                 )}
               </TabsContent>
             </Tabs>
+
+            {task && (
+              <PackagingThermalLabel
+                open={showLabel}
+                onOpenChange={setShowLabel}
+                data={{
+                  taskId: task.id,
+                  orderNumber: task.jobs?.order_number ?? '—',
+                  client: task.jobs?.client ?? '—',
+                  product: task.jobs?.product ?? '—',
+                  approvedQuantity: task.approved_quantity,
+                  packagedAt: task.packaged_at ?? null,
+                  destination: task.jobs?.client ?? null,
+                }}
+              />
+            )}
           </div>
         )}
       </SheetContent>
