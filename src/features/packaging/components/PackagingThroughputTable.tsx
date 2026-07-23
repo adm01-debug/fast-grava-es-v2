@@ -1,24 +1,66 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trophy as TrophyIcon, Users as UsersIcon } from 'lucide-react';
-import { usePackagingThroughput } from '../hooks/usePackagingThroughput';
+import { Trophy as TrophyIcon, Users as UsersIcon, Download as DownloadIcon } from 'lucide-react';
+import { usePackagingThroughput, type OperatorThroughput } from '../hooks/usePackagingThroughput';
 
 interface Props {
   days?: number;
 }
 
+function toCsv(rows: OperatorThroughput[]): string {
+  const header = ['Ranking', 'Operador', 'Tarefas', 'Aprovadas', 'Rejeitadas', 'Ciclo Médio (min)', '% Rejeição'];
+  const lines = rows.map((op, idx) => [
+    idx + 1,
+    `"${op.operatorName.replace(/"/g, '""')}"`,
+    op.tasksCompleted,
+    op.piecesApproved,
+    op.piecesRejected,
+    op.avgCycleMinutes !== null ? op.avgCycleMinutes.toFixed(1) : '',
+    (op.rejectionRate * 100).toFixed(2),
+  ].join(','));
+  return [header.join(','), ...lines].join('\n');
+}
+
+function downloadCsv(csv: string, filename: string) {
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export function PackagingThroughputTable({ days = 30 }: Props) {
   const { data, isLoading } = usePackagingThroughput(days);
 
+  const handleExport = () => {
+    if (!data || data.length === 0) return;
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadCsv(toCsv(data), `packaging-throughput-${days}d-${stamp}.csv`);
+  };
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="flex items-center gap-2 text-base">
           <UsersIcon className="h-4 w-4 text-primary" />
           Throughput por Operador · Últimos {days} dias
         </CardTitle>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleExport}
+          disabled={!data || data.length === 0}
+        >
+          <DownloadIcon className="h-4 w-4 mr-2" />
+          Exportar CSV
+        </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
