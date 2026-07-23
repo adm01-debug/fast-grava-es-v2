@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Package as PackageIcon, AlertTriangle as AlertIcon, CircleCheck as CheckIcon, Clock as ClockIcon, TimerOff as OverdueIcon } from 'lucide-react';
 import type { PackagingTaskWithJob } from '../services/packagingService';
 import { usePackagingSettings, computeSla } from '../hooks/usePackagingSettings';
+import { usePackagingSlaOverrides } from '../hooks/usePackagingSlaOverrides';
 
 interface Props {
   tasks: PackagingTaskWithJob[];
@@ -9,13 +10,14 @@ interface Props {
 
 export function PackagingStatsCards({ tasks }: Props) {
   const { data: settings } = usePackagingSettings();
+  const { data: overrides } = usePackagingSlaOverrides();
 
   const pending = tasks.filter(t => t.status === 'pending').length;
   const inProgress = tasks.filter(t => t.status === 'in_triage' || t.status === 'packaging').length;
   const ready = tasks.filter(t => t.status === 'ready_to_ship').length;
   const totalRejected = tasks.reduce((sum, t) => sum + (t.rejected_quantity ?? 0), 0);
   const overdue = settings
-    ? tasks.filter(t => computeSla(t, settings).level === 'overdue').length
+    ? tasks.filter(t => computeSla(t, settings, overrides).level === 'overdue').length
     : 0;
 
   const cards = [
