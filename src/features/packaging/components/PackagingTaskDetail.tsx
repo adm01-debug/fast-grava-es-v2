@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Printer } from 'lucide-react';
 import { usePackagingTask } from '../hooks/usePackagingTask';
 import { DefectTriageForm } from './DefectTriageForm';
 import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
 import { PackagingChecklistPanel } from './PackagingChecklistPanel';
+import { PackagingThermalLabel } from './PackagingThermalLabel';
 import { format } from 'date-fns';
 
 interface Props {
@@ -17,6 +20,7 @@ interface Props {
 
 export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
   const { task, defects, isLoading, assign, changeStatus, registerPackaging, recordDefect } = usePackagingTask(taskId);
+  const [showLabel, setShowLabel] = useState(false);
 
   return (
     <Sheet open={!!taskId} onOpenChange={onOpenChange}>
@@ -80,16 +84,27 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                   submitting={registerPackaging.isPending}
                   onSubmit={async (values) => { await registerPackaging.mutateAsync(values); }}
                 />
-                {task.status === 'packaging' && (
-                  <Button
-                    className="w-full mt-4"
-                    variant="secondary"
-                    onClick={() => changeStatus.mutate('ready_to_ship')}
-                    disabled={changeStatus.isPending}
-                  >
-                    Marcar como pronto para envio
-                  </Button>
-                )}
+                <div className="mt-4 flex flex-col gap-2">
+                  {task.approved_quantity > 0 && (
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => setShowLabel(true)}
+                    >
+                      <Printer className="h-4 w-4" /> Imprimir etiqueta térmica
+                    </Button>
+                  )}
+                  {task.status === 'packaging' && (
+                    <Button
+                      className="w-full"
+                      variant="secondary"
+                      onClick={() => changeStatus.mutate('ready_to_ship')}
+                      disabled={changeStatus.isPending}
+                    >
+                      Marcar como pronto para envio
+                    </Button>
+                  )}
+                </div>
               </TabsContent>
 
               <TabsContent value="defects" className="pt-4 space-y-3">
@@ -123,6 +138,22 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
                 )}
               </TabsContent>
             </Tabs>
+
+            {task && (
+              <PackagingThermalLabel
+                open={showLabel}
+                onOpenChange={setShowLabel}
+                data={{
+                  taskId: task.id,
+                  orderNumber: task.jobs?.order_number ?? '—',
+                  client: task.jobs?.client ?? '—',
+                  product: task.jobs?.product ?? '—',
+                  approvedQuantity: task.approved_quantity,
+                  packagedAt: null,
+                  destination: task.jobs?.client ?? null,
+                }}
+              />
+            )}
           </div>
         )}
       </SheetContent>
