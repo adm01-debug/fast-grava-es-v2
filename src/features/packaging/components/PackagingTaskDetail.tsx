@@ -7,6 +7,7 @@ import { usePackagingTask } from '../hooks/usePackagingTask';
 import { DefectTriageForm } from './DefectTriageForm';
 import { PackagingRegisterForm } from './PackagingRegisterForm';
 import { DEFECT_TYPE_LABELS, DECISION_LABELS, SEVERITY_LABELS, TASK_STATUS_LABELS } from '../types/packaging.schema';
+import { PackagingChecklistPanel } from './PackagingChecklistPanel';
 import { format } from 'date-fns';
 
 interface Props {
@@ -51,11 +52,16 @@ export function PackagingTaskDetail({ taskId, onOpenChange }: Props) {
             )}
 
             <Tabs defaultValue="triage">
-              <TabsList className="grid grid-cols-3 w-full">
+              <TabsList className="grid grid-cols-4 w-full">
                 <TabsTrigger value="triage">Triagem</TabsTrigger>
                 <TabsTrigger value="packaging">Embalagem</TabsTrigger>
+                <TabsTrigger value="checklist">Conferência</TabsTrigger>
                 <TabsTrigger value="defects">Defeitos ({defects.length})</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="checklist" className="pt-4">
+                <PackagingChecklistPanel taskId={task.id} />
+              </TabsContent>
 
               <TabsContent value="triage" className="pt-4">
                 <p className="text-sm text-muted-foreground mb-3">
