@@ -54,6 +54,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { escapeHtml } from '@/lib/sanitize';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -610,8 +611,22 @@ function BatchQRLabelModal({ open, onOpenChange, items }: { open: boolean, onOpe
     if (!content) return;
     const win = window.open('', '_blank');
     if (!win) return;
+    // Build the print markup from data with explicit escaping instead of
+    // serializing the live DOM (innerHTML) — a dangerouslySetInnerHTML
+    // descendant added to the preview later would otherwise flow into the
+    // popup unescaped. Only the library-generated QR <svg> is lifted from
+    // the DOM; all text comes from escapeHtml().
+    const qrSvgs = Array.from(content.querySelectorAll('svg'));
+    const labels = items.map((item, i) => {
+      const svg = qrSvgs[i]?.outerHTML ?? '';
+      const text = showText
+        ? `<p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#000;line-height:1.1;margin:8px 0 0">${escapeHtml(item.name)}</p>
+           <p style="font-size:8px;font-family:monospace;color:rgba(0,0,0,.6);margin:0">ID: ${escapeHtml(item.id.substring(0, 8).toUpperCase())}</p>`
+        : '';
+      return `<div class="label-item">${svg}${text}</div>`;
+    }).join('');
     win.document.write('<html><head><title>Imprimir Lote</title><style>body { font-family: sans-serif; padding: 20px; } .label-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; } .label-item { border: 1px solid #ccc; padding: 10px; text-align: center; page-break-inside: avoid; }</style></head><body><div class="label-grid">');
-    win.document.write(content.innerHTML);
+    win.document.write(labels);
     win.document.write('</div></body></html>');
     win.document.close();
     win.focus();

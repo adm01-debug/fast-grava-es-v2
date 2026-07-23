@@ -38,6 +38,7 @@ export default function AuthPage() {
   const loginSchema = z.object({ email: z.string().email(t('auth.invalidEmail')), password: z.string().min(6, t('auth.passwordMinLength', { min: 6 })) });
 
   const [isLoading, setIsLoading] = useState(false);
+  const loginSubmittingRef = useRef(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -88,10 +89,16 @@ export default function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); setErrors({});
+    // Synchronous re-entry guard: the button's disabled={isLoading} only takes
+    // effect after the next render, so rapid double-submits in the same tick
+    // could enqueue duplicate auth requests without this ref.
+    if (loginSubmittingRef.current) return;
     try { loginSchema.parse({ email: loginEmail, password: loginPassword }); } catch (err) { if (err instanceof z.ZodError) { const fe: Record<string, string> = {}; err.errors.forEach(e => { if (e.path[0]) fe[`login_${e.path[0]}`] = e.message; }); setErrors(fe); return; } }
     if (rememberMe) localStorage.setItem('rememberedEmail', loginEmail); else localStorage.removeItem('rememberedEmail');
+    loginSubmittingRef.current = true;
     setIsLoading(true);
     const { error } = await signIn(loginEmail, loginPassword);
+    loginSubmittingRef.current = false;
     if (error) {
       const le = error as Error & { isLockout?: boolean; remainingMinutes?: number; lockoutMinutes?: number };
       if (le.isLockout) {

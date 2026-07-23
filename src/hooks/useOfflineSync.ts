@@ -154,6 +154,21 @@ export function useOfflineSync() {
     }
   }, [isOnline, pendingActions.length]);
 
+  // The service worker's background 'sync' event fires when the browser
+  // regains connectivity (even if the 'online' event was missed, e.g. the tab
+  // was throttled). The SW can't replay the localStorage queue itself, so it
+  // posts SYNC_PENDING_ACTIONS and the app runs a sync pass here.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      if ((event.data as { type?: string } | null)?.type === 'SYNC_PENDING_ACTIONS') {
+        syncRef.current?.();
+      }
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
+  }, []);
+
   // Cache essential data for offline use
   const cacheData = useCallback(async () => {
     if (!isOnline) return;

@@ -3,6 +3,7 @@ import { useSchedulingData } from '../index';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { useAuth } from '@/features/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 /**
  * Automatically escalates job priority based on rules:
@@ -48,35 +49,46 @@ export function usePriorityEscalation() {
 
         // Overdue jobs → escalate to urgent
         if (isOverdue && job.priority !== 'urgent') {
-          escalatedRef.current.add(job.id);
+          // Per-job try/catch: one failed update must not abort the loop for
+          // the remaining jobs, and only a confirmed write marks the job as
+          // escalated — otherwise a transient failure would never be retried.
+          try {
+            const { error } = await supabase
+              .from('jobs')
+              .update({ priority: 'urgent' })
+              .eq('id', job.id);
+            if (error) throw error;
 
-          await supabase
-            .from('jobs')
-            .update({ priority: 'urgent' })
-            .eq('id', job.id);
-
-          add({
-            title: '🔺 Prioridade Escalada',
-            message: `${job.order_number} passou da data agendada — prioridade alterada para URGENTE`,
-            type: 'warning',
-            href: '/',
-          });
+            escalatedRef.current.add(job.id);
+            add({
+              title: '🔺 Prioridade Escalada',
+              message: `${job.order_number} passou da data agendada — prioridade alterada para URGENTE`,
+              type: 'warning',
+              href: '/',
+            });
+          } catch (err) {
+            logger.error('Failed to escalate overdue job to urgent', err, 'usePriorityEscalation');
+          }
         }
 
         // Today's queue jobs → escalate to high (if medium or low)
         if (isDueToday && job.status === 'queue' && ['medium', 'low'].includes(job.priority)) {
-          escalatedRef.current.add(job.id);
+          try {
+            const { error } = await supabase
+              .from('jobs')
+              .update({ priority: 'high' })
+              .eq('id', job.id);
+            if (error) throw error;
 
-          await supabase
-            .from('jobs')
-            .update({ priority: 'high' })
-            .eq('id', job.id);
-
-          add({
-            title: '📋 Prioridade Atualizada',
-            message: `${job.order_number} agendado para hoje — prioridade elevada para ALTA`,
-            type: 'info',
-          });
+            escalatedRef.current.add(job.id);
+            add({
+              title: '📋 Prioridade Atualizada',
+              message: `${job.order_number} agendado para hoje — prioridade elevada para ALTA`,
+              type: 'info',
+            });
+          } catch (err) {
+            logger.error('Failed to escalate due-today job to high', err, 'usePriorityEscalation');
+          }
         }
       }
 

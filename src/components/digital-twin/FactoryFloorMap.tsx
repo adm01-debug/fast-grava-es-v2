@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { clickableProps } from '@/lib/a11y';
+import { logger } from '@/lib/logger';
 
 interface MachineLive {
   load: number;
@@ -38,19 +39,26 @@ export function FactoryFloorMap() {
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     const fetchActiveJobs = async () => {
-      const { data } = await supabase
-        .from('jobs')
-        .select('*, machines(id, name)')
-        .eq('status', 'production');
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*, machines(id, name)')
+          .eq('status', 'production');
+        if (error) throw error;
+        if (!mounted) return;
 
-      const jobsByMachine: Record<string, JobRow> = {};
-      data?.forEach((job: JobRow) => {
-        if (job.machine_id) {
-          jobsByMachine[job.machine_id] = job;
-        }
-      });
-      setActiveJobs(jobsByMachine);
+        const jobsByMachine: Record<string, JobRow> = {};
+        data?.forEach((job: JobRow) => {
+          if (job.machine_id) {
+            jobsByMachine[job.machine_id] = job;
+          }
+        });
+        setActiveJobs(jobsByMachine);
+      } catch (err) {
+        logger.error('Failed to fetch active jobs for factory floor map', err, 'FactoryFloorMap');
+      }
     };
 
     fetchActiveJobs();
@@ -68,7 +76,10 @@ export function FactoryFloorMap() {
       });
       setLiveData(newData);
     }, 3000);
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [machines, activeJobs]);
 
   return (

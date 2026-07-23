@@ -10,6 +10,10 @@ import { sanitizeCsvCell } from '@/lib/csvSafety';
 type TableName = keyof Database['public']['Tables'];
 export type ExportFormat = 'csv' | 'json';
 
+// Hard cap on exported rows — keeps a single export from ballooning browser
+// memory. When exactly this many rows come back, the result was truncated.
+const MAX_EXPORT_ROWS = 10000;
+
 export interface ExportOptions {
   columns?: string[];
   filters?: Record<string, string | string[]>;
@@ -109,13 +113,18 @@ export function useDataExport(tableName: TableName) {
         });
       }
 
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' }).limit(10000);
+      query = query.order(sortBy, { ascending: sortOrder === 'asc' }).limit(MAX_EXPORT_ROWS);
 
       const { data, error } = await query;
       if (error) throw error;
       if (!data || data.length === 0) {
         toast.info('Nenhum dado para exportar');
         return;
+      }
+      if (data.length === MAX_EXPORT_ROWS) {
+        toast.warning(`Exportação limitada a ${MAX_EXPORT_ROWS.toLocaleString('pt-BR')} registros`, {
+          description: 'Use filtros para reduzir o volume e exportar o restante.',
+        });
       }
 
       const defaultFileName = `${tableName}_export_${new Date().toISOString().split('T')[0]}`;

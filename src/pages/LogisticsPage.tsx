@@ -284,7 +284,7 @@ export default function LogisticsPage() {
                               variant="ghost"
                               size="icon"
                               className="group-hover:text-primary"
-                              onClick={() => window.open(`/track?q=${shipment.job?.order_number}`, '_blank')}
+                              onClick={() => window.open(`/track?q=${encodeURIComponent(shipment.job?.order_number ?? '')}`, '_blank')}
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>

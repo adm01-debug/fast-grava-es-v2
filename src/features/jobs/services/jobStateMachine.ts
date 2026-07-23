@@ -14,7 +14,7 @@ const TRANSITIONS: Record<JobStatus, JobStatus[]> = {
   delayed: ['production', 'cancelled'],
   rework: ['production', 'finished', 'cancelled'],
   buffer: ['ready', 'scheduled', 'cancelled'],
-  packaging: ['finished', 'rework', 'on_hold' as JobStatus, 'cancelled'].filter(s => s !== 'on_hold') as JobStatus[],
+  packaging: ['finished', 'rework', 'cancelled'],
   finished: ['packaging'], // finished can be sent (auto) to packaging
   cancelled: ['queue'],
 };
