@@ -2692,7 +2692,11 @@ export type Database = {
           defect_reasons: string[]
           id: string
           package_types: string[]
+          sla_packaging_hours: number
+          sla_total_hours: number
+          sla_triage_hours: number
           updated_at: string
+          warning_threshold_pct: number
           weight_unit: string
         }
         Insert: {
@@ -2700,7 +2704,11 @@ export type Database = {
           defect_reasons?: string[]
           id?: string
           package_types?: string[]
+          sla_packaging_hours?: number
+          sla_total_hours?: number
+          sla_triage_hours?: number
           updated_at?: string
+          warning_threshold_pct?: number
           weight_unit?: string
         }
         Update: {
@@ -2708,7 +2716,11 @@ export type Database = {
           defect_reasons?: string[]
           id?: string
           package_types?: string[]
+          sla_packaging_hours?: number
+          sla_total_hours?: number
+          sla_triage_hours?: number
           updated_at?: string
+          warning_threshold_pct?: number
           weight_unit?: string
         }
         Relationships: []
@@ -5675,6 +5687,23 @@ export type Database = {
       increment_sheet_view_count: {
         Args: { sheet_id: string }
         Returns: undefined
+      }
+      packaging_task_sla_status: {
+        Args: {
+          _created_at: string
+          _sla_packaging: number
+          _sla_total: number
+          _sla_triage: number
+          _started_at: string
+          _status: string
+          _warn_pct: number
+        }
+        Returns: {
+          elapsed_hours: number
+          level: string
+          progress_pct: number
+          sla_hours: number
+        }[]
       }
       process_tpm_notifications_cron: { Args: never; Returns: undefined }
       purge_old_logs: {
