@@ -81,7 +81,21 @@ export default function PackagingDashboard() {
           </Button>
         </div>
 
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end flex-wrap gap-2">
+          <Toggle
+            pressed={mineOnly}
+            onPressedChange={setMineOnly}
+            aria-label="Filtrar somente minhas tarefas"
+            variant="outline"
+            size="sm"
+            disabled={!user}
+          >
+            <UserIcon className="h-4 w-4 mr-2" />
+            Minhas tarefas
+            {mineCount > 0 && (
+              <Badge variant="secondary" className="ml-2">{mineCount}</Badge>
+            )}
+          </Toggle>
           <Toggle
             pressed={overdueOnly}
             onPressedChange={setOverdueOnly}
