@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Trophy as TrophyIcon, Users as UsersIcon, Download as DownloadIcon } from 'lucide-react';
 import { usePackagingThroughput, type OperatorThroughput } from '../hooks/usePackagingThroughput';
@@ -9,6 +11,12 @@ import { usePackagingThroughput, type OperatorThroughput } from '../hooks/usePac
 interface Props {
   days?: number;
 }
+
+const PERIODS = [
+  { value: '7', label: 'Últimos 7 dias' },
+  { value: '30', label: 'Últimos 30 dias' },
+  { value: '90', label: 'Últimos 90 dias' },
+] as const;
 
 function toCsv(rows: OperatorThroughput[]): string {
   const header = ['Ranking', 'Operador', 'Tarefas', 'Aprovadas', 'Rejeitadas', 'Ciclo Médio (min)', '% Rejeição'];
@@ -36,31 +44,45 @@ function downloadCsv(csv: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function PackagingThroughputTable({ days = 30 }: Props) {
-  const { data, isLoading } = usePackagingThroughput(days);
+export function PackagingThroughputTable({ days: initialDays = 30 }: Props) {
+  const [days, setDays] = useState(String(initialDays));
+  const daysNum = Number(days);
+  const { data, isLoading } = usePackagingThroughput(daysNum);
 
   const handleExport = () => {
     if (!data || data.length === 0) return;
     const stamp = new Date().toISOString().slice(0, 10);
-    downloadCsv(toCsv(data), `packaging-throughput-${days}d-${stamp}.csv`);
+    downloadCsv(toCsv(data), `packaging-throughput-${daysNum}d-${stamp}.csv`);
   };
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 gap-2 flex-wrap">
         <CardTitle className="flex items-center gap-2 text-base">
           <UsersIcon className="h-4 w-4 text-primary" />
-          Throughput por Operador · Últimos {days} dias
+          Throughput por Operador
         </CardTitle>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleExport}
-          disabled={!data || data.length === 0}
-        >
-          <DownloadIcon className="h-4 w-4 mr-2" />
-          Exportar CSV
-        </Button>
+        <div className="flex items-center gap-2">
+          <Select value={days} onValueChange={setDays}>
+            <SelectTrigger className="w-[180px] h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PERIODS.map((p) => (
+                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExport}
+            disabled={!data || data.length === 0}
+          >
+            <DownloadIcon className="h-4 w-4 mr-2" />
+            Exportar CSV
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
