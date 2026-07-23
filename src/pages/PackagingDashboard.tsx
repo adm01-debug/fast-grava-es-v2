@@ -96,7 +96,28 @@ export default function PackagingDashboard() {
           </Button>
         </div>
 
-        <div className="flex items-center justify-end flex-wrap gap-2">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="relative w-full sm:w-72">
+            <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por pedido, cliente ou produto…"
+              aria-label="Buscar tarefas"
+              className="pl-8 pr-8 h-9"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                aria-label="Limpar busca"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <XIcon className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center flex-wrap gap-2">
           <Toggle
             pressed={mineOnly}
             onPressedChange={setMineOnly}
