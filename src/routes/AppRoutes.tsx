@@ -184,6 +184,7 @@ export function AnimatedRoutes() {
         <Route path="/alerts" element={<ProtectedPage direction={direction} fallback={<DashboardPageSkeleton />}><AlertsDashboard /></ProtectedPage>} />
         <Route path="/kanban" element={<ProtectedPage direction={direction} fallback={<KanbanPageSkeleton />} allowedRoles={['coordinator', 'manager', 'operator']}><KanbanBoard /></ProtectedPage>} />
         <Route path="/new-job" element={<ProtectedPage direction={direction} fallback={<DashboardPageSkeleton />} allowedRoles={['coordinator', 'manager']}><NewJobPage /></ProtectedPage>} />
+        <Route path="/packaging" element={<ProtectedPage direction={direction} fallback={<ListPageSkeleton />} allowedRoles={['coordinator', 'manager', 'operator']}><PackagingDashboard /></ProtectedPage>} />
 
         {/* KPIs & Analytics */}
         <Route path="/kpis" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><KPIDashboard /></ProtectedPage>} />
