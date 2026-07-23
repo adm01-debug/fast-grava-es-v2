@@ -10,11 +10,22 @@ import type {
 // Supabase generated types don't include the new packaging tables yet.
 // Access them through a locally-typed handle to preserve type-safety at the call sites
 // without polluting the codebase with `any` casts.
+type PgResult = { data: unknown; error: Error | null };
+type PgBuilder = {
+  select: (cols?: string) => PgBuilder;
+  order: (col: string, opts?: { ascending?: boolean }) => PgBuilder;
+  eq: (col: string, val: unknown) => PgBuilder;
+  in: (col: string, vals: unknown[]) => PgBuilder;
+  or: (filter: string) => PgBuilder;
+  maybeSingle: () => Promise<PgResult>;
+  single: () => Promise<PgResult>;
+  then: PromiseLike<PgResult>['then'];
+};
 type UntypedSupabase = {
   from: (table: string) => {
-    select: (cols?: string) => any;
-    insert: (values: Record<string, unknown> | Record<string, unknown>[]) => any;
-    update: (values: Record<string, unknown>) => any;
+    select: (cols?: string) => PgBuilder;
+    insert: (values: Record<string, unknown> | Record<string, unknown>[]) => PgBuilder;
+    update: (values: Record<string, unknown>) => PgBuilder;
   };
 };
 const db = supabase as unknown as UntypedSupabase;
