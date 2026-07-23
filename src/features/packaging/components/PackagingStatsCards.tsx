@@ -1,0 +1,37 @@
+import { Card } from '@/components/ui/card';
+import { Package as PackageIcon, AlertTriangle as AlertIcon, CircleCheck as CheckIcon, Clock as ClockIcon } from 'lucide-react';
+import type { PackagingTaskWithJob } from '../services/packagingService';
+
+interface Props {
+  tasks: PackagingTaskWithJob[];
+}
+
+export function PackagingStatsCards({ tasks }: Props) {
+  const pending = tasks.filter(t => t.status === 'pending').length;
+  const inProgress = tasks.filter(t => t.status === 'in_triage' || t.status === 'packaging').length;
+  const ready = tasks.filter(t => t.status === 'ready_to_ship').length;
+  const totalRejected = tasks.reduce((sum, t) => sum + (t.rejected_quantity ?? 0), 0);
+
+  const cards = [
+    { icon: ClockIcon, label: 'Pendentes', value: pending, tone: 'text-status-queue' },
+    { icon: PackageIcon, label: 'Em andamento', value: inProgress, tone: 'text-status-production' },
+    { icon: CheckIcon, label: 'Prontos p/ envio', value: ready, tone: 'text-status-finished' },
+    { icon: AlertIcon, label: 'Peças rejeitadas', value: totalRejected, tone: 'text-destructive' },
+  ] as const;
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {cards.map(({ icon: Icon, label, value, tone }) => (
+        <Card key={label} className="p-4">
+          <div className="flex items-center gap-3">
+            <Icon className={`w-5 h-5 ${tone}`} />
+            <div>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-2xl font-semibold">{value}</p>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
