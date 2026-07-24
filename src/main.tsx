@@ -1,5 +1,5 @@
 // Env validation must precede every other import — see envGuard.ts.
-import "./lib/envGuard";
+import "@/lib/envGuard";
 import { createRoot } from "react-dom/client";
 import { onCLS, onFID, onLCP, onTTFB, onINP } from "web-vitals";
 import * as Sentry from "@sentry/react";

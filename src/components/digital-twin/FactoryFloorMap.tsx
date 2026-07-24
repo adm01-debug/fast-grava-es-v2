@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
@@ -38,6 +38,15 @@ export function FactoryFloorMap() {
   const [heatmapType, setHeatmapType] = useState<'none' | 'load' | 'temp'>('none');
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
+  // The simulation interval reads the latest jobs through a ref so the fetch
+  // effect doesn't need activeJobs in its deps — with it there, every
+  // setActiveJobs (new object reference) re-ran the effect, firing another
+  // query and resetting the interval in a continuous loop.
+  const activeJobsRef = useRef(activeJobs);
+  useEffect(() => {
+    activeJobsRef.current = activeJobs;
+  }, [activeJobs]);
+
   useEffect(() => {
     let mounted = true;
     const fetchActiveJobs = async () => {
@@ -62,11 +71,16 @@ export function FactoryFloorMap() {
     };
 
     fetchActiveJobs();
+    return () => {
+      mounted = false;
+    };
+  }, [machines]);
 
+  useEffect(() => {
     const interval = setInterval(() => {
       const newData: Record<string, MachineLive> = {};
       machines.forEach((m: MachineRow) => {
-        const hasJob = !!activeJobs[m.id];
+        const hasJob = !!activeJobsRef.current[m.id];
         newData[m.id] = {
           load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0,
           temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30,
@@ -76,11 +90,8 @@ export function FactoryFloorMap() {
       });
       setLiveData(newData);
     }, 3000);
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, [machines, activeJobs]);
+    return () => clearInterval(interval);
+  }, [machines]);
 
   return (
     <div className="space-y-4">

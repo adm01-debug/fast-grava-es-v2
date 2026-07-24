@@ -319,9 +319,34 @@ export function useOfflineSync() {
     }
   };
 
-  // Sync all pending actions
+  // Sync all pending actions. The tab-local ref guard stops concurrent
+  // passes within this tab; the Web Locks request below extends that
+  // exclusion across tabs — the localStorage queue is shared, so two open
+  // windows woken by the same 'online'/SW-sync signal would otherwise both
+  // replay it. Replays are individually idempotent (updated_at guards,
+  // upsert-by-id), so the lock is belt-and-suspenders; when Web Locks is
+  // unavailable the behavior degrades to today's per-tab guard.
   const syncPendingActions = useCallback(async () => {
     if (!isOnline || pendingActions.length === 0 || syncInFlightRef.current) return;
+
+    if (typeof navigator !== 'undefined' && 'locks' in navigator) {
+      const ran = await navigator.locks.request(
+        'fastgravacoes-offline-sync',
+        { ifAvailable: true },
+        async (lock) => {
+          if (!lock) return false; // another tab is already syncing
+          await runSyncPass();
+          return true;
+        },
+      );
+      if (!ran) logger.info('Sync pass skipped — another tab holds the sync lock', undefined, 'useOfflineSync');
+      return;
+    }
+
+    await runSyncPass();
+
+    async function runSyncPass() {
+    if (syncInFlightRef.current) return;
     syncInFlightRef.current = true;
     setIsSyncing(true);
 
@@ -384,6 +409,7 @@ export function useOfflineSync() {
     } finally {
       syncInFlightRef.current = false;
       setIsSyncing(false);
+    }
     }
   }, [isOnline, pendingActions, cacheData]);
 

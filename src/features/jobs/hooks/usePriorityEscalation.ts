@@ -17,6 +17,10 @@ export function usePriorityEscalation() {
   const { jobs } = useSchedulingData();
   const { add } = useNotificationsContext();
   const escalatedRef = useRef<Set<string>>(new Set());
+  // Jobs with an escalation write currently in flight. Reserved BEFORE the
+  // await so two overlapping checkEscalation passes (interval tick + effect
+  // re-run) can't both update the same job and fire duplicate notifications.
+  const inFlightRef = useRef<Set<string>>(new Set());
   const seededRef = useRef(false);
 
   // Seed the escalated-set from the current jobs state on first data load so
@@ -42,7 +46,7 @@ export function usePriorityEscalation() {
 
       for (const job of jobs) {
         if (['finished', 'cancelled', 'production'].includes(job.status)) continue;
-        if (escalatedRef.current.has(job.id)) continue;
+        if (escalatedRef.current.has(job.id) || inFlightRef.current.has(job.id)) continue;
 
         const isOverdue = job.scheduled_date && job.scheduled_date < today;
         const isDueToday = job.scheduled_date === today;
@@ -52,6 +56,7 @@ export function usePriorityEscalation() {
           // Per-job try/catch: one failed update must not abort the loop for
           // the remaining jobs, and only a confirmed write marks the job as
           // escalated — otherwise a transient failure would never be retried.
+          inFlightRef.current.add(job.id);
           try {
             const { error } = await supabase
               .from('jobs')
@@ -68,11 +73,14 @@ export function usePriorityEscalation() {
             });
           } catch (err) {
             logger.error('Failed to escalate overdue job to urgent', err, 'usePriorityEscalation');
+          } finally {
+            inFlightRef.current.delete(job.id);
           }
         }
 
         // Today's queue jobs → escalate to high (if medium or low)
         if (isDueToday && job.status === 'queue' && ['medium', 'low'].includes(job.priority)) {
+          inFlightRef.current.add(job.id);
           try {
             const { error } = await supabase
               .from('jobs')
@@ -88,6 +96,8 @@ export function usePriorityEscalation() {
             });
           } catch (err) {
             logger.error('Failed to escalate due-today job to high', err, 'usePriorityEscalation');
+          } finally {
+            inFlightRef.current.delete(job.id);
           }
         }
       }
