@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { E2E_EMAIL, E2E_PASSWORD } from './helpers/credentials';
 
 test.describe('Auth Flow - Login/Logout', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,8 +8,8 @@ test.describe('Auth Flow - Login/Logout', () => {
 
   test('should login successfully with valid credentials', async ({ page }) => {
     // Fill login
-    await page.fill('#login-email', 'admin@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-email', E2E_EMAIL);
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
 
     // Wait for navigation to dashboard
@@ -31,8 +32,8 @@ test.describe('Auth Flow - Login/Logout', () => {
 
   test('should logout successfully', async ({ page }) => {
     // Login first
-    await page.fill('#login-email', 'admin@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-email', E2E_EMAIL);
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL('/');
 
@@ -56,7 +57,7 @@ test.describe('Protected Routes', () => {
     // Login as operator
     await page.goto('/auth');
     await page.fill('#login-email', 'operador@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
     
     // Wait for dashboard or redirection
@@ -76,8 +77,8 @@ test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
     // Login as admin for full access
     await page.goto('/auth');
-    await page.fill('#login-email', 'admin@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-email', E2E_EMAIL);
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL('/');
   });

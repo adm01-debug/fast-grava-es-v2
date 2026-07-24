@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { E2E_EMAIL, E2E_PASSWORD } from './helpers/credentials';
 
 /**
  * E2E — Manuseio e Embalagem (/packaging)
@@ -10,10 +11,10 @@ import { test, expect, Page } from '@playwright/test';
  *  4. Destaque visual do item de sidebar quando em /packaging e sub-rotas
  */
 
-const PASSWORD = 'Fast@2026!';
+const PASSWORD = E2E_PASSWORD;
 
 const ACCOUNTS = {
-  admin: 'admin@fastgravacoes.com.br',
+  admin: E2E_EMAIL,
   coordinator: 'coordenador@fastgravacoes.com.br',
   manager: 'gerente@fastgravacoes.com.br',
   operator: 'operador@fastgravacoes.com.br',

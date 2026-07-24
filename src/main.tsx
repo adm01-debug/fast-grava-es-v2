@@ -1,3 +1,5 @@
+// Env validation must precede every other import — see envGuard.ts.
+import "./lib/envGuard";
 import { createRoot } from "react-dom/client";
 import { onCLS, onFID, onLCP, onTTFB, onINP } from "web-vitals";
 import * as Sentry from "@sentry/react";
@@ -7,18 +9,6 @@ import { logger } from "./lib/logger";
 
 // Initialize i18n
 import "./i18n";
-
-// Fail fast on missing required env vars. Without this, createClient() in
-// integrations/supabase/client.ts receives undefined and the app dies later
-// with a cryptic "Failed to construct 'URL'" on the first network call —
-// with no hint that a misnamed CI secret or absent .env.local is the cause.
-const REQUIRED_ENV_VARS = ["VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY"] as const;
-const missingEnvVars = REQUIRED_ENV_VARS.filter((key) => !import.meta.env[key]);
-if (missingEnvVars.length > 0) {
-  const message = `Configuração ausente: ${missingEnvVars.join(", ")}. Verifique o arquivo .env (ou os secrets de CI/deploy).`;
-  document.body.innerHTML = `<div style="font-family:system-ui;padding:2rem;color:#dc2626"><h1 style="font-size:1.25rem">Erro de configuração</h1><pre style="white-space:pre-wrap">${message}</pre></div>`;
-  throw new Error(message);
-}
 
 // Import global providers
 import { AccessibilityProvider } from "./components/accessibility/AccessibilityProvider";
