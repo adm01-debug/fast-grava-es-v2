@@ -34,8 +34,16 @@ describe('jobStateMachine', () => {
       expect(canTransition('cancelled', 'production')).toBe(false);
     });
 
-    it('finished é terminal absoluto', () => {
-      expect(getValidTransitions('finished')).toEqual([]);
+    it('finished só permite avançar para packaging (fluxo de embalagem)', () => {
+      expect(getValidTransitions('finished')).toEqual(['packaging']);
+      expect(canTransition('finished', 'packaging')).toBe(true);
+    });
+
+    it('packaging pode finalizar, retrabalhar ou cancelar', () => {
+      expect(canTransition('packaging', 'finished')).toBe(true);
+      expect(canTransition('packaging', 'rework')).toBe(true);
+      expect(canTransition('packaging', 'cancelled')).toBe(true);
+      expect(canTransition('packaging', 'queue')).toBe(false);
     });
 
     it('production pode pausar, atrasar, retrabalhar ou finalizar', () => {
@@ -53,7 +61,7 @@ describe('jobStateMachine', () => {
 
     it('lança mensagem clara em transição inválida', () => {
       expect(() => assertTransition('finished', 'queue')).toThrow(/Transição inválida/);
-      expect(() => assertTransition('finished', 'queue')).toThrow(/estado terminal/);
+      expect(() => assertTransition('finished', 'queue')).toThrow(/packaging/);
     });
 
     it('mensagem lista transições válidas disponíveis', () => {

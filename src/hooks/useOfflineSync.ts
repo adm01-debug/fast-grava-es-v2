@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { TablesUpdate } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
+import { registerBackgroundSync } from '@/lib/offlineStorage';
 import { toast } from 'sonner';
 
 interface PendingAction {
@@ -154,6 +155,21 @@ export function useOfflineSync() {
     }
   }, [isOnline, pendingActions.length]);
 
+  // The service worker's background 'sync' event fires when the browser
+  // regains connectivity (even if the 'online' event was missed, e.g. the tab
+  // was throttled). The SW can't replay the localStorage queue itself, so it
+  // posts SYNC_PENDING_ACTIONS and the app runs a sync pass here.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      if ((event.data as { type?: string } | null)?.type === 'SYNC_PENDING_ACTIONS') {
+        syncRef.current?.();
+      }
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
+  }, []);
+
   // Cache essential data for offline use
   const cacheData = useCallback(async () => {
     if (!isOnline) return;
@@ -195,6 +211,12 @@ export function useOfflineSync() {
     };
 
     setPendingActions(prev => [...prev, action]);
+
+    // Ask the browser to fire the SW 'sync' event when connectivity returns,
+    // even if this tab is throttled/closed-reopened and misses the 'online'
+    // event. Best-effort — the online-event path above still covers browsers
+    // without Background Sync.
+    registerBackgroundSync().catch(() => { /* unsupported — online event path covers it */ });
 
     toast.info('Ação salva offline', {
       description: 'Será sincronizada quando a conexão voltar.',
@@ -297,9 +319,34 @@ export function useOfflineSync() {
     }
   };
 
-  // Sync all pending actions
+  // Sync all pending actions. The tab-local ref guard stops concurrent
+  // passes within this tab; the Web Locks request below extends that
+  // exclusion across tabs — the localStorage queue is shared, so two open
+  // windows woken by the same 'online'/SW-sync signal would otherwise both
+  // replay it. Replays are individually idempotent (updated_at guards,
+  // upsert-by-id), so the lock is belt-and-suspenders; when Web Locks is
+  // unavailable the behavior degrades to today's per-tab guard.
   const syncPendingActions = useCallback(async () => {
     if (!isOnline || pendingActions.length === 0 || syncInFlightRef.current) return;
+
+    if (typeof navigator !== 'undefined' && 'locks' in navigator) {
+      const ran = await navigator.locks.request(
+        'fastgravacoes-offline-sync',
+        { ifAvailable: true },
+        async (lock) => {
+          if (!lock) return false; // another tab is already syncing
+          await runSyncPass();
+          return true;
+        },
+      );
+      if (!ran) logger.info('Sync pass skipped — another tab holds the sync lock', undefined, 'useOfflineSync');
+      return;
+    }
+
+    await runSyncPass();
+
+    async function runSyncPass() {
+    if (syncInFlightRef.current) return;
     syncInFlightRef.current = true;
     setIsSyncing(true);
 
@@ -362,6 +409,7 @@ export function useOfflineSync() {
     } finally {
       syncInFlightRef.current = false;
       setIsSyncing(false);
+    }
     }
   }, [isOnline, pendingActions, cacheData]);
 

@@ -283,9 +283,37 @@ jobs:
           name: dist-${{ github.sha }}
           path: dist/
 
+      # The E2E suite logs into a LIVE Supabase instance with a seeded test
+      # user. Without the Supabase secrets the SPA cannot even boot
+      # (createClient throws), so every test fails at the login form — a
+      # permanently-red gate that verifies nothing. Run the suite only when
+      # the required secrets are configured; surface a loud notice otherwise
+      # so the skip is a conscious, visible state rather than silent.
+      - name: Check E2E prerequisites
+        id: e2e-prereq
+        env:
+          SUPABASE_URL_SECRET: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_KEY_SECRET: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          E2E_EMAIL_SECRET: ${{ secrets.E2E_EMAIL }}
+          E2E_PASSWORD_SECRET: ${{ secrets.E2E_PASSWORD }}
+        run: |
+          if [ -n "$SUPABASE_URL_SECRET" ] && [ -n "$SUPABASE_KEY_SECRET" ] && [ -n "$E2E_EMAIL_SECRET" ] && [ -n "$E2E_PASSWORD_SECRET" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=E2E skipped::Secrets VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY / E2E_EMAIL / E2E_PASSWORD are not all configured — E2E tests require a live Supabase instance and a seeded test user. Configure the secrets to activate this gate."
+            echo "## ⏭️ E2E skipped — required secrets not configured" >> "$GITHUB_STEP_SUMMARY"
+            echo "The suite logs into a live Supabase instance and needs \`VITE_SUPABASE_URL\`, \`VITE_SUPABASE_ANON_KEY\`, \`E2E_EMAIL\` and \`E2E_PASSWORD\`." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Run E2E tests
+        if: steps.e2e-prereq.outputs.enabled == 'true'
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:8080
+          # Credentials for the seeded live-instance test user — required;
+          # the credentials helper fails fast when they are absent.
+          E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
         # CI: chromium only + 2 workers to fit within the time budget.
         # mobile-chrome and full parallelism are covered by local dev runs.
         run: npm run test:e2e -- --project=chromium --workers=2 --reporter=html --reporter=list
@@ -293,7 +321,7 @@ jobs:
 
 
       - name: Upload Playwright report
-        if: always()
+        if: always() && steps.e2e-prereq.outputs.enabled == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ github.sha }}

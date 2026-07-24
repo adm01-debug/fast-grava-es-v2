@@ -39,3 +39,7 @@ lint.txt
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright artifacts
+playwright-report/
+test-results/

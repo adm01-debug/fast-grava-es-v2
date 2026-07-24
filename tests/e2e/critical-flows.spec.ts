@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { E2E_EMAIL, E2E_PASSWORD } from './helpers/credentials';
 
 /**
  * End-to-end tests for the authentication flow, protected routes, and core navigation.
@@ -17,8 +18,8 @@ test.describe('Authentication and Authorization Flow', () => {
     await expect(page.locator('button[type="submit"]')).toContainText(/Entrar|Login/i);
 
     // 2. Perform login with admin credentials (mocking/testing against known seed data)
-    await page.fill('#login-email', 'admin@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-email', E2E_EMAIL);
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
 
     // 3. Verify successful navigation to dashboard
@@ -40,7 +41,7 @@ test.describe('Authentication and Authorization Flow', () => {
     // 3. Attempt to access restricted role page (simulating operator permissions)
     // Note: In real E2E, we'd log in with operator account
     await page.fill('#login-email', 'operador@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
     
     // 4. Operator should be redirected to operator view or home
@@ -54,8 +55,8 @@ test.describe('Authentication and Authorization Flow', () => {
 
   test('User Logout Flow', async ({ page }) => {
     // 1. Login first
-    await page.fill('#login-email', 'admin@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-email', E2E_EMAIL);
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL('/');
 
@@ -77,8 +78,8 @@ test.describe('Main Application Navigation', () => {
   test.beforeEach(async ({ page }) => {
     // Always start authenticated as admin for navigation tests
     await page.goto('/auth');
-    await page.fill('#login-email', 'admin@fastgravacoes.com.br');
-    await page.fill('#login-password', 'Fast@2026!');
+    await page.fill('#login-email', E2E_EMAIL);
+    await page.fill('#login-password', E2E_PASSWORD);
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL('/');
   });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTPM } from '@/features/maintenance/hooks/useTPM';
@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { clickableProps } from '@/lib/a11y';
+import { logger } from '@/lib/logger';
 
 interface MachineLive {
   load: number;
@@ -37,28 +38,49 @@ export function FactoryFloorMap() {
   const [heatmapType, setHeatmapType] = useState<'none' | 'load' | 'temp'>('none');
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
+  // The simulation interval reads the latest jobs through a ref so the fetch
+  // effect doesn't need activeJobs in its deps — with it there, every
+  // setActiveJobs (new object reference) re-ran the effect, firing another
+  // query and resetting the interval in a continuous loop.
+  const activeJobsRef = useRef(activeJobs);
   useEffect(() => {
-    const fetchActiveJobs = async () => {
-      const { data } = await supabase
-        .from('jobs')
-        .select('*, machines(id, name)')
-        .eq('status', 'production');
+    activeJobsRef.current = activeJobs;
+  }, [activeJobs]);
 
-      const jobsByMachine: Record<string, JobRow> = {};
-      data?.forEach((job: JobRow) => {
-        if (job.machine_id) {
-          jobsByMachine[job.machine_id] = job;
-        }
-      });
-      setActiveJobs(jobsByMachine);
+  useEffect(() => {
+    let mounted = true;
+    const fetchActiveJobs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*, machines(id, name)')
+          .eq('status', 'production');
+        if (error) throw error;
+        if (!mounted) return;
+
+        const jobsByMachine: Record<string, JobRow> = {};
+        data?.forEach((job: JobRow) => {
+          if (job.machine_id) {
+            jobsByMachine[job.machine_id] = job;
+          }
+        });
+        setActiveJobs(jobsByMachine);
+      } catch (err) {
+        logger.error('Failed to fetch active jobs for factory floor map', err, 'FactoryFloorMap');
+      }
     };
 
     fetchActiveJobs();
+    return () => {
+      mounted = false;
+    };
+  }, [machines]);
 
+  useEffect(() => {
     const interval = setInterval(() => {
       const newData: Record<string, MachineLive> = {};
       machines.forEach((m: MachineRow) => {
-        const hasJob = !!activeJobs[m.id];
+        const hasJob = !!activeJobsRef.current[m.id];
         newData[m.id] = {
           load: hasJob ? Math.floor(Math.random() * 20) + 80 : 0,
           temp: hasJob ? Math.floor(Math.random() * 20) + 45 : 30,
@@ -69,7 +91,7 @@ export function FactoryFloorMap() {
       setLiveData(newData);
     }, 3000);
     return () => clearInterval(interval);
-  }, [machines, activeJobs]);
+  }, [machines]);
 
   return (
     <div className="space-y-4">

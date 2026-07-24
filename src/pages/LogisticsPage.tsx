@@ -74,8 +74,13 @@ export default function LogisticsPage() {
     return shipments.data?.reduce((acc, s) => acc + (s.freight_cost || 0), 0) || 0;
   }, [shipments.data]);
 
+  // Single source for the tracking URL — URLSearchParams encodes order
+  // numbers with reserved characters (e.g. "A&B") for both copy and open.
+  const buildTrackingLink = (orderNumber?: string | null) =>
+    `/track?${new URLSearchParams({ q: orderNumber ?? '' })}`;
+
   const handleCopyLink = (orderNumber: string) => {
-    const link = `${window.location.origin}/track?q=${orderNumber}`;
+    const link = `${window.location.origin}${buildTrackingLink(orderNumber)}`;
     navigator.clipboard.writeText(link);
     toast.success(t('logistics.copyLink') + '!');
   };
@@ -284,7 +289,7 @@ export default function LogisticsPage() {
                               variant="ghost"
                               size="icon"
                               className="group-hover:text-primary"
-                              onClick={() => window.open(`/track?q=${shipment.job?.order_number}`, '_blank')}
+                              onClick={() => window.open(buildTrackingLink(shipment.job?.order_number), '_blank')}
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
