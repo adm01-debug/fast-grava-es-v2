@@ -71,8 +71,13 @@ export function FactoryFloorMap() {
     };
 
     fetchActiveJobs();
+    // Deliberate polling: jobs enter/leave production while the map stays
+    // mounted (machines rarely changes), so refresh on a fixed cadence
+    // instead of relying on dependency changes.
+    const pollInterval = setInterval(fetchActiveJobs, 15_000);
     return () => {
       mounted = false;
+      clearInterval(pollInterval);
     };
   }, [machines]);
 

@@ -45,6 +45,20 @@ const MAX_RETRIES = 3;
 // hammering a flaky/down backend in a tight loop.
 const RETRY_BACKOFF_BASE_MS = 3000;
 
+/** The pending queue in localStorage is the source of truth: several
+ * components mount independent useOfflineSync instances (provider, status
+ * banner, ready indicator), each with its own React state. Reading fresh at
+ * every mutation/sync prevents a stale instance from resurrecting actions
+ * another instance already processed. */
+function readQueueFromStorage(): PendingAction[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.PENDING_ACTIONS);
+    return stored ? (JSON.parse(stored) as PendingAction[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 /** try/catch around localStorage.setItem — quota-exceeded and private-mode
  * errors must not throw into the caller; the caller already has the data in
  * memory (React state), so a failed persist only risks losing it on reload,
@@ -210,7 +224,12 @@ export function useOfflineSync() {
       retryCount: 0,
     };
 
-    setPendingActions(prev => [...prev, action]);
+    // Read-modify-write against localStorage (not this instance's possibly
+    // stale state) so an already-processed queue can't be resurrected by an
+    // instance that missed another instance's sync pass.
+    const next = [...readQueueFromStorage(), action];
+    safeLocalStorageSet(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(next));
+    setPendingActions(next);
 
     // Ask the browser to fire the SW 'sync' event when connectivity returns,
     // even if this tab is throttled/closed-reopened and misses the 'online'
@@ -334,12 +353,17 @@ export function useOfflineSync() {
         'fastgravacoes-offline-sync',
         { ifAvailable: true },
         async (lock) => {
-          if (!lock) return false; // another tab is already syncing
+          if (!lock) return false; // another tab/instance is already syncing
           await runSyncPass();
           return true;
         },
       );
-      if (!ran) logger.info('Sync pass skipped — another tab holds the sync lock', undefined, 'useOfflineSync');
+      if (!ran) {
+        logger.info('Sync pass skipped — another instance holds the sync lock', undefined, 'useOfflineSync');
+        // Reconcile this instance's view with the queue the lock holder is
+        // draining, so it doesn't keep exposing already-processed actions.
+        setPendingActions(readQueueFromStorage());
+      }
       return;
     }
 
@@ -356,7 +380,11 @@ export function useOfflineSync() {
       const newlyFailed: FailedAction[] = [];
       let hadRetryableFailure = false;
 
-      for (const action of pendingActions) {
+      // Replay from storage, not this instance's state — another instance
+      // may have queued or drained actions since this one last rendered.
+      const queue = readQueueFromStorage();
+
+      for (const action of queue) {
         const result = await processPendingAction(action);
 
         if (result === 'success') {
@@ -376,6 +404,9 @@ export function useOfflineSync() {
         }
       }
 
+      // Persist immediately so other instances reading storage see the
+      // drained queue even before this instance's persist effect runs.
+      safeLocalStorageSet(STORAGE_KEYS.PENDING_ACTIONS, JSON.stringify(remainingActions));
       setPendingActions(remainingActions);
       if (newlyFailed.length > 0) {
         setFailedActions(prev => [...prev, ...newlyFailed]);
