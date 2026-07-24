@@ -69,9 +69,11 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Background Sync
+// Background Sync — tag must match registerBackgroundSync() in
+// src/lib/offlineStorage.ts, which registers 'sync-pending-actions'
+// whenever offline work is queued.
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-data') {
+  if (event.tag === 'sync-pending-actions') {
     event.waitUntil(syncData());
   }
 });

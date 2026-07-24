@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { TablesUpdate } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
+import { registerBackgroundSync } from '@/lib/offlineStorage';
 import { toast } from 'sonner';
 
 interface PendingAction {
@@ -210,6 +211,12 @@ export function useOfflineSync() {
     };
 
     setPendingActions(prev => [...prev, action]);
+
+    // Ask the browser to fire the SW 'sync' event when connectivity returns,
+    // even if this tab is throttled/closed-reopened and misses the 'online'
+    // event. Best-effort — the online-event path above still covers browsers
+    // without Background Sync.
+    registerBackgroundSync().catch(() => { /* unsupported — online event path covers it */ });
 
     toast.info('Ação salva offline', {
       description: 'Será sincronizada quando a conexão voltar.',
