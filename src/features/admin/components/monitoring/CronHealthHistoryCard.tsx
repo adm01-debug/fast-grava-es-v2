@@ -74,6 +74,14 @@ export function CronHealthHistoryCard() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-medium truncate">{t.jobname}</p>
               <div className="flex items-center gap-2">
+                {t.isStale && (
+                  <Badge variant="destructive" title="Sem execução no intervalo esperado">
+                    silenciosa
+                  </Badge>
+                )}
+                {t.expectedIntervalMinutes != null && (
+                  <Badge variant="outline">a cada {t.expectedIntervalMinutes}min</Badge>
+                )}
                 {t.avgDurationMs != null && (
                   <Badge variant="outline">~{t.avgDurationMs}ms</Badge>
                 )}
@@ -81,6 +89,7 @@ export function CronHealthHistoryCard() {
                   {t.failureRatePct.toFixed(0)}% amostras com falha
                 </Badge>
               </div>
+
             </div>
             <Sparkbars values={t.points.map((p) => p.failures)} />
             <p className="text-xs text-muted-foreground">
