@@ -134,10 +134,10 @@ serve(async (req) => {
 
     const recipientIds = Array.from(new Set((roles ?? []).map((r) => r.user_id as string)));
 
-    // Preferência do usuário (#40): quem tiver registro em
-    // `user_notification_settings` só recebe e-mail se `email_enabled` estiver
-    // ativo E `notification_types` contiver 'cron_alerts'. Sem registro =>
-    // comportamento padrão (recebe), para não silenciar alertas críticos.
+    // Preferência do usuário (#40): opt-out explícito. O usuário deixa de
+    // receber e-mail se desligar e-mails (`email_enabled = false`) ou marcar
+    // 'cron_alerts_off' em `notification_types`. Sem registro => recebe,
+    // para nunca silenciar alerta crítico por omissão de configuração.
     const { data: prefs } = await supabase
       .from("user_notification_settings")
       .select("user_id, email_enabled, notification_types")
@@ -148,7 +148,7 @@ serve(async (req) => {
         .filter((p) => {
           const types = (p.notification_types as string[] | null) ?? [];
           const emailOn = p.email_enabled !== false;
-          return !emailOn || !types.includes("cron_alerts");
+          return !emailOn || types.includes("cron_alerts_off");
         })
         .map((p) => p.user_id as string),
     );
