@@ -50,6 +50,19 @@ serve(async (req) => {
     // to evade IP-based lockout, or frame another IP as the failing source.
     const ip_address = getClientIp(req);
 
+    // Endpoint público (verify_jwt = false): limita enumeração de e-mails e
+    // flood de tentativas a partir de um mesmo IP.
+    const limited = await checkRateLimit(supabase, {
+      endpoint: 'check-login-lockout',
+      identity: { ip: ip_address },
+      max: 30,
+      windowSeconds: 60,
+      corsHeaders: getCorsHeaders(req),
+    });
+    if (limited) return limited;
+
+
+
     if (!email || !action) {
       return new Response(
         JSON.stringify({ error: 'Email and action are required' }),
