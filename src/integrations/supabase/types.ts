@@ -655,6 +655,36 @@ export type Database = {
           },
         ]
       }
+      edge_health_history: {
+        Row: {
+          captured_at: string
+          checks: Json
+          created_at: string
+          id: string
+          latency_ms: number | null
+          source: string
+          status: string
+        }
+        Insert: {
+          captured_at?: string
+          checks?: Json
+          created_at?: string
+          id?: string
+          latency_ms?: number | null
+          source?: string
+          status: string
+        }
+        Update: {
+          captured_at?: string
+          checks?: Json
+          created_at?: string
+          id?: string
+          latency_ms?: number | null
+          source?: string
+          status?: string
+        }
+        Relationships: []
+      }
       efficiency_alert_history: {
         Row: {
           alert_type: string
@@ -5932,6 +5962,8 @@ export type Database = {
       get_system_status_summary: {
         Args: never
         Returns: {
+          edge_last_check: string
+          edge_status: string
           failing_jobs: number
           healthy_jobs: number
           last_capture: string

@@ -4,6 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Activity as ActivityIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
+  deriveCronStatus,
+  deriveEdgeStatus,
   deriveOverallStatus,
   useSystemStatusSummary,
   type OverallStatus,
@@ -16,12 +18,31 @@ const STATUS_LABEL: Record<OverallStatus, string> = {
   unknown: "Sem coletas recentes",
 };
 
+const SHORT_LABEL: Record<OverallStatus, string> = {
+  operational: "Operacional",
+  degraded: "Degradado",
+  outage: "Com falha",
+  unknown: "Sem dados",
+};
+
 const STATUS_CLASS: Record<OverallStatus, string> = {
   operational: "bg-success/10 text-success border-success/30",
   degraded: "bg-warning/10 text-warning border-warning/30",
   outage: "bg-destructive/10 text-destructive border-destructive/30",
   unknown: "bg-muted text-muted-foreground border-border",
 };
+
+function DomainRow({ label, status }: { label: string; status: OverallStatus }) {
+  return (
+    <div className="flex items-center justify-between rounded-md border p-3">
+      <span className="text-sm">{label}</span>
+      <Badge variant="outline" className={cn("text-xs", STATUS_CLASS[status])}>
+        {SHORT_LABEL[status]}
+      </Badge>
+    </div>
+  );
+}
+
 
 function Metric({ label, value }: { label: string; value: number | string }) {
   return (
@@ -38,7 +59,10 @@ function Metric({ label, value }: { label: string; value: number | string }) {
  */
 export default function SystemStatusPage() {
   const { data, isLoading, error } = useSystemStatusSummary();
-  const status = deriveOverallStatus(data ?? null);
+  const summary = data ?? null;
+  const status = deriveOverallStatus(summary);
+  const cronStatus = deriveCronStatus(summary);
+  const edgeStatus = deriveEdgeStatus(summary);
 
   return (
     <main className="container mx-auto max-w-3xl space-y-4 p-4 md:p-6">
@@ -47,7 +71,7 @@ export default function SystemStatusPage() {
           <ActivityIcon className="h-5 w-5" /> Status do sistema
         </h1>
         <p className="text-sm text-muted-foreground">
-          Saúde consolidada das rotinas automáticas nas últimas 24 horas.
+          Saúde consolidada das rotinas automáticas e das funções de servidor nas últimas 24 horas.
         </p>
       </header>
 
@@ -69,6 +93,11 @@ export default function SystemStatusPage() {
               {STATUS_LABEL[status]}
             </Badge>
 
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <DomainRow label="Rotinas automáticas" status={cronStatus} />
+              <DomainRow label="Funções de servidor" status={edgeStatus} />
+            </div>
+
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <Metric label="Rotinas monitoradas" value={data?.total_jobs ?? 0} />
               <Metric label="Saudáveis" value={data?.healthy_jobs ?? 0} />
@@ -77,10 +106,15 @@ export default function SystemStatusPage() {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Última coleta:{" "}
+              Última coleta das rotinas:{" "}
               {data?.last_capture
                 ? new Date(data.last_capture).toLocaleString("pt-BR")
                 : "sem registro nas últimas 24h"}
+              {" · "}
+              Última verificação das funções:{" "}
+              {data?.edge_last_check
+                ? new Date(data.edge_last_check).toLocaleString("pt-BR")
+                : "sem registro"}
             </p>
           </CardContent>
         </Card>

@@ -68,18 +68,33 @@ Deno.serve(async (req) => {
 
   // Poll internal health-check
   let health: HealthResponse | null = null;
+  const startedAt = Date.now();
+  let latencyMs = 0;
   try {
     const res = await fetch(`${supabaseUrl}/functions/v1/health-check`, {
       headers: { Authorization: `Bearer ${serviceRoleKey}` },
     });
     health = (await res.json()) as HealthResponse;
+    latencyMs = Date.now() - startedAt;
   } catch (e) {
     log.error("health_fetch_failed", { error: e instanceof Error ? e.message : String(e) });
     return new Response(JSON.stringify({ ok: false, error: "health fetch failed" }), { status: 502, headers: corsHeaders });
   }
 
   const status = health?.status ?? "fail";
-  log.info("health_polled", { status });
+  log.info("health_polled", { status, latencyMs });
+
+  // Persistir a coleta para alimentar o resumo consolidado de /status.
+  // Falha na persistência nunca deve derrubar o monitor.
+  const { error: persistError } = await supabase.from("edge_health_history").insert({
+    status,
+    checks: health?.checks ?? {},
+    latency_ms: latencyMs,
+    source: "health-monitor",
+  });
+  if (persistError) {
+    log.warn("edge_health_persist_failed", { error: persistError.message });
+  }
 
   if (status !== "pass") {
     // Audit in security_events
