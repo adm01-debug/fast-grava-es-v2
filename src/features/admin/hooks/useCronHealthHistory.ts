@@ -43,7 +43,10 @@ export function useCronHealthHistory(days = 7) {
       const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from("cron_health_history")
-        .select("id, jobid, jobname, consecutive_failures, last_status, last_duration_ms, captured_at")
+        .select(
+          "id, jobid, jobname, consecutive_failures, last_status, last_duration_ms, captured_at, is_stale, expected_interval_minutes",
+        )
+
         .gte("captured_at", since)
         .order("captured_at", { ascending: true })
         .limit(2000);
