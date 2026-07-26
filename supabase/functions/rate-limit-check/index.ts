@@ -1,5 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
+import { checkRateLimit } from "../_shared/rateLimit.ts";
+
 
 interface RateLimitConfig {
   maxRequests: number;
