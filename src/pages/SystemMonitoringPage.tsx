@@ -215,6 +215,9 @@ export default function SystemMonitoringPage() {
 
         <CronHealthCard />
 
+        <CronHealthHistoryCard />
+
+
         <Card>
           <CardHeader>
             <CardTitle>Timeline por hora</CardTitle>
