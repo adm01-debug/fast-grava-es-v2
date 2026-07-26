@@ -133,13 +133,37 @@ serve(async (req) => {
       .eq("is_active", true);
 
     const recipientIds = Array.from(new Set((roles ?? []).map((r) => r.user_id as string)));
+
+    // Preferência do usuário (#40): quem tiver registro em
+    // `user_notification_settings` só recebe e-mail se `email_enabled` estiver
+    // ativo E `notification_types` contiver 'cron_alerts'. Sem registro =>
+    // comportamento padrão (recebe), para não silenciar alertas críticos.
+    const { data: prefs } = await supabase
+      .from("user_notification_settings")
+      .select("user_id, email_enabled, notification_types")
+      .in("user_id", recipientIds.length > 0 ? recipientIds : ["00000000-0000-0000-0000-000000000000"]);
+
+    const optedOut = new Set(
+      (prefs ?? [])
+        .filter((p) => {
+          const types = (p.notification_types as string[] | null) ?? [];
+          const emailOn = p.email_enabled !== false;
+          return !emailOn || !types.includes("cron_alerts");
+        })
+        .map((p) => p.user_id as string),
+    );
+
+    const emailRecipientIds = recipientIds.filter((id) => !optedOut.has(id));
     const emails: string[] = [];
-    for (const id of recipientIds) {
+    for (const id of emailRecipientIds) {
       const { data: u } = await supabase.auth.admin.getUserById(id);
       if (u?.user?.email) emails.push(u.user.email);
     }
 
-    if (emails.length === 0) return json({ sent: 0, reason: "sem destinatários" });
+    if (emails.length === 0) {
+      return json({ sent: 0, reason: "sem destinatários (opt-out ou sem e-mail)" });
+    }
+
 
     const dedupeSince = new Date(Date.now() - DEDUPE_HOURS * 60 * 60 * 1000).toISOString();
     const { data: recent } = await supabase
