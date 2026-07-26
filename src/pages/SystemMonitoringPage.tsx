@@ -45,6 +45,7 @@ import {
 } from "@/features/admin/hooks/useMonitoringData";
 import { CronHealthCard } from "@/features/admin/components/monitoring/CronHealthCard";
 import { CronHealthHistoryCard } from "@/features/admin/components/monitoring/CronHealthHistoryCard";
+import { CronEmailPreferenceCard } from "@/features/admin/components/monitoring/CronEmailPreferenceCard";
 
 function StatCard({
   title,
@@ -216,6 +217,7 @@ export default function SystemMonitoringPage() {
         <CronHealthCard />
 
         <CronHealthHistoryCard />
+        <CronEmailPreferenceCard />
 
 
         <Card>
