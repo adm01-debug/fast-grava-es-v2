@@ -488,6 +488,48 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_p95_daily: {
+        Row: {
+          avg_ms: number | null
+          created_at: string
+          day: string
+          failure_rate_pct: number
+          id: string
+          jobid: number
+          jobname: string | null
+          max_ms: number | null
+          p95_ms: number | null
+          samples: number
+          updated_at: string
+        }
+        Insert: {
+          avg_ms?: number | null
+          created_at?: string
+          day: string
+          failure_rate_pct?: number
+          id?: string
+          jobid: number
+          jobname?: string | null
+          max_ms?: number | null
+          p95_ms?: number | null
+          samples?: number
+          updated_at?: string
+        }
+        Update: {
+          avg_ms?: number | null
+          created_at?: string
+          day?: string
+          failure_rate_pct?: number
+          id?: string
+          jobid?: number
+          jobname?: string | null
+          max_ms?: number | null
+          p95_ms?: number | null
+          samples?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_summaries: {
         Row: {
           created_at: string
@@ -5942,6 +5984,7 @@ export type Database = {
         Args: { p_type: string }
         Returns: undefined
       }
+      rollup_cron_p95_daily: { Args: { _days?: number }; Returns: number }
       snapshot_cron_health: { Args: never; Returns: number }
       test_rls_policies: {
         Args: { p_role: string; p_table_name: string; p_test_user_id: string }
