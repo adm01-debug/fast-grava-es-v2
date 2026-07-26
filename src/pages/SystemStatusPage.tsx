@@ -4,6 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Activity as ActivityIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
+  deriveCronStatus,
+  deriveEdgeStatus,
   deriveOverallStatus,
   useSystemStatusSummary,
   type OverallStatus,
@@ -16,12 +18,31 @@ const STATUS_LABEL: Record<OverallStatus, string> = {
   unknown: "Sem coletas recentes",
 };
 
+const SHORT_LABEL: Record<OverallStatus, string> = {
+  operational: "Operacional",
+  degraded: "Degradado",
+  outage: "Com falha",
+  unknown: "Sem dados",
+};
+
 const STATUS_CLASS: Record<OverallStatus, string> = {
   operational: "bg-success/10 text-success border-success/30",
   degraded: "bg-warning/10 text-warning border-warning/30",
   outage: "bg-destructive/10 text-destructive border-destructive/30",
   unknown: "bg-muted text-muted-foreground border-border",
 };
+
+function DomainRow({ label, status }: { label: string; status: OverallStatus }) {
+  return (
+    <div className="flex items-center justify-between rounded-md border p-3">
+      <span className="text-sm">{label}</span>
+      <Badge variant="outline" className={cn("text-xs", STATUS_CLASS[status])}>
+        {SHORT_LABEL[status]}
+      </Badge>
+    </div>
+  );
+}
+
 
 function Metric({ label, value }: { label: string; value: number | string }) {
   return (
