@@ -218,6 +218,7 @@ export default function SystemMonitoringPage() {
         <CronHealthCard />
 
         <CronHealthHistoryCard />
+        <CronP95TrendCard />
         <CronEmailPreferenceCard />
 
 
