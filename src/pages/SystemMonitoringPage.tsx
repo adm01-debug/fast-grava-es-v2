@@ -43,6 +43,7 @@ import {
   type AlertThresholds,
   type MonitoringWindow,
 } from "@/features/admin/hooks/useMonitoringData";
+import { CronHealthCard } from "@/features/admin/components/monitoring/CronHealthCard";
 
 function StatCard({
   title,
@@ -210,6 +211,8 @@ export default function SystemMonitoringPage() {
             Icon={GaugeIcon}
           />
         </div>
+
+        <CronHealthCard />
 
         <Card>
           <CardHeader>
