@@ -437,6 +437,51 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_health_history: {
+        Row: {
+          active: boolean | null
+          captured_at: string
+          consecutive_failures: number
+          created_at: string
+          id: string
+          jobid: number
+          jobname: string | null
+          last_duration_ms: number | null
+          last_error: string | null
+          last_run: string | null
+          last_status: string | null
+          schedule: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          captured_at?: string
+          consecutive_failures?: number
+          created_at?: string
+          id?: string
+          jobid: number
+          jobname?: string | null
+          last_duration_ms?: number | null
+          last_error?: string | null
+          last_run?: string | null
+          last_status?: string | null
+          schedule?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          captured_at?: string
+          consecutive_failures?: number
+          created_at?: string
+          id?: string
+          jobid?: number
+          jobname?: string | null
+          last_duration_ms?: number | null
+          last_error?: string | null
+          last_run?: string | null
+          last_status?: string | null
+          schedule?: string | null
+        }
+        Relationships: []
+      }
       daily_summaries: {
         Row: {
           created_at: string
@@ -5877,6 +5922,7 @@ export type Database = {
         Args: { p_type: string }
         Returns: undefined
       }
+      snapshot_cron_health: { Args: never; Returns: number }
       test_rls_policies: {
         Args: { p_role: string; p_table_name: string; p_test_user_id: string }
         Returns: {
