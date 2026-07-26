@@ -39,7 +39,21 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Guarda de abuso do próprio endpoint de rate limit (público): anônimos são
+  // limitados por IP para não conseguirem inflar `rate_limit_logs`.
+  if (!verifiedUserId) {
+    const selfLimited = await checkRateLimit(supabase, {
+      endpoint: 'rate-limit-check:self',
+      identity: { ip: req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') },
+      max: 60,
+      windowSeconds: 60,
+      corsHeaders: getCorsHeaders(req),
+    });
+    if (selfLimited) return selfLimited;
+  }
+
   try {
+
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== 'object') {
       return new Response(
