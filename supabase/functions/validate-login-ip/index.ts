@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit } from "../_shared/rateLimit.ts";
 
 interface ValidateIPRequest {
   user_id?: string;
@@ -55,6 +56,17 @@ serve(async (req) => {
     const { user_id, user_email, user_agent, action, failure_reason }: ValidateIPRequest = await req.json();
     // Server-derived — never trust a client-supplied IP for an allowlist decision.
     const ip_address = getClientIp(req);
+
+    // Abuse mitigation: este endpoint é público (verify_jwt = false) e grava em
+    // login_audit. Limitamos por IP para impedir enumeração/flood de registros.
+    const limited = await checkRateLimit(supabase, {
+      endpoint: 'validate-login-ip',
+      identity: { ip: ip_address },
+      max: 30,
+      windowSeconds: 60,
+      corsHeaders: getCorsHeaders(req),
+    });
+    if (limited) return limited;
 
     console.log(`[validate-login-ip] Action: ${action}, IP: ${ip_address}`);
 

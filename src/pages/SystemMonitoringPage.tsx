@@ -44,6 +44,7 @@ import {
   type MonitoringWindow,
 } from "@/features/admin/hooks/useMonitoringData";
 import { CronHealthCard } from "@/features/admin/components/monitoring/CronHealthCard";
+import { CronHealthHistoryCard } from "@/features/admin/components/monitoring/CronHealthHistoryCard";
 
 function StatCard({
   title,
@@ -213,6 +214,9 @@ export default function SystemMonitoringPage() {
         </div>
 
         <CronHealthCard />
+
+        <CronHealthHistoryCard />
+
 
         <Card>
           <CardHeader>
