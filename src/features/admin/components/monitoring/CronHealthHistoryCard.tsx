@@ -73,28 +73,37 @@ export function CronHealthHistoryCard() {
           <div key={t.jobid} className="rounded-md border p-3 space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-medium truncate">{t.jobname}</p>
-              <div className="flex items-center gap-2">
-                {t.isStale && (
-                  <Badge variant="destructive" title="Sem execução no intervalo esperado">
-                    silenciosa
-                  </Badge>
-                )}
+              <div className="flex flex-wrap items-center gap-2">
+                {t.isStale && <Badge variant="destructive">silenciosa</Badge>}
                 {t.expectedIntervalMinutes != null && (
                   <Badge variant="outline">a cada {t.expectedIntervalMinutes}min</Badge>
                 )}
                 {t.avgDurationMs != null && (
-                  <Badge variant="outline">~{t.avgDurationMs}ms</Badge>
+                  <Badge variant="outline">média ~{t.avgDurationMs}ms</Badge>
+                )}
+                {t.p95DurationMs != null && (
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      t.avgDurationMs != null && t.p95DurationMs > t.avgDurationMs * 3
+                        ? "border-warning text-warning"
+                        : undefined,
+                    )}
+                  >
+                    p95 {t.p95DurationMs}ms
+                  </Badge>
                 )}
                 <Badge variant={t.failureRatePct > 0 ? "destructive" : "outline"}>
                   {t.failureRatePct.toFixed(0)}% amostras com falha
                 </Badge>
               </div>
-
             </div>
             <Sparkbars values={t.points.map((p) => p.failures)} />
             <p className="text-xs text-muted-foreground">
               {t.points.length} coleta(s) · pior sequência: {t.worstFailures} falha(s)
+              {t.maxDurationMs != null ? ` · pico ${t.maxDurationMs}ms` : ""}
             </p>
+
           </div>
         ))}
       </CardContent>
