@@ -2,6 +2,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
 
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit } from "../_shared/rateLimit.ts";
+
 
 const MAX_FAILED_ATTEMPTS = 5;
 const BASE_LOCKOUT_MINUTES = 1; // First lockout: 1 minute
