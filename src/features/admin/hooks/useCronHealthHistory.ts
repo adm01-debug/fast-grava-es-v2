@@ -81,7 +81,10 @@ export function useCronHealthHistory(days = 7) {
                 ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
                 : null,
             worstFailures: rows.reduce((max, r) => Math.max(max, r.consecutive_failures ?? 0), 0),
+            isStale: rows[rows.length - 1]?.is_stale === true,
+            expectedIntervalMinutes: rows[rows.length - 1]?.expected_interval_minutes ?? null,
           };
+
         })
         .sort((a, b) => b.failureRatePct - a.failureRatePct);
     },
