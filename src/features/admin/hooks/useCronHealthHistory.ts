@@ -15,6 +15,8 @@ export const cronHealthHistoryRowSchema = z.object({
   last_status: z.string().nullable(),
   last_duration_ms: z.number().nullable(),
   captured_at: z.string(),
+  is_stale: z.boolean().nullable().optional(),
+  expected_interval_minutes: z.number().nullable().optional(),
 });
 
 export type CronHealthHistoryRow = z.infer<typeof cronHealthHistoryRowSchema>;
@@ -26,7 +28,11 @@ export interface CronHealthTrend {
   failureRatePct: number;
   avgDurationMs: number | null;
   worstFailures: number;
+  /** Rotina sem execução dentro do intervalo esperado na coleta mais recente. */
+  isStale: boolean;
+  expectedIntervalMinutes: number | null;
 }
+
 
 export function useCronHealthHistory(days = 7) {
   return useQuery<CronHealthTrend[]>({
