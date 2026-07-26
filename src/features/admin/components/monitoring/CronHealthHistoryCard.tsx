@@ -93,6 +93,11 @@ export function CronHealthHistoryCard() {
                     p95 {t.p95DurationMs}ms
                   </Badge>
                 )}
+                {t.p95DegradationPct != null && t.p95DegradationPct >= 50 && (
+                  <Badge variant="destructive">
+                    p95 +{t.p95DegradationPct}% vs. base
+                  </Badge>
+                )}
                 <Badge variant={t.failureRatePct > 0 ? "destructive" : "outline"}>
                   {t.failureRatePct.toFixed(0)}% amostras com falha
                 </Badge>
@@ -102,6 +107,9 @@ export function CronHealthHistoryCard() {
             <p className="text-xs text-muted-foreground">
               {t.points.length} coleta(s) · pior sequência: {t.worstFailures} falha(s)
               {t.maxDurationMs != null ? ` · pico ${t.maxDurationMs}ms` : ""}
+              {t.p95BaselineMs != null && t.p95RecentMs != null
+                ? ` · p95 24h ${t.p95RecentMs}ms vs. base ${t.p95BaselineMs}ms`
+                : ""}
             </p>
 
           </div>
