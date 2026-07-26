@@ -27,11 +27,31 @@ export interface CronHealthTrend {
   points: Array<{ capturedAt: string; failures: number; durationMs: number | null }>;
   failureRatePct: number;
   avgDurationMs: number | null;
+  /** Percentil 95 da duração observada — evidencia caudas lentas ocultas pela média. */
+  p95DurationMs: number | null;
+  maxDurationMs: number | null;
   worstFailures: number;
   /** Rotina sem execução dentro do intervalo esperado na coleta mais recente. */
   isStale: boolean;
   expectedIntervalMinutes: number | null;
 }
+
+/**
+ * Percentil por interpolação linear (método R-7, igual ao de planilhas).
+ * Retorna `null` para amostras vazias.
+ */
+export function percentile(values: number[], p: number): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  if (sorted.length === 1) return sorted[0];
+  const rank = (sorted.length - 1) * p;
+  const low = Math.floor(rank);
+  const high = Math.ceil(rank);
+  if (low === high) return sorted[low];
+  return sorted[low] + (sorted[high] - sorted[low]) * (rank - low);
+}
+
+
 
 
 export function useCronHealthHistory(days = 7) {
