@@ -30,6 +30,12 @@ export interface CronHealthTrend {
   /** Percentil 95 da duração observada — evidencia caudas lentas ocultas pela média. */
   p95DurationMs: number | null;
   maxDurationMs: number | null;
+  /** p95 das últimas 24h — janela "recente" usada na detecção de degradação. */
+  p95RecentMs: number | null;
+  /** p95 do período anterior às últimas 24h — linha de base histórica. */
+  p95BaselineMs: number | null;
+  /** Variação percentual do p95 recente sobre a linha de base (null se indisponível). */
+  p95DegradationPct: number | null;
   worstFailures: number;
   /** Rotina sem execução dentro do intervalo esperado na coleta mais recente. */
   isStale: boolean;
@@ -88,6 +94,23 @@ export function useCronHealthHistory(days = 7) {
           const durations = rows
             .map((r) => r.last_duration_ms)
             .filter((d): d is number => typeof d === "number");
+          const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+          const recentDurations = rows
+            .filter((r) => new Date(r.captured_at).getTime() >= cutoff)
+            .map((r) => r.last_duration_ms)
+            .filter((d): d is number => typeof d === "number");
+          const baselineDurations = rows
+            .filter((r) => new Date(r.captured_at).getTime() < cutoff)
+            .map((r) => r.last_duration_ms)
+            .filter((d): d is number => typeof d === "number");
+
+          // Exige amostra mínima em ambas as janelas para evitar falso positivo.
+          const MIN_SAMPLES = 3;
+          const p95Recent =
+            recentDurations.length >= MIN_SAMPLES ? percentile(recentDurations, 0.95) : null;
+          const p95Baseline =
+            baselineDurations.length >= MIN_SAMPLES ? percentile(baselineDurations, 0.95) : null;
+
           const failedSamples = rows.filter((r) => (r.consecutive_failures ?? 0) > 0).length;
 
           return {
@@ -108,6 +131,12 @@ export function useCronHealthHistory(days = 7) {
               return v === null ? null : Math.round(v);
             })(),
             maxDurationMs: durations.length > 0 ? Math.max(...durations) : null,
+            p95RecentMs: p95Recent === null ? null : Math.round(p95Recent),
+            p95BaselineMs: p95Baseline === null ? null : Math.round(p95Baseline),
+            p95DegradationPct:
+              p95Recent === null || p95Baseline === null || p95Baseline <= 0
+                ? null
+                : Math.round(((p95Recent - p95Baseline) / p95Baseline) * 100),
 
             worstFailures: rows.reduce((max, r) => Math.max(max, r.consecutive_failures ?? 0), 0),
             isStale: rows[rows.length - 1]?.is_stale === true,
