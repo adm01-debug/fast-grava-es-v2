@@ -103,6 +103,12 @@ export function useCronHealthHistory(days = 7) {
               durations.length > 0
                 ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
                 : null,
+            p95DurationMs: (() => {
+              const v = percentile(durations, 0.95);
+              return v === null ? null : Math.round(v);
+            })(),
+            maxDurationMs: durations.length > 0 ? Math.max(...durations) : null,
+
             worstFailures: rows.reduce((max, r) => Math.max(max, r.consecutive_failures ?? 0), 0),
             isStale: rows[rows.length - 1]?.is_stale === true,
             expectedIntervalMinutes: rows[rows.length - 1]?.expected_interval_minutes ?? null,
