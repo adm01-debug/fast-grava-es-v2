@@ -2,6 +2,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
 
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit } from "../_shared/rateLimit.ts";
+
 
 const MAX_FAILED_ATTEMPTS = 5;
 const BASE_LOCKOUT_MINUTES = 1; // First lockout: 1 minute
@@ -49,6 +51,19 @@ serve(async (req) => {
     // Server-derived — a client-supplied IP would let an attacker spoof/rotate
     // to evade IP-based lockout, or frame another IP as the failing source.
     const ip_address = getClientIp(req);
+
+    // Endpoint público (verify_jwt = false): limita enumeração de e-mails e
+    // flood de tentativas a partir de um mesmo IP.
+    const limited = await checkRateLimit(supabase, {
+      endpoint: 'check-login-lockout',
+      identity: { ip: ip_address },
+      max: 30,
+      windowSeconds: 60,
+      corsHeaders: getCorsHeaders(req),
+    });
+    if (limited) return limited;
+
+
 
     if (!email || !action) {
       return new Response(

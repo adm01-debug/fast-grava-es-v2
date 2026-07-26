@@ -443,7 +443,9 @@ export type Database = {
           captured_at: string
           consecutive_failures: number
           created_at: string
+          expected_interval_minutes: number | null
           id: string
+          is_stale: boolean
           jobid: number
           jobname: string | null
           last_duration_ms: number | null
@@ -457,7 +459,9 @@ export type Database = {
           captured_at?: string
           consecutive_failures?: number
           created_at?: string
+          expected_interval_minutes?: number | null
           id?: string
+          is_stale?: boolean
           jobid: number
           jobname?: string | null
           last_duration_ms?: number | null
@@ -471,7 +475,9 @@ export type Database = {
           captured_at?: string
           consecutive_failures?: number
           created_at?: string
+          expected_interval_minutes?: number | null
           id?: string
+          is_stale?: boolean
           jobid?: number
           jobname?: string | null
           last_duration_ms?: number | null
@@ -5862,6 +5868,10 @@ export type Database = {
           _previous_hash: string
         }
         Returns: string
+      }
+      cron_expected_interval_minutes: {
+        Args: { _schedule: string }
+        Returns: number
       }
       get_cron_health: {
         Args: never

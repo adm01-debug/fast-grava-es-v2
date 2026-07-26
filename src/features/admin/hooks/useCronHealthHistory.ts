@@ -15,6 +15,8 @@ export const cronHealthHistoryRowSchema = z.object({
   last_status: z.string().nullable(),
   last_duration_ms: z.number().nullable(),
   captured_at: z.string(),
+  is_stale: z.boolean().nullable().optional(),
+  expected_interval_minutes: z.number().nullable().optional(),
 });
 
 export type CronHealthHistoryRow = z.infer<typeof cronHealthHistoryRowSchema>;
@@ -26,7 +28,11 @@ export interface CronHealthTrend {
   failureRatePct: number;
   avgDurationMs: number | null;
   worstFailures: number;
+  /** Rotina sem execução dentro do intervalo esperado na coleta mais recente. */
+  isStale: boolean;
+  expectedIntervalMinutes: number | null;
 }
+
 
 export function useCronHealthHistory(days = 7) {
   return useQuery<CronHealthTrend[]>({
@@ -37,7 +43,10 @@ export function useCronHealthHistory(days = 7) {
       const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from("cron_health_history")
-        .select("id, jobid, jobname, consecutive_failures, last_status, last_duration_ms, captured_at")
+        .select(
+          "id, jobid, jobname, consecutive_failures, last_status, last_duration_ms, captured_at, is_stale, expected_interval_minutes",
+        )
+
         .gte("captured_at", since)
         .order("captured_at", { ascending: true })
         .limit(2000);
@@ -75,7 +84,10 @@ export function useCronHealthHistory(days = 7) {
                 ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
                 : null,
             worstFailures: rows.reduce((max, r) => Math.max(max, r.consecutive_failures ?? 0), 0),
+            isStale: rows[rows.length - 1]?.is_stale === true,
+            expectedIntervalMinutes: rows[rows.length - 1]?.expected_interval_minutes ?? null,
           };
+
         })
         .sort((a, b) => b.failureRatePct - a.failureRatePct);
     },
