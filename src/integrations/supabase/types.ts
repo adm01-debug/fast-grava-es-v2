@@ -5887,6 +5887,16 @@ export type Database = {
           schedule: string
         }[]
       }
+      get_system_status_summary: {
+        Args: never
+        Returns: {
+          failing_jobs: number
+          healthy_jobs: number
+          last_capture: string
+          stale_jobs: number
+          total_jobs: number
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

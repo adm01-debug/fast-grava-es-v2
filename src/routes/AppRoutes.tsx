@@ -66,6 +66,7 @@ const MachineComparisonPage = lazy(() => import("@/pages/MachineComparisonPage")
 const OperatorHistoryPage = lazy(() => import("@/pages/OperatorHistoryPage"));
 const AdminTelemetriaPage = lazy(() => import("@/pages/AdminTelemetriaPage"));
 const SystemMonitoringPage = lazy(() => import("@/pages/SystemMonitoringPage"));
+const SystemStatusPage = lazy(() => import("@/pages/SystemStatusPage"));
 const AuditTrailPage = lazy(() => import("@/pages/AuditTrailPage"));
 const DigitalTwin = lazy(() => import("@/pages/DigitalTwin"));
 const LogisticsPage = lazy(() => import("@/pages/LogisticsPage"));
@@ -243,6 +244,7 @@ export function AnimatedRoutes() {
         <Route path="/code-quality" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><CodeQualityDashboard /></ProtectedPage>} />
         <Route path="/admin/telemetria" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><AdminTelemetriaPage /></ProtectedPage>} />
         <Route path="/admin/monitoring" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SystemMonitoringPage /></ProtectedPage>} />
+        <Route path="/status" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />}><SystemStatusPage /></ProtectedPage>} />
         <Route path="/simulation" element={<ProtectedPage direction={direction} fallback={<KPIPageSkeleton />} allowedRoles={['coordinator', 'manager']}><SimulationDashboard /></ProtectedPage>} />
 
         {/* Kiosk */}
