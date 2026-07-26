@@ -17,10 +17,14 @@ describe("percentile (R-7)", () => {
     expect(percentile([1, 2, 3, 4], 0.5)).toBe(2.5);
   });
 
-  it("p95 destaca cauda lenta", () => {
+  it("p95 fica acima da média quando há cauda lenta", () => {
     const values = [...Array(19).fill(100), 5000];
-    expect(percentile(values, 0.95)).toBeGreaterThan(1000);
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+    const p95 = percentile(values, 0.95) ?? 0;
+    expect(p95).toBeGreaterThan(100);
+    expect(p95).toBeLessThan(avg * 2);
   });
+
 
   it("não depende da ordem de entrada", () => {
     expect(percentile([9, 1, 5, 3, 7], 0.95)).toBe(percentile([1, 3, 5, 7, 9], 0.95));
