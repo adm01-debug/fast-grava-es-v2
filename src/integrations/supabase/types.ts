@@ -5818,6 +5818,20 @@ export type Database = {
         }
         Returns: string
       }
+      get_cron_health: {
+        Args: never
+        Returns: {
+          active: boolean
+          consecutive_failures: number
+          jobid: number
+          jobname: string
+          last_duration_ms: number
+          last_error: string
+          last_run: string
+          last_status: string
+          schedule: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

@@ -28,7 +28,7 @@ export const ALLOWED_ORIGINS: readonly string[] = [
 ];
 
 const DEFAULT_ALLOWED_HEADERS =
-  "authorization, x-client-info, apikey, content-type, x-api-key, x-webhook-signature, x-forwarded-for, x-real-ip, x-simulation-mode, x-simulation-severity";
+  "authorization, x-client-info, apikey, content-type, x-api-key, x-cron-secret, x-request-id, x-webhook-signature, x-forwarded-for, x-real-ip, x-simulation-mode, x-simulation-severity";
 
 const DEFAULT_ALLOWED_METHODS = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
 
