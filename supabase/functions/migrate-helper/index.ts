@@ -1,35 +1,61 @@
-// Edge function temporária para migração de banco.
-// Cole em: Cloud > Edge Functions > migrate-helper > View code
-// Após a migração, remova esta função.
+// Edge function auxiliar de migração.
+//
+// SEGURANÇA:
+// - Autenticação por segredo (MIGRATE_HELPER_KEY), nunca hardcoded no repositório.
+// - CORS restrito às origens da aplicação (_shared/cors.ts).
+// - NUNCA retorna SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL ou qualquer segredo.
+// - Nenhum SQL arbitrário vindo do cliente.
 
-const ACCESS_KEY = "fc55d1ed80e84555db29a6aa19c741805b98b9ec9bcac151";
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-access-key",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
+import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts";
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: cors });
-  const key = req.headers.get("x-access-key");
-  if (key !== ACCESS_KEY) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
+const EXPECTED_KEY = Deno.env.get("MIGRATE_HELPER_KEY") ?? "";
 
-  const url = new URL(req.url);
-  const action = url.searchParams.get("action") || "ping";
+function json(body: unknown, status: number, cors: Record<string, string>): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+}
 
-  try {
-    if (action === "ping") {
-      return new Response(JSON.stringify({ ok: true, project_ref: Deno.env.get("SUPABASE_URL") }), { headers: { ...cors, "Content-Type": "application/json" } });
-    }
-    if (action === "credentials") {
-      return new Response(JSON.stringify({
-        url: Deno.env.get("SUPABASE_URL"),
-        service_role: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
-        db_url: Deno.env.get("SUPABASE_DB_URL"),
-      }), { headers: { ...cors, "Content-Type": "application/json" } });
-    }
-    return new Response(JSON.stringify({ error: "unknown_action" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+Deno.serve((req) => {
+  const preflight = handleCorsPreflight(req);
+  if (preflight) return preflight;
+
+  const cors = getCorsHeaders(req);
+
+  // Se o segredo não estiver configurado, a função fica fechada (fail-closed).
+  if (!EXPECTED_KEY) {
+    return json({ error: "unavailable" }, 503, cors);
+  }
+
+  const key = req.headers.get("x-access-key") ?? "";
+  if (key !== EXPECTED_KEY) {
+    return json({ error: "unauthorized" }, 401, cors);
+  }
+
+  const action = new URL(req.url).searchParams.get("action") ?? "ping";
+
+  switch (action) {
+    case "ping":
+      // Apenas sinal de vida. Nenhum identificador de projeto ou credencial.
+      return json({ ok: true, timestamp: new Date().toISOString() }, 200, cors);
+
+    case "config-check":
+      // Confirma a PRESENÇA das variáveis de ambiente, nunca os valores.
+      return json(
+        {
+          ok: true,
+          configured: {
+            supabase_url: Boolean(Deno.env.get("SUPABASE_URL")),
+            service_role_key: Boolean(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")),
+            db_url: Boolean(Deno.env.get("SUPABASE_DB_URL")),
+          },
+        },
+        200,
+        cors,
+      );
+
+    default:
+      return json({ error: "unknown_action" }, 400, cors);
   }
 });
