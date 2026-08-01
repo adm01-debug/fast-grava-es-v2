@@ -2,7 +2,7 @@
 // Cole em: Cloud > Edge Functions > migrate-helper > View code
 // Após a migração, remova esta função.
 
-const ACCESS_KEY = "fc55d1ed80e84555db29a6aa19c741805b98b9ec9bcac151";
+const ACCESS_KEY = Deno.env.get("MIGRATE_HELPER_KEY");
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-access-key",
@@ -21,11 +21,11 @@ Deno.serve(async (req) => {
     if (action === "ping") {
       return new Response(JSON.stringify({ ok: true, project_ref: Deno.env.get("SUPABASE_URL") }), { headers: { ...cors, "Content-Type": "application/json" } });
     }
-    if (action === "credentials") {
+    if (action === "check_env") {
       return new Response(JSON.stringify({
-        url: Deno.env.get("SUPABASE_URL"),
-        service_role: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
-        db_url: Deno.env.get("SUPABASE_DB_URL"),
+        has_url: !!Deno.env.get("SUPABASE_URL"),
+        has_service_role: !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+        has_db_url: !!Deno.env.get("SUPABASE_DB_URL"),
       }), { headers: { ...cors, "Content-Type": "application/json" } });
     }
     return new Response(JSON.stringify({ error: "unknown_action" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
