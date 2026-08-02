@@ -3056,6 +3056,41 @@ export type Database = {
           },
         ]
       }
+      packaging_waste: {
+        Row: {
+          created_at: string | null
+          id: string
+          material_type: string
+          operator_id: string | null
+          task_id: string | null
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          material_type: string
+          operator_id?: string | null
+          task_id?: string | null
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          material_type?: string
+          operator_id?: string | null
+          task_id?: string | null
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_waste_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "packaging_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       password_reset_requests: {
         Row: {
           created_at: string
@@ -5957,6 +5992,17 @@ export type Database = {
           last_run: string
           last_status: string
           schedule: string
+        }[]
+      }
+      get_packaging_manifest: {
+        Args: { p_task_ids: string[] }
+        Returns: {
+          client_name: string
+          order_number: string
+          package_type: string
+          packages_count: number
+          shipping_address: string
+          total_weight: number
         }[]
       }
       get_system_status_summary: {
