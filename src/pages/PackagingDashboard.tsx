@@ -9,6 +9,7 @@ import { PackagingQualityDashboard } from '@/features/packaging/components/Packa
 import { PackagingThroughputTable } from '@/features/packaging/components/PackagingThroughputTable';
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
 import { PackagingSlaOverridesManager } from '@/features/packaging/components/PackagingSlaOverridesManager';
+import { PackagingLeaderboard } from '@/features/packaging/components/PackagingLeaderboard';
 import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon, Search as SearchIcon, X as XIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
@@ -259,8 +260,15 @@ export default function PackagingDashboard() {
             />
           </TabsContent>
           <TabsContent value="quality" className="mt-4 space-y-4">
-            <PackagingQualityDashboard />
-            <PackagingThroughputTable days={30} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-4">
+                <PackagingQualityDashboard />
+                <PackagingThroughputTable days={30} />
+              </div>
+              <div className="lg:col-span-1">
+                <PackagingLeaderboard />
+              </div>
+            </div>
           </TabsContent>
           <TabsContent value="settings" className="mt-4">
             <PackagingSlaOverridesManager />
