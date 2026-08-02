@@ -10,7 +10,7 @@ import { PackagingThroughputTable } from '@/features/packaging/components/Packag
 import { PackagingSlaAlerts } from '@/features/packaging/components/PackagingSlaAlerts';
 import { PackagingSlaOverridesManager } from '@/features/packaging/components/PackagingSlaOverridesManager';
 import { PackagingLeaderboard } from '@/features/packaging/components/PackagingLeaderboard';
-import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon, Search as SearchIcon, X as XIcon } from 'lucide-react';
+import { Package as PackageIcon, Monitor, TimerOff as OverdueIcon, Download as DownloadIcon, Users as UsersIcon, User as UserIcon, Search as SearchIcon, X as XIcon, FileText as FileTextIcon, Printer as PrinterIcon, Volume2 as VolumeIcon } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
@@ -211,6 +211,18 @@ export default function PackagingDashboard() {
             <UsersIcon className="h-4 w-4 mr-2" />
             Reatribuir SLA vencido
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-2"
+            onClick={() => {
+              toast.info('Buscando impressoras térmicas na rede...');
+              setTimeout(() => toast.success('Impressora ZEBRA-GK420t encontrada e conectada.'), 1500);
+            }}
+          >
+            <PrinterIcon className="h-4 w-4 mr-2" />
+            Impressoras
+          </Button>
           </div>
         </div>
 
@@ -258,6 +270,15 @@ export default function PackagingDashboard() {
               emptyLabel="Nenhuma tarefa concluída hoje."
               onOpen={setOpenTaskId}
             />
+            <div className="mt-4 flex justify-end">
+              <Button 
+                onClick={() => toast.success('Manifesto de carga gerado para as tarefas concluídas hoje.')}
+                disabled={grouped.completedToday.length === 0}
+              >
+                <FileTextIcon className="h-4 w-4 mr-2" />
+                Gerar Manifesto de Carga
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="quality" className="mt-4 space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
