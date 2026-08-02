@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSoundFeedback } from '../hooks/useSoundFeedback';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -20,6 +21,7 @@ interface Props {
 const DEFAULT_TYPES = ['caixa', 'saco', 'envelope', 'pallet'];
 
 export function PackagingRegisterForm({ received, defaultPackageTypes = DEFAULT_TYPES, onSubmit, submitting, onScaleWeight }: Props) {
+  const { playSound } = useSoundFeedback();
   const form = useForm<PackagingRegisterForm>({
     resolver: zodResolver(packagingRegisterFormSchema),
     defaultValues: {
@@ -32,7 +34,18 @@ export function PackagingRegisterForm({ received, defaultPackageTypes = DEFAULT_
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form 
+      onSubmit={form.handleSubmit(async (v) => {
+        try {
+          await onSubmit(v);
+          playSound('success');
+        } catch (e) {
+          playSound('error');
+          throw e;
+        }
+      })} 
+      className="space-y-4"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label>Tipo de embalagem</Label>
