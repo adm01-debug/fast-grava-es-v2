@@ -2842,6 +2842,36 @@ export type Database = {
           },
         ]
       }
+      packaging_equipment: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_maintenance_at: string | null
+          name: string
+          next_maintenance_at: string | null
+          status: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_maintenance_at?: string | null
+          name: string
+          next_maintenance_at?: string | null
+          status?: string | null
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_maintenance_at?: string | null
+          name?: string
+          next_maintenance_at?: string | null
+          status?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
       packaging_settings: {
         Row: {
           created_at: string
@@ -5948,6 +5978,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_reassign_stale_packaging_tasks: { Args: never; Returns: undefined }
       calculate_audit_hash: {
         Args: { rec: Database["public"]["Tables"]["audit_log"]["Row"] }
         Returns: string
@@ -5992,6 +6023,15 @@ export type Database = {
           last_run: string
           last_status: string
           schedule: string
+        }[]
+      }
+      get_packaging_leaderboard: {
+        Args: never
+        Returns: {
+          avg_time_minutes: number
+          operator_name: string
+          quality_rate: number
+          tasks_completed: number
         }[]
       }
       get_packaging_manifest: {
