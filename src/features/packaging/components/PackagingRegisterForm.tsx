@@ -1,7 +1,10 @@
 import { useForm } from 'react-hook-form';
+import { Monitor } from 'lucide-react';
+import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSoundFeedback } from '../hooks/useSoundFeedback';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,13 +13,15 @@ import { packagingRegisterFormSchema, type PackagingRegisterForm } from '../type
 interface Props {
   received: number;
   defaultPackageTypes?: string[];
+  onScaleWeight?: () => Promise<number>;
   onSubmit: (values: PackagingRegisterForm) => Promise<void> | void;
   submitting?: boolean;
 }
 
 const DEFAULT_TYPES = ['caixa', 'saco', 'envelope', 'pallet'];
 
-export function PackagingRegisterForm({ received, defaultPackageTypes = DEFAULT_TYPES, onSubmit, submitting }: Props) {
+export function PackagingRegisterForm({ received, defaultPackageTypes = DEFAULT_TYPES, onSubmit, submitting, onScaleWeight }: Props) {
+  const { playSound } = useSoundFeedback();
   const form = useForm<PackagingRegisterForm>({
     resolver: zodResolver(packagingRegisterFormSchema),
     defaultValues: {
@@ -29,7 +34,18 @@ export function PackagingRegisterForm({ received, defaultPackageTypes = DEFAULT_
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form 
+      onSubmit={form.handleSubmit(async (v) => {
+        try {
+          await onSubmit(v);
+          playSound('success');
+        } catch (e) {
+          playSound('error');
+          throw e;
+        }
+      })} 
+      className="space-y-4"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label>Tipo de embalagem</Label>
@@ -54,7 +70,29 @@ export function PackagingRegisterForm({ received, defaultPackageTypes = DEFAULT_
         </div>
         <div>
           <Label htmlFor="total_weight_kg">Peso total (kg)</Label>
-          <Input id="total_weight_kg" type="number" step="0.01" min={0} {...form.register('total_weight_kg')} />
+          <div className="flex gap-2">
+            <Input id="total_weight_kg" type="number" step="0.01" min={0} {...form.register('total_weight_kg')} className="flex-1" />
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="icon"
+              title="Ler balança"
+              onClick={async () => {
+                if (onScaleWeight) {
+                  const weight = await onScaleWeight();
+                  form.setValue('total_weight_kg', weight);
+                } else {
+                  // Mock para demonstração se não houver handler real
+                  const mockWeight = Number((Math.random() * 50).toFixed(2));
+                  form.setValue('total_weight_kg', mockWeight);
+                  toast.success(`Peso capturado: ${mockWeight}kg (Simulação)`);
+                }
+              }}
+            >
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin-slow hidden group-data-[loading=true]:block" />
+              <Monitor className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <div>
           <Label htmlFor="approved_quantity">Peças aprovadas (recebidas: {received})</Label>

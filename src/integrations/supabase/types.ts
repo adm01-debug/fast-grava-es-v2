@@ -2842,6 +2842,36 @@ export type Database = {
           },
         ]
       }
+      packaging_equipment: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_maintenance_at: string | null
+          name: string
+          next_maintenance_at: string | null
+          status: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_maintenance_at?: string | null
+          name: string
+          next_maintenance_at?: string | null
+          status?: string | null
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_maintenance_at?: string | null
+          name?: string
+          next_maintenance_at?: string | null
+          status?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
       packaging_settings: {
         Row: {
           created_at: string
@@ -3052,6 +3082,41 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: true
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packaging_waste: {
+        Row: {
+          created_at: string | null
+          id: string
+          material_type: string
+          operator_id: string | null
+          task_id: string | null
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          material_type: string
+          operator_id?: string | null
+          task_id?: string | null
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          material_type?: string
+          operator_id?: string | null
+          task_id?: string | null
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_waste_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "packaging_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -5913,6 +5978,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_reassign_stale_packaging_tasks: { Args: never; Returns: undefined }
       calculate_audit_hash: {
         Args: { rec: Database["public"]["Tables"]["audit_log"]["Row"] }
         Returns: string
@@ -5957,6 +6023,26 @@ export type Database = {
           last_run: string
           last_status: string
           schedule: string
+        }[]
+      }
+      get_packaging_leaderboard: {
+        Args: never
+        Returns: {
+          avg_time_minutes: number
+          operator_name: string
+          quality_rate: number
+          tasks_completed: number
+        }[]
+      }
+      get_packaging_manifest: {
+        Args: { p_task_ids: string[] }
+        Returns: {
+          client_name: string
+          order_number: string
+          package_type: string
+          packages_count: number
+          shipping_address: string
+          total_weight: number
         }[]
       }
       get_system_status_summary: {
