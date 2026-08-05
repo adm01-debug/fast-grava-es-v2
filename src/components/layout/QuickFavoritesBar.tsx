@@ -208,9 +208,18 @@ export const QuickFavoritesBar = memo(function QuickFavoritesBar() {
 
     try {
       if (!audioContextRef.current) {
-        audioContextRef.current = createBrowserAudioContext();
+        const audioWindow = window as Window & {
+          AudioContext?: typeof AudioContext;
+          webkitAudioContext?: typeof AudioContext;
+        };
+        const AudioContextConstructor = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
+        if (!AudioContextConstructor) return;
+        const ctx = new AudioContextConstructor();
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        audioContextRef.current = ctx;
       }
       const ctx = audioContextRef.current;
+      if (!ctx) return;
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 

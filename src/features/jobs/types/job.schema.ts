@@ -12,7 +12,7 @@ export const jobSchema = z.object({
   client: z.string().min(1, 'Cliente é obrigatório').max(200, 'Nome do cliente muito longo'),
   product: z.string().min(1, 'Produto é obrigatório').max(200, 'Nome do produto muito longo'),
   quantity: z.number().int().positive('Quantidade deve ser positiva'),
-  technique_id: z.string().uuid('Técnica é obrigatória'),
+  technique_id: z.string().min(1, 'Técnica é obrigatória'),
   machine_id: z.string().uuid().nullable().optional(),
   priority: jobPrioritySchema.catch('medium'),
   status: jobStatusSchema.catch('queue'),

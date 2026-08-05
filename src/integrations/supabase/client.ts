@@ -41,7 +41,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
                 route,
                 timestamp: new Date().toISOString()
               };
-              
+
               if (response.status === 401 || response.status === 403) {
                 logger.warn(`Acesso negado (${response.status}): ${urlString}`, errorData);
               } else {

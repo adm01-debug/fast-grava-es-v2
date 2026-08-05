@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 import { logger } from '@/lib/logger';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -34,37 +35,29 @@ export function TPMParameterAlerts() {
       setIsLoading(true);
       const { data, error } = await supabase
         .from('tpm_parameter_alerts')
-        .select('*, execution:maintenance_records(id, machine:machines(name, code))')
+        .select('*, execution:tpm_executions(id, machine:machines(name, code))')
         .eq('is_resolved', false)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      if (!isMountedRef.current) return;
       setAlerts((data ?? []) as unknown as TPMParameterAlert[]);
     } catch (err) {
       logger.warn('Falha ao carregar alertas de parâmetros TPM', err, 'TPMParameterAlerts');
     } finally {
-      if (isMountedRef.current) setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     isMountedRef.current = true;
     fetchAlerts();
-
-    // Subscription for new alerts
-    const channel = supabase
-      .channel('parameter-alerts')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tpm_parameter_alerts' }, () => {
-        fetchAlerts();
-      })
-      .subscribe();
-
-    return () => {
-      isMountedRef.current = false;
-      supabase.removeChannel(channel);
-    };
+    return () => { isMountedRef.current = false; };
   }, []);
+
+  // Subscription for new alerts
+  useRealtimeChannel('parameter-alerts', [{ table: 'tpm_parameter_alerts' }], () => {
+    fetchAlerts();
+  });
 
   const resolveAlert = async (id: string) => {
     try {

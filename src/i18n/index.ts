@@ -64,8 +64,8 @@ i18n
       useSuspense: false,
     },
 
-    // Debug em dev
-    debug: import.meta.env.DEV,
+    // Debug em dev — silenciado para não poluir o console
+    debug: false,
   });
 
 export default i18n;

@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 import {
   MaintenanceType,
@@ -14,46 +14,17 @@ export function useTPMData() {
   const queryClient = useQueryClient();
 
   // Realtime subscriptions for TPM data
-  useEffect(() => {
-    const schedulesChannel = supabase
-      .channel('tpm-schedules-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'maintenance_schedules' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
-        }
-      )
-      .subscribe();
+  useRealtimeChannel('tpm-schedules-changes', [{ table: 'maintenance_schedules' }], () => {
+    queryClient.invalidateQueries({ queryKey: ['maintenance-schedules'] });
+  });
 
-    const recordsChannel = supabase
-      .channel('tpm-records-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'maintenance_records' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
-        }
-      )
-      .subscribe();
+  useRealtimeChannel('tpm-records-changes', [{ table: 'maintenance_records' }], () => {
+    queryClient.invalidateQueries({ queryKey: ['maintenance-records'] });
+  });
 
-    const alertsChannel = supabase
-      .channel('tpm-alerts-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'maintenance_alerts' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(schedulesChannel);
-      supabase.removeChannel(recordsChannel);
-      supabase.removeChannel(alertsChannel);
-    };
-  }, [queryClient]);
+  useRealtimeChannel('tpm-alerts-changes', [{ table: 'maintenance_alerts' }], () => {
+    queryClient.invalidateQueries({ queryKey: ['maintenance-alerts'] });
+  });
 
   // Fetch maintenance types
   const { data: maintenanceTypes = [], isLoading: loadingTypes } = useQuery({

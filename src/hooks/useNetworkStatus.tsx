@@ -51,7 +51,7 @@ interface NetworkStatusProviderProps {
 
 export function NetworkStatusProvider({
   children,
-  pingUrl = "/functions/v1/health-check",
+  pingUrl = "/auth/v1/settings",
   pingInterval = 60000,
 }: NetworkStatusProviderProps) {
   const [state, setState] = React.useState<NetworkState>({

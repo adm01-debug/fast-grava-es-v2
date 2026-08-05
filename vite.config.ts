@@ -139,7 +139,9 @@ export default defineConfig(({ mode }) => ({
       'recharts',
       'clsx',
       'tailwind-merge',
+      'dayjs',
+      '@braintree/sanitize-url',
     ],
-    exclude: ['mermaid', 'exceljs', 'jspdf', 'html2canvas', 'jszip'],
+    exclude: ['mermaid', 'exceljs', 'jspdf', 'html2canvas'],
   },
 }));

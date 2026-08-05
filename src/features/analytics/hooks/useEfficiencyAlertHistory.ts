@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
-import { useEffect } from "react";
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 import { showErrorToast, createAppError, createMutationErrorHandler } from '@/lib/errorHandling';
 import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 
@@ -65,26 +65,9 @@ export const useEfficiencyAlertHistory = (options?: { limit?: number; offset?: n
   });
 
   // Subscribe to realtime updates
-  useEffect(() => {
-    const channel = supabase
-      .channel('efficiency-alert-history-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'efficiency_alert_history'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['efficiency-alert-history'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
+  useRealtimeChannel('efficiency-alert-history-changes', [{ table: 'efficiency_alert_history' }], () => {
+    queryClient.invalidateQueries({ queryKey: ['efficiency-alert-history'] });
+  });
 
   const recordAlert = useMutation({
     mutationFn: async (alert: Omit<EfficiencyAlertHistory, 'id' | 'created_at' | 'detected_at'>) => {

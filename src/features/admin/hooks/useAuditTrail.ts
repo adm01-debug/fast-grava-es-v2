@@ -18,7 +18,7 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
   };
   let query = client
     .from('audit_log')
-    .select('*, profiles:actor_id(full_name)')
+    .select('*, actor_email')
     .order('created_at', { ascending: false });
 
   if (filters.limit) query = query.limit(filters.limit);
@@ -43,7 +43,7 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     logger.error('Failed to load audit entries', error, CONTEXT);
     throw error;
   }
-  type AuditRow = Record<string, unknown> & { profiles?: { full_name?: string } | null; actor_name?: string };
+  type AuditRow = Record<string, unknown> & { actor_email?: string | null; actor_name?: string };
   const rows = (data ?? []) as AuditRow[];
   const parsed = rows.map((row) => {
     const result = auditLogEntrySchema.safeParse(row);
@@ -53,7 +53,7 @@ async function fetchAuditEntries(filters: AuditFilters): Promise<AuditLogEntry[]
     }
     return {
       ...result.data,
-      actor_name: row.profiles?.full_name || row.actor_name, // Injecting actor_name for UI
+      actor_name: row.actor_email || row.actor_name, // Surface actor_email as actor_name for UI
     } as AuditLogEntry & { actor_name?: string };
   });
   return parsed.filter((x): x is AuditLogEntry & { actor_name?: string } => x !== null);

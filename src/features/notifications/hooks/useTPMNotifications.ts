@@ -1,7 +1,8 @@
-import { useEffect, useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { usePushNotifications } from '@/features/notifications';
 import { useNotificationSounds } from '@/features/notifications';
 import { supabase } from '@/integrations/supabase/client';
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 import { MaintenanceAlert } from '@/features/maintenance/hooks/types';
 import { toast } from 'sonner';
 
@@ -231,41 +232,23 @@ export const useTPMNotifications = () => {
   }, [sendNotification]);
 
   // Listen to realtime maintenance alerts
-  useEffect(() => {
+  useRealtimeChannel('tpm-alerts-notifications', [{ table: 'maintenance_alerts' }], async (payload) => {
     if (permission !== 'granted') return;
+    const newAlert = payload.new as MaintenanceAlert;
 
-    const channel = supabase
-      .channel('tpm-alerts-notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'maintenance_alerts'
-        },
-        async (payload) => {
-          const newAlert = payload.new as MaintenanceAlert;
+    const { data: machine } = await supabase
+      .from('machines')
+      .select('id, name, code')
+      .eq('id', newAlert.machine_id)
+      .single();
 
-          const { data: machine } = await supabase
-            .from('machines')
-            .select('id, name, code')
-            .eq('id', newAlert.machine_id)
-            .single();
-
-          const alertWithMachine = {
-            ...newAlert,
-            machine: machine || undefined
-          };
-
-          sendMaintenanceNotification(alertWithMachine);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
+    const alertWithMachine = {
+      ...newAlert,
+      machine: machine || undefined
     };
-  }, [permission, sendMaintenanceNotification]);
+
+    sendMaintenanceNotification(alertWithMachine);
+  });
 
   // Cleanup old notified alerts periodically
   useEffect(() => {

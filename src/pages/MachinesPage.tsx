@@ -226,9 +226,9 @@ export default function MachinesPage() {
                   <Activity className="h-5 w-5 text-blue-500" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-2xl font-bold">
+                  <div className="text-2xl font-bold">
                     {isLoadingReliability ? <Skeleton className="h-6 w-12" /> : `${Math.round(reliabilitySummary.averageAvailability)}%`}
-                  </p>
+                  </div>
                   <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider truncate">Disponibilidade</p>
                 </div>
               </div>
@@ -242,9 +242,9 @@ export default function MachinesPage() {
                   <AlertTriangle className="h-5 w-5 text-destructive" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-2xl font-bold">
+                  <div className="text-2xl font-bold">
                     {isLoadingReliability ? <Skeleton className="h-6 w-12" /> : reliabilitySummary.criticalMachines.length}
-                  </p>
+                  </div>
                   <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider truncate">Críticas</p>
                 </div>
               </div>

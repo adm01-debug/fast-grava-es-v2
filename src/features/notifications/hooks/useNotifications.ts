@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 
 import { Notification } from '../types';
 
@@ -11,12 +12,26 @@ const EMPTY_NOTIFICATIONS: Notification[] = [];
 export function useNotifications(options?: { limit?: number; unreadOnly?: boolean }) {
   const { limit = 50, unreadOnly = false } = options ?? {};
   const queryClient = useQueryClient();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (mounted) setUserId(data.user?.id ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_evt, session) => {
+      if (mounted) setUserId(session?.user?.id ?? null);
+    });
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications', { limit, unreadOnly }],
     queryFn: async () => {
       try {
-        // Try to fetch from push_notifications table which exists
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return EMPTY_NOTIFICATIONS;
 
@@ -31,7 +46,6 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
           return EMPTY_NOTIFICATIONS;
         }
 
-        // Transform push_notifications to Notification format
         return data.map(n => {
           const metadata = (n.data as Record<string, unknown> | null) || {};
           const severity = metadata.severity as string | undefined;
@@ -139,36 +153,17 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
     },
   });
 
-  useEffect(() => {
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    let mounted = true;
-
-    const setupRealtime = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !mounted) return;
-
-      // Ensure we don't have multiple channels
-      if (channel) return;
-
-      channel = supabase.channel('notifications-realtime').on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'push_notifications', filter: `user_id=eq.${user.id}`,
-      }, (payload) => {
-        queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        const notif = payload.new as { title: string; body: string };
-        toast.info(notif.title, { description: notif.body });
-      }).subscribe();
-    };
-
-    setupRealtime();
-
-    return () => {
-      mounted = false;
-      if (channel) {
-        supabase.removeChannel(channel);
-        channel = null;
-      }
-    };
-  }, [queryClient]);
+  // Realtime via useRealtimeChannel — handles StrictMode double-mount and userId
+  // changes correctly. Channel name includes userId so each session is isolated.
+  useRealtimeChannel(
+    () => userId ? `notifications-realtime-${userId}` : 'notifications-pending',
+    userId ? [{ event: 'INSERT', schema: 'public', table: 'push_notifications', filter: `user_id=eq.${userId}` }] : [],
+    (payload) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      const notif = payload.new as { title: string; body: string };
+      toast.info(notif.title, { description: notif.body });
+    },
+  );
 
   return {
     notifications, unreadCount, isLoading,
@@ -179,8 +174,6 @@ export function useNotifications(options?: { limit?: number; unreadOnly?: boolea
 
 // Helper function for status change notifications
 export function notifyStatusChange(clientName: string, oldStatus: string, newStatus: string) {
-  // Logic shifted to database triggers + InAppNotificationWatcher
-  // This helper can be used for manual client-side triggers if needed
   if (process.env.NODE_ENV === 'development') {
     logger.info(`Status changed for ${clientName}: ${oldStatus} -> ${newStatus}`, { clientName, oldStatus, newStatus }, 'Status Notification');
   }

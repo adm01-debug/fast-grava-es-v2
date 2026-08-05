@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 import { createAppError } from '@/lib/errorHandling';
 import { defaultQueryOptions, STALE_TIMES } from '@/lib/queryConfig';
 import {
@@ -43,22 +43,9 @@ export const useTechnicalSheets = () => {
     ...defaultQueryOptions,
   });
 
-  useEffect(() => {
-    const channel = supabase
-      .channel('technical-sheets-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'technical_sheets' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['technical-sheets'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
+  useRealtimeChannel('technical-sheets-changes', [{ table: 'technical_sheets' }], () => {
+    queryClient.invalidateQueries({ queryKey: ['technical-sheets'] });
+  });
 
   const categoriesQuery = useQuery({
     queryKey: ['product-categories'],

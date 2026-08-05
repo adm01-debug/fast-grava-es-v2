@@ -44,10 +44,22 @@ export function useThemeSound() {
   }, []);
 
   const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = createBrowserAudioContext();
+    const audioWindow = window as BrowserAudioWindow;
+    const AudioContextConstructor = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
+    if (!AudioContextConstructor) return null;
+
+    if (audioContextRef.current) return audioContextRef.current;
+
+    try {
+      const ctx = new AudioContextConstructor();
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      audioContextRef.current = ctx;
+      return ctx;
+    } catch {
+      return null;
     }
-    return audioContextRef.current;
   }, []);
 
   const playLightModeSound = useCallback(() => {
@@ -55,6 +67,7 @@ export function useThemeSound() {
 
     try {
       const ctx = getAudioContext();
+      if (!ctx) return;
       const now = ctx.currentTime;
 
       // Create a bright, ascending chime for light mode
@@ -101,6 +114,7 @@ export function useThemeSound() {
 
     try {
       const ctx = getAudioContext();
+      if (!ctx) return;
       const now = ctx.currentTime;
 
       // Create a soft, descending tone for dark mode

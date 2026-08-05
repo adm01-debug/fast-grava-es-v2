@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { showErrorToast, createAppError } from '@/lib/errorHandling';
+import { useRealtimeChannel } from '@/lib/realtimeChannel';
 import { useAuth } from '@/features/auth';
 
 const OPERATOR_MACHINES_CONTEXT = {
@@ -48,29 +49,12 @@ export function useOperatorMachines(operatorId?: string) {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Subscribe to realtime updates for operator machine assignments
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const channel = supabase
-      .channel('operator-machines-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'operator_machines'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['operator-machines'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient, isAuthenticated]);
+  // Shared realtime channel via the singleton helper — see
+  // src/lib/realtimeChannel.ts. Multiple `useOperatorMachines` consumers and
+  // React 18 StrictMode double-mount reuse one channel.
+  useRealtimeChannel('operator-machines-changes', [{ table: 'operator_machines' }], () => {
+    queryClient.invalidateQueries({ queryKey: ['operator-machines'] });
+  });
 
   const assignMachine = useMutation({
     mutationFn: async ({ operatorId, machineId }: { operatorId: string; machineId: string }) => {

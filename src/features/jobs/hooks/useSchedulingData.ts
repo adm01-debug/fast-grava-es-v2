@@ -94,33 +94,11 @@ export function useSchedulingData() {
 
   const [profilesQuery, techniquesQuery, machinesQuery, jobsQuery] = results;
 
-  // Centralized realtime subscription for core tables
-  useEffect(() => {
-    if (!queryClient || !isAuthenticated) return;
-
-    const channel = supabase
-      .channel('app-core-sync')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'jobs' },
-        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.JOBS_RECENT })
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'techniques' },
-        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TECHNIQUES })
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'machines' },
-        () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MACHINES })
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient, isAuthenticated]);
+  // Note: the original "app-core-sync" channel was removed because it collided
+  // with `useJobs`/`useMachines`/`useTechniques`, which already invalidate the
+  // same query keys via their own realtime subscriptions (see
+  // src/lib/realtimeChannel.ts). Keeping both produced Supabase's
+  // "cannot add `postgres_changes` callbacks after `subscribe()`" error.
 
   // Pre-build Maps for O(1) lookups instead of O(n) .find()
   const techniquesMap = useMemo(() => {

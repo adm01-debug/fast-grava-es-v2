@@ -111,7 +111,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <HelmetProvider>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ComposedProviders>
               <Observers />
               {children}
