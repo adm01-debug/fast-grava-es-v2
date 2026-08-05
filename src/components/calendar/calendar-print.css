@@ -1,0 +1,51 @@
+/* E15 — Print-friendly calendar styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide non-essential UI */
+  .print\:hidden,
+  nav,
+  aside,
+  header[role="banner"],
+  .calendar-no-print {
+    display: none !important;
+  }
+
+  /* Force light backgrounds for print */
+  .calendar-print-area,
+  .calendar-print-area * {
+    color: #111 !important;
+    background: white !important;
+    border-color: #ddd !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep status colors visible (subtle borders) */
+  .calendar-print-area [class*="bg-status-"] {
+    background: white !important;
+    border: 1px solid currentColor !important;
+  }
+
+  /* Avoid awkward page breaks inside rows */
+  .calendar-print-area .calendar-row {
+    page-break-inside: avoid;
+  }
+
+  /* Expand scroll containers */
+  .calendar-print-area [data-radix-scroll-area-viewport],
+  .calendar-print-area .min-w-\[1200px\],
+  .calendar-print-area .min-w-\[1000px\] {
+    min-width: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+}

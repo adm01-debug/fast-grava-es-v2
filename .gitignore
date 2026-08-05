@@ -1,0 +1,45 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Test & coverage artifacts
+coverage/
+test-results.json
+
+# Code review artifacts (npm audit / lint dumps)
+audit.json
+lint.txt
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+# Production/staging env files may contain real secrets — never commit them.
+# Use .env.production.example / .env.staging.example for templates.
+.env.production
+.env.staging
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Playwright artifacts
+playwright-report/
+test-results/
